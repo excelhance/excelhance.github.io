@@ -1,294 +1,153 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>L’Archiviste</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L’Archiviste</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    }
+<style>
+body {
+  background:#0f172a; color:#e5e7eb; padding:16px;
+  font-family:system-ui;
+}
+h1 { text-align:center; margin-bottom:12px }
+button {
+  width:100%; padding:12px; margin-bottom:12px;
+  border:none; border-radius:10px;
+  background:#38bdf8; color:#0f172a; font-weight:bold;
+}
+.zone { border:2px dashed #475569; border-radius:12px; padding:10px; margin-bottom:16px }
+.zone-title { text-align:center; margin-bottom:8px; color:#94a3b8 }
+.cartes { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; min-height:110px }
 
-    body {
-      background: #0f172a;
-      color: #e5e7eb;
-      padding: 16px;
-    }
+.carte {
+  width:70px; height:100px; background:#fff; border-radius:10px;
+  color:#000; position:relative; cursor:pointer;
+  box-shadow:0 4px 8px rgba(0,0,0,.4);
+}
+.carte.rouge { color:#b91c1c }
+.carte.selectionnee { outline:3px solid #38bdf8; transform:translateY(-6px) }
 
-    h1 {
-      text-align: center;
-      margin-bottom: 16px;
-      font-size: 1.6rem;
-    }
+.valeur { position:absolute; top:6px; left:6px; font-weight:bold }
+.symbole { position:absolute; bottom:6px; right:6px }
+.centre { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:2rem }
 
-    button {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 16px;
-      border: none;
-      border-radius: 10px;
-      background: #38bdf8;
-      color: #0f172a;
-      font-size: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .zone {
-      border: 2px dashed #475569;
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 20px;
-    }
-
-    .zone-title {
-      text-align: center;
-      margin-bottom: 8px;
-      font-size: 1rem;
-      color: #94a3b8;
-    }
-
-    .cartes {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: center;
-      min-height: 110px;
-    }
-
-    .carte {
-      width: 70px;
-      height: 100px;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-      color: black;
-      position: relative;
-      user-select: none;
-      cursor: pointer;
-      transition: transform 0.1s ease;
-      touch-action: manipulation;
-    }
-
-    .carte.rouge {
-      color: #b91c1c;
-    }
-
-    .carte.selectionnee {
-      outline: 3px solid #38bdf8;
-      transform: translateY(-6px);
-    }
-
-    .valeur {
-      position: absolute;
-      top: 6px;
-      left: 6px;
-      font-size: 0.9rem;
-      font-weight: bold;
-    }
-
-    .symbole {
-      position: absolute;
-      bottom: 6px;
-      right: 6px;
-      font-size: 0.9rem;
-    }
-
-    .centre {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 2rem;
-    }
-
-    /* ARCHIVES */
-    .archives {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-    }
-
-    .archive {
-      border: 2px solid #475569;
-      border-radius: 10px;
-      padding: 6px;
-      text-align: center;
-      cursor: pointer;
-    }
-
-    .archive h3 {
-      margin-bottom: 6px;
-    }
-
-    .archive-cartes {
-      min-height: 90px;
-    }
-  </style>
+.archives { display:grid; grid-template-columns:repeat(4,1fr); gap:8px }
+.archive { border:2px solid #475569; border-radius:10px; padding:6px }
+.archive-cartes { position:relative; height:90px }
+.archive-cartes .carte {
+  position:absolute; left:0;
+}
+</style>
 </head>
 
 <body>
 
-  <h1>🂡 L’Archiviste</h1>
+<h1>🂡 L’Archiviste</h1>
+<button id="piocher">Piocher (2)</button>
+<button id="defausser">Défausser</button>
 
-  <button id="piocherBtn">Piocher (2 cartes)</button>
+<div class="zone">
+  <div class="zone-title">Zone Centrale</div>
+  <div class="cartes" id="centre"></div>
+</div>
 
-  <!-- ZONE CENTRALE -->
-  <div class="zone">
-    <div class="zone-title">Zone Centrale</div>
-    <div class="cartes" id="zoneCentrale"></div>
+<div class="zone">
+  <div class="zone-title">Archives</div>
+  <div class="archives">
+    <div class="archive" data-c="♠"><div class="archive-cartes"></div></div>
+    <div class="archive" data-c="♥"><div class="archive-cartes"></div></div>
+    <div class="archive" data-c="♦"><div class="archive-cartes"></div></div>
+    <div class="archive" data-c="♣"><div class="archive-cartes"></div></div>
   </div>
+</div>
 
-  <!-- ARCHIVES -->
-  <div class="zone">
-    <div class="zone-title">Archives</div>
-    <div class="archives">
-      <div class="archive" data-couleur="♠">
-        <h3>♠</h3>
-        <div class="archive-cartes"></div>
-      </div>
-      <div class="archive" data-couleur="♥">
-        <h3>♥</h3>
-        <div class="archive-cartes"></div>
-      </div>
-      <div class="archive" data-couleur="♦">
-        <h3>♦</h3>
-        <div class="archive-cartes"></div>
-      </div>
-      <div class="archive" data-couleur="♣">
-        <h3>♣</h3>
-        <div class="archive-cartes"></div>
-      </div>
-    </div>
-  </div>
+<script>
+const centre = document.getElementById("centre");
+let pioche=[], archives={ "♠":[], "♥":[], "♦":[], "♣":[] };
 
-  <script>
-    /* ===== ÉTAT DU JEU ===== */
+const valeurs=[
+["A",1],["2",2],["3",3],["4",4],["5",5],["6",6],
+["7",7],["8",8],["9",9],["10",10],["D",12],["R",13]
+];
+const couleurs=["♠","♥","♦","♣"];
 
-    let pioche = [];
-    const zoneCentrale = document.getElementById('zoneCentrale');
-    const piocherBtn = document.getElementById('piocherBtn');
+function creerPaquet(){
+  pioche=[];
+  couleurs.forEach(c=>valeurs.forEach(v=>pioche.push({l:v[0],v:v[1],c})));
+  pioche.sort(()=>Math.random()-.5);
+}
 
-    const archives = {
-      '♠': [],
-      '♥': [],
-      '♦': [],
-      '♣': []
-    };
+function carteHTML(c){
+  const d=document.createElement("div");
+  d.className="carte"+((c.c=="♥"||c.c=="♦")?" rouge":"");
+  d.dataset.v=c.v; d.dataset.l=c.l; d.dataset.c=c.c;
+  d.innerHTML=`<div class=valeur>${c.l}</div><div class=centre>${c.c}</div><div class=symbole>${c.c}</div>`;
+  d.onclick=()=>d.classList.toggle("selectionnee");
+  return d;
+}
 
-    const couleurs = ['♠', '♥', '♦', '♣'];
-    const valeurs = [
-      { label: 'A', valeur: 1 },
-      { label: '2', valeur: 2 },
-      { label: '3', valeur: 3 },
-      { label: '4', valeur: 4 },
-      { label: '5', valeur: 5 },
-      { label: '6', valeur: 6 },
-      { label: '7', valeur: 7 },
-      { label: '8', valeur: 8 },
-      { label: '9', valeur: 9 },
-      { label: '10', valeur: 10 },
-      { label: 'D', valeur: 12 },
-      { label: 'R', valeur: 13 }
-    ];
+document.getElementById("piocher").onclick=()=>{
+  for(let i=0;i<2;i++) if(pioche.length) centre.appendChild(carteHTML(pioche.pop()));
+};
 
-    /* ===== INITIALISATION ===== */
+document.querySelectorAll(".archive").forEach(a=>{
+  a.onclick=()=>{
+    const sel=[...document.querySelectorAll(".carte.selectionnee")];
+    if(sel.length!==1) return;
+    const d=sel[0];
+    if(d.dataset.c!==a.dataset.c) return;
 
-    function creerPaquet() {
-      pioche = [];
-      couleurs.forEach(couleur => {
-        valeurs.forEach(v => {
-          pioche.push({
-            label: v.label,
-            valeur: v.valeur,
-            couleur: couleur
-          });
-        });
-      });
-      melanger(pioche);
-    }
-
-    function melanger(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-    }
-
-    /* ===== CRÉATION CARTE ===== */
-
-    function creerCarteHTML(carte) {
-      const div = document.createElement('div');
-      div.classList.add('carte');
-      if (carte.couleur === '♥' || carte.couleur === '♦') {
-        div.classList.add('rouge');
-      }
-
-      div.dataset.valeur = carte.valeur;
-      div.dataset.couleur = carte.couleur;
-
-      div.innerHTML = `
-        <div class="valeur">${carte.label}</div>
-        <div class="centre">${carte.couleur}</div>
-        <div class="symbole">${carte.couleur}</div>
-      `;
-
-      const toggle = (e) => {
-        e.preventDefault();
-        div.classList.toggle('selectionnee');
-      };
-
-      div.addEventListener('click', toggle);
-      div.addEventListener('touchstart', toggle);
-
-      return div;
-    }
-
-    /* ===== PIOCHER ===== */
-
-    function piocherCartes() {
-      for (let i = 0; i < 2; i++) {
-        if (pioche.length === 0) return;
-        const carte = pioche.pop();
-        zoneCentrale.appendChild(creerCarteHTML(carte));
-      }
-    }
-
-    piocherBtn.addEventListener('click', piocherCartes);
-
-    /* ===== CLASSER ===== */
-
-    document.querySelectorAll('.archive').forEach(archiveDiv => {
-      archiveDiv.addEventListener('click', () => {
-        const selection = document.querySelectorAll('.carte.selectionnee');
-        if (selection.length !== 1) return;
-
-        const carteDiv = selection[0];
-        const couleurArchive = archiveDiv.dataset.couleur;
-
-        if (carteDiv.dataset.couleur !== couleurArchive) return;
-
-        const valeurCarte = parseInt(carteDiv.dataset.valeur, 10);
-        const pile = archives[couleurArchive];
-        const derniereValeur = pile.length === 0 ? 0 : pile[pile.length - 1];
-
-        if (valeurCarte !== derniereValeur + 1) return;
-
-        // Classement
-        pile.push(valeurCarte);
-        archiveDiv.querySelector('.archive-cartes').appendChild(carteDiv);
-        carteDiv.classList.remove('selectionnee');
-      });
+    archives[a.dataset.c].push({
+      v:+d.dataset.v, l:d.dataset.l, c:d.dataset.c
     });
 
-    /* ===== LANCEMENT ===== */
+    renderArchive(a.dataset.c);
+    d.remove();
+  };
+});
 
-    creerPaquet();
-  </script>
+function renderArchive(c){
+  const cont=document.querySelector(`.archive[data-c="${c}"] .archive-cartes`);
+  cont.innerHTML="";
+  archives[c].sort((a,b)=>a.v-b.v).forEach((carte,i)=>{
+    const d=carteHTML(carte);
+    d.style.top=(i*4)+"px";
+    cont.appendChild(d);
+  });
+}
+
+document.getElementById("defausser").onclick=()=>{
+  const sel=[...document.querySelectorAll(".carte.selectionnee")];
+  if(sel.length!==2) return;
+
+  const v=sel.map(c=>+c.dataset.v).sort((a,b)=>a-b);
+
+  // même valeur
+  if(v[0]===v[1]) return sel.forEach(c=>c.remove());
+
+  // 6 + 9
+  if(v[0]===6 && v[1]===9){
+    sel.forEach(c=>c.classList.remove("selectionnee"));
+    return;
+  }
+
+  // 10 + Roi
+  if(v[0]===10 && v[1]===13){
+    centre.innerHTML="";
+    sel.forEach(c=>c.remove());
+    document.getElementById("piocher").click();
+  }
+
+  // 2 + 5
+  if(v[0]===2 && v[1]===5){
+    sel.forEach(c=>c.remove());
+    document.getElementById("piocher").click();
+  }
+};
+
+creerPaquet();
+</script>
 
 </body>
 </html>
