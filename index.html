@@ -234,6 +234,9 @@ let premierePioche = true; // true tant que la première pioche n'a pas été fa
 document.getElementById("piocher").onclick = () => {
   const sel = [...document.querySelectorAll(".carte.selectionnee")];
 
+  // Sauvegarde de l'état avant modification pour l'animation
+  const premierePiocheAvantClic = premierePioche;
+
   // Détermine le nombre de cartes à piocher
   let cartesADeposer;
   if(premierePioche){
@@ -256,8 +259,10 @@ document.getElementById("piocher").onclick = () => {
       if(pioche.length && centre.children.length < 7){
           const c = creerCarteHTML(pioche.pop());
 
-          // Ajoute l'animation si c'est une re-pioche
-          if(sel.length === 0 && !jokerEnAttente && !premierePioche) c.classList.add("repioche");
+          // Ajoute l'animation uniquement si c'est une re-pioche (après la 1ère pioche)
+          if(!premierePiocheAvantClic && sel.length === 0 && !jokerEnAttente) {
+              c.classList.add("repioche");
+          }
 
           centre.appendChild(c);
       }
