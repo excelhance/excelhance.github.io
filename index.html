@@ -224,34 +224,61 @@ btnPioche.onclick = () => {
 /* =====================================================
    ARCHIVES
 ===================================================== */
-document.querySelectorAll(".archive").forEach(archive=>{
+document.querySelectorAll(".archive").forEach(archive => {
   archive.onclick = () => {
+
+    // Gestion du Chaos (Joker en attente)
     if(jokerEnAttente){
-      if(archives[archive.dataset.c].length===0) return;
-      pioche.push(...archives[archive.dataset.c]);
+      const arch = archives[archive.dataset.c];
+      if(arch.length === 0) return;
+
+      // Vider l'archive choisie et remettre ses cartes dans la pioche
+      pioche.push(...arch);
       archives[archive.dataset.c] = [];
       renderArchive(archive.dataset.c);
-      // Joker marqueur
-      archive.insertAdjacentHTML("afterbegin","<div class='joker-marqueur'>🃏</div>");
-      jokerEnAttente=false;
-      btnJoker.classList.remove("joker-actif");
-      btnJoker.classList.add("joker-utilise");
-      attenteAction=false;
+
+      // Vider la Zone Centrale
+      while(centre.firstChild){
+        centre.removeChild(centre.firstChild);
+      }
+
+      // Marqueur visuel Joker (au-dessus du titre, sans décaler l'icône)
+      const marqueur = document.createElement("div");
+      marqueur.className = "joker-marqueur";
+      marqueur.textContent = "🃏";
+      marqueur.style.position = "absolute";
+      marqueur.style.top = "4px";
+      marqueur.style.right = "4px";
+      archive.querySelector("h3").appendChild(marqueur);
+
+      // Changer visuel du bouton Joker
+      const btnJoker = document.getElementById("joker");
+      btnJoker.style.backgroundColor = "#dc2626"; // rouge léger
+      btnJoker.style.color = "#fff";
+
+      jokerEnAttente = false;
+      attenteAction = false;
       return;
     }
 
-    if(etat!=="action") return;
-    const sel=[...document.querySelectorAll(".carte.selectionnee")];
-    if(sel.length!==1) return;
-    const d=sel[0];
-    if(d.dataset.couleur!==archive.dataset.c) return;
+    // Classement d'une carte dans l'archive
+    if(etat !== "action") return;
+    const sel = [...document.querySelectorAll(".carte.selectionnee")];
+    if(sel.length !== 1) return;
+    const d = sel[0];
+    if(d.dataset.couleur !== archive.dataset.c) return;
 
-    archives[archive.dataset.c].push({valeur:+d.dataset.valeur,label:d.dataset.label,couleur:d.dataset.couleur});
+    archives[archive.dataset.c].push({
+      valeur: +d.dataset.valeur,
+      label: d.dataset.label,
+      couleur: d.dataset.couleur
+    });
     d.remove();
     renderArchive(archive.dataset.c);
-    etat="pioche";
+
+    etat = "pioche";
     verifierVictoire();
-    attenteAction=false;
+    attenteAction = false;
   };
 });
 
