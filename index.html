@@ -294,76 +294,37 @@ function renderArchive(c){
 }
 
 /* =====================================================
-   DEFAUSSE
+   DÉFAUSSE (RÈGLES COMPLÈTES UNIFIÉES)
 ===================================================== */
 document.getElementById("defausser").onclick = () => {
-  if(etat !== "action") return;
+    if(etat !== "action") return;
 
-  const sel = [...document.querySelectorAll(".carte.selectionnee")];
-  if(sel.length < 2) return;
+    const sel = [...document.querySelectorAll(".carte.selectionnee")];
+    if(sel.length < 2) return;
 
-  const v = sel.map(c => +c.dataset.valeur).sort((a,b) => a-b);
+    const v = sel.map(c => +c.dataset.valeur).sort((a,b) => a-b);
 
-  // Même valeur
-  if(v[0] === v[1]){
-      sel.forEach(c => c.remove());
-      etat = "action";
-      attenteAction = false;
-      return;
-  }
+    // ===== Même valeur =====
+    if(v[0] === v[1]){
+        sel.forEach(c => c.remove());
+        etat = "pioche";
+        attenteAction = false;  // pas de re-pioche automatique
+        return;
+    }
 
-  // 6 + 9 => rejouer sans piocher
-  if(v[0] === 6 && v[1] === 9){
-      sel.forEach(c => c.classList.remove("selectionnee"));
-      return;
-  }
+    // ===== 6 + 9 =====
+    if(v[0] === 6 && v[1] === 9){
+        sel.forEach(c => c.classList.remove("selectionnee"));  // juste désélection
+        return;  // rejouer immédiatement, aucune pioche
+    }
 
-  // 10 + Roi => vider zone centrale + pioche automatique de 2 cartes
-  if(v[0] === 10 && v[1] === 13){
-      // Vider Zone Centrale et retirer les cartes sélectionnées
-      centre.innerHTML = "";
-      sel.forEach(c => c.remove());
-  
-      // Pioche automatique de 2 cartes
-      const maxPioche = Math.min(2, 7 - centre.children.length);
-      for(let i=0; i<maxPioche; i++){
-          if(pioche.length){
-              centre.appendChild(creerCarteHTML(pioche.pop()));
-          }
-      }
-  
-      // Passer en attente d'action utilisateur
-      etat = "action";
-      attenteAction = true;
-  
-      return;
-  }
-
-
-  // 10 + As => regarder 3 cartes (UI simplifiée) + pioche 2 cartes si pas re-pioche
-  if(v[0] === 1 && v[1] === 10){
-      sel.forEach(c => c.remove());
-      etat = "action";
-
-      if(!attenteAction){
-          for(let i=0; i<2; i++){
-              if(pioche.length && centre.children.length < 7){
-                  centre.appendChild(creerCarteHTML(pioche.pop()));
-              }
-          }
-          attenteAction = false;
-      }
-
-      return;
-  }
-
-  // 2 + 5 avec carte supplémentaire
-  if(sel.length === 3){
-    const vals = sel.map(c => +c.dataset.valeur);
-    if(vals.includes(2) && vals.includes(5)){
+    // ===== 10 + Roi =====
+    if(v[0] === 10 && v[1] === 13){
+        // Vider la Zone Centrale et retirer les cartes sélectionnées
+        centre.innerHTML = "";
         sel.forEach(c => c.remove());
 
-        // Pioche automatique de 2 cartes
+        // Pioche automatique de 2 cartes max
         const maxPioche = Math.min(2, 7 - centre.children.length);
         for(let i=0; i<maxPioche; i++){
             if(pioche.length){
@@ -371,13 +332,38 @@ document.getElementById("defausser").onclick = () => {
             }
         }
 
-        // Passage en attente d'action utilisateur
-        etat = "action";
-        attenteAction = true;
-
+        etat = "action";       // attente de l'action utilisateur
+        attenteAction = true;   // empêche re-pioche immédiate
         return;
     }
-  }
+
+    // ===== 10 + As =====
+    if(v[0] === 1 && v[1] === 10){
+        sel.forEach(c => c.remove());
+        etat = "pioche";       // prochaine action : pioche normale
+        attenteAction = false;
+        return;
+    }
+
+    // ===== 2 + 5 + 1 carte supplémentaire =====
+    if(sel.length === 3){
+        const vals = sel.map(c => +c.dataset.valeur);
+        if(vals.includes(2) && vals.includes(5)){
+            sel.forEach(c => c.remove());
+
+            // Pioche automatique de 2 cartes max
+            const maxPioche = Math.min(2, 7 - centre.children.length);
+            for(let i=0; i<maxPioche; i++){
+                if(pioche.length){
+                    centre.appendChild(creerCarteHTML(pioche.pop()));
+                }
+            }
+
+            etat = "action";       // attente action utilisateur
+            attenteAction = true;   // empêche re-pioche immédiate
+            return;
+        }
+    }
 };
 
 /* =====================================================
