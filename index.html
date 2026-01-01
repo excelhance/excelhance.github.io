@@ -30,6 +30,15 @@ button {
   font-weight:bold;
 }
 
+button.joker-actif {
+  background:#fde047; /* jaune doux */
+}
+
+button.joker-consomme {
+  background:#dc2626; /* rouge */
+  color:#ffffff;
+}
+
 /* ===== ZONES ===== */
 .zone {
   border:2px dashed #475569;
@@ -87,6 +96,10 @@ button {
 }
 
 /* ===== ARCHIVES ===== */
+.archive {
+  position:relative;
+}
+  
 .archives {
   display:grid;
   grid-template-columns:repeat(4,1fr);
@@ -108,6 +121,13 @@ button {
   display:flex;
   flex-direction:column;
   gap:4px;
+}
+
+.joker-marqueur {
+  position:absolute;
+  top:-10px;
+  right:-10px;
+  font-size:1.2rem;
 }
 
 /* Cartes réduites dans les archives */
@@ -151,6 +171,7 @@ let pioche = [];
 let etat = "pioche";            // "pioche" ou "action"
 let jokerUtilise = false;
 let jokerEnAttente = false;
+document.getElementById("joker").classList.add("joker-actif");
 
 const archives = { "♠":[], "♥":[], "♦":[], "♣":[] };
 
@@ -165,6 +186,7 @@ const valeurs = [
    INITIALISATION DU PAQUET
 ===================================================== */
 function creerPaquet(){
+  document.getElementById("joker").className = "";
   pioche=[];
   couleurs.forEach(c=>{
     valeurs.forEach(v=>{
@@ -201,8 +223,11 @@ function creerCarteHTML(carte, interactive=true){
 document.getElementById("piocher").onclick = () => {
   if(etat !== "pioche") return;
 
-  // Limite de 7 cartes en zone centrale
-  if(centre.children.length >= 7) return;
+  // Pioche interdite si piocher 2 cartes dépasse 7 cartes
+  if(centre.children.length + 2 > 7){
+    alert("Zone Centrale saturée, pioche impossible");
+    return;
+  }
 
   for(let i=0;i<2;i++){
     if(pioche.length && centre.children.length < 7){
@@ -233,6 +258,11 @@ document.querySelectorAll(".archive").forEach(archive=>{
       );
   
       jokerEnAttente = false;
+
+      const btnJoker = document.getElementById("joker");
+      btnJoker.classList.remove("joker-actif");
+      btnJoker.classList.add("joker-consomme");
+      
       return;
     }
 
