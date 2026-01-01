@@ -329,22 +329,24 @@ document.getElementById("defausser").onclick = () => {
 
   // 2 + 5 avec carte supplémentaire
   if(sel.length === 3){
-      const vals = sel.map(c => +c.dataset.valeur);
-      if(vals.includes(2) && vals.includes(5)){
-          sel.forEach(c => c.remove());
-          etat = "action";
+    const vals = sel.map(c => +c.dataset.valeur);
+    if(vals.includes(2) && vals.includes(5)){
+        sel.forEach(c => c.remove());
 
-          if(!attenteAction){
-              for(let i=0; i<2; i++){
-                  if(pioche.length && centre.children.length < 7){
-                      centre.appendChild(creerCarteHTML(pioche.pop()));
-                  }
-              }
-              attenteAction = false;
-          }
+        // Pioche automatique de 2 cartes
+        const maxPioche = Math.min(2, 7 - centre.children.length);
+        for(let i=0; i<maxPioche; i++){
+            if(pioche.length){
+                centre.appendChild(creerCarteHTML(pioche.pop()));
+            }
+        }
 
-          return;
-      }
+        // Passage en attente d'action utilisateur
+        etat = "action";
+        attenteAction = true;
+
+        return;
+    }
   }
 };
 
