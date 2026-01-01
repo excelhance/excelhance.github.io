@@ -232,19 +232,21 @@ function creerCarteHTML(carte, interactive=true){
 document.getElementById("piocher").onclick = () => {
   const sel = [...document.querySelectorAll(".carte.selectionnee")];
   
-  // Re-pioche uniquement si état="action" et aucune carte sélectionnée et Joker pas actif
-  const rePioche = (etat === "action" && sel.length === 0 && !jokerEnAttente);
+  // Détermine le nombre de cartes à piocher
+  let cartesADeposer;
+  if(premierePioche){
+      cartesADeposer = 2;       // première pioche → 2 cartes
+      premierePioche = false;    // première pioche effectuée
+  } else if(sel.length === 0 && !jokerEnAttente){
+      cartesADeposer = 3;       // re-pioche après inaction → 3 cartes
+  } else {
+      cartesADeposer = 2;       // pioche normale après sélection → 2 cartes
+  }
   
-  // Bloque le clic si pas de pioche possible
-  if(!rePioche && etat !== "pioche") return;
-  
-  // Nombre de cartes à déposer selon contexte
-  const cartesADeposer = rePioche ? 3 : 2;
-
   // Vérifie si pioche possible sans dépasser 7 cartes
-  if(cartesActuelles + cartesADeposer > 7){
-    alert("Zone Centrale saturée, pioche impossible");
-    return;
+  if(centre.children.length + cartesADeposer > 7){
+      alert("Zone Centrale saturée, pioche impossible");
+      return;
   }
 
   // Dépose les cartes
