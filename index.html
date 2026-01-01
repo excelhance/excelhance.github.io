@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>L’Archiviste</title>
-
 <style>
 /* ===== BASE ===== */
 body {
@@ -14,10 +13,7 @@ body {
   font-family:system-ui;
 }
 
-h1 {
-  text-align:center;
-  margin-bottom:12px;
-}
+h1 { text-align:center; margin-bottom:12px; }
 
 button {
   width:100%;
@@ -28,16 +24,12 @@ button {
   background:#38bdf8;
   color:#0f172a;
   font-weight:bold;
+  transition: all 0.2s;
 }
 
-button.joker-actif {
-  background:#fde047; /* jaune doux */
-}
-
-button.joker-consomme {
-  background:#dc2626; /* rouge */
-  color:#ffffff;
-}
+/* Bouton Joker actif/inactif */
+button.joker-actif { background:#fff; color:#0f172a; }
+button.joker-utilise { background:#dc2626; color:#fff; }
 
 /* ===== ZONES ===== */
 .zone {
@@ -47,11 +39,7 @@ button.joker-consomme {
   margin-bottom:14px;
 }
 
-.zone-title {
-  text-align:center;
-  margin-bottom:6px;
-  color:#94a3b8;
-}
+.zone-title { text-align:center; margin-bottom:6px; color:#94a3b8; }
 
 .cartes {
   display:flex;
@@ -70,6 +58,8 @@ button.joker-consomme {
   color:#000;
   position:relative;
   box-shadow:0 4px 8px rgba(0,0,0,.4);
+  cursor:pointer;
+  transition: transform 0.2s, outline 0.2s;
 }
 
 .carte.rouge { color:#b91c1c }
@@ -79,36 +69,10 @@ button.joker-consomme {
   transform:translateY(-6px);
 }
 
-@keyframes slideIn {
-  0% { transform: translateY(-30px); opacity:0; }
-  100% { transform: translateY(0); opacity:1; }
-}
-
-.carte.repioche {
-  animation: slideIn 0.4s ease forwards;
-}
-
-.valeur {
-  position:absolute;
-  top:6px;
-  left:6px;
-  font-weight:bold;
-}
-
-.centre {
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:2rem;
-}
+.valeur { position:absolute; top:6px; left:6px; font-weight:bold; }
+.centre { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:2rem; }
 
 /* ===== ARCHIVES ===== */
-.archive {
-  position:relative;
-}
-  
 .archives {
   display:grid;
   grid-template-columns:repeat(4,1fr);
@@ -119,12 +83,10 @@ button.joker-consomme {
   border:2px solid #475569;
   border-radius:10px;
   padding:6px;
+  position:relative;
 }
 
-.archive h3 {
-  text-align:center;
-  margin-bottom:4px;
-}
+.archive h3 { text-align:center; margin-bottom:4px; }
 
 .archive-cartes {
   display:flex;
@@ -132,22 +94,29 @@ button.joker-consomme {
   gap:4px;
 }
 
-.joker-marqueur {
-  position:absolute;
-  top:-10px;
-  right:-10px;
-  font-size:1.2rem;
-}
-
 /* Cartes réduites dans les archives */
 .archive-cartes .carte {
-  width:42px;   /* 60 % de 70px */
-  height:60px;  /* 60 % de 100px */
+  width:42px;
+  height:60px;
   font-size:0.8rem;
+}
+
+/* Animation re-pioche */
+@keyframes slideIn {
+  0% { transform: translateY(-30px); opacity:0; }
+  100% { transform: translateY(0); opacity:1; }
+}
+.carte.repioche { animation: slideIn 0.4s ease forwards; }
+
+/* Joker marqueur */
+.joker-marqueur {
+  position:absolute;
+  top:2px;
+  right:2px;
+  font-size:1rem;
 }
 </style>
 </head>
-
 <body>
 
 <h1>🂡 L’Archiviste</h1>
@@ -173,29 +142,26 @@ button.joker-consomme {
 
 <script>
 /* =====================================================
-   ÉTAT GLOBAL DU JEU
+   ÉTAT GLOBAL
 ===================================================== */
 const centre = document.getElementById("centre");
+const btnPioche = document.getElementById("piocher");
+const btnJoker = document.getElementById("joker");
 let pioche = [];
-let etat = "pioche";            // "pioche" ou "action"
+let etat = "pioche";
 let jokerUtilise = false;
 let jokerEnAttente = false;
-document.getElementById("joker").classList.add("joker-actif");
+let premierePioche = true;
+let attenteAction = false;
 
 const archives = { "♠":[], "♥":[], "♦":[], "♣":[] };
-
 const couleurs = ["♠","♥","♦","♣"];
-const valeurs = [
-  ["A",1],["2",2],["3",3],["4",4],["5",5],
-  ["6",6],["7",7],["8",8],["9",9],
-  ["10",10],["D",12],["R",13]
-];
+const valeurs = [["A",1],["2",2],["3",3],["4",4],["5",5],["6",6],["7",7],["8",8],["9",9],["10",10],["D",12],["R",13]];
 
 /* =====================================================
-   INITIALISATION DU PAQUET
+   INITIALISATION PAQUET
 ===================================================== */
 function creerPaquet(){
-  document.getElementById("joker").className = "";
   pioche=[];
   couleurs.forEach(c=>{
     valeurs.forEach(v=>{
@@ -206,7 +172,7 @@ function creerPaquet(){
 }
 
 /* =====================================================
-   CRÉATION HTML D’UNE CARTE
+   CREATION CARTE HTML
 ===================================================== */
 function creerCarteHTML(carte, interactive=true){
   const d=document.createElement("div");
@@ -214,206 +180,166 @@ function creerCarteHTML(carte, interactive=true){
   d.dataset.valeur = carte.valeur;
   d.dataset.label = carte.label;
   d.dataset.couleur = carte.couleur;
-
-  d.innerHTML = `
-    <div class="valeur">${carte.label}</div>
-    <div class="centre">${carte.couleur}</div>
-  `;
-
-  if(interactive){
-    d.onclick = () => d.classList.toggle("selectionnee");
-  }
+  d.innerHTML = `<div class="valeur">${carte.label}</div><div class="centre">${carte.couleur}</div>`;
+  if(interactive) d.onclick = ()=>d.classList.toggle("selectionnee");
   return d;
 }
 
 /* =====================================================
-   PIOCHE + RE-PIOCHE AVEC ANIMATION
+   PIOCHE + RE-POCHE
 ===================================================== */
-let premierePioche = true; // true tant que la première pioche n'a pas été faite
-
-document.getElementById("piocher").onclick = () => {
+btnPioche.onclick = () => {
   const sel = [...document.querySelectorAll(".carte.selectionnee")];
-
-  // Sauvegarde de l'état avant modification pour l'animation
   const premierePiocheAvantClic = premierePioche;
 
-  // Détermine le nombre de cartes à piocher
   let cartesADeposer;
   if(premierePioche){
-      cartesADeposer = 2;       // première pioche → 2 cartes
-      premierePioche = false;    // première pioche effectuée
-  } else if(sel.length === 0 && !jokerEnAttente){
-      cartesADeposer = 3;       // re-pioche après inaction → 3 cartes
+      cartesADeposer = 2;
+      premierePioche = false;
+  } else if(attenteAction && sel.length===0 && !jokerEnAttente){
+      cartesADeposer = 3;
   } else {
-      cartesADeposer = 2;       // pioche normale après sélection → 2 cartes
+      cartesADeposer = 2;
   }
 
-  // Vérifie si pioche possible sans dépasser 7 cartes
   if(centre.children.length + cartesADeposer > 7){
       alert("Zone Centrale saturée, pioche impossible");
       return;
   }
 
-  // Dépose les cartes dans la Zone Centrale
-  for(let i=0; i<cartesADeposer; i++){
-      if(pioche.length && centre.children.length < 7){
+  for(let i=0;i<cartesADeposer;i++){
+      if(pioche.length && centre.children.length<7){
           const c = creerCarteHTML(pioche.pop());
-
-          // Ajoute l'animation uniquement si c'est une re-pioche (après la 1ère pioche)
-          if(!premierePiocheAvantClic && sel.length === 0 && !jokerEnAttente) {
+          if(!premierePiocheAvantClic && attenteAction && sel.length===0 && !jokerEnAttente){
               c.classList.add("repioche");
           }
-
           centre.appendChild(c);
       }
   }
 
-  // Passe en état action après pioche
-  etat = "action";
+  etat="action";
+  attenteAction = true;
 };
 
 /* =====================================================
-   CLASSEMENT DANS LES ARCHIVES
+   ARCHIVES
 ===================================================== */
 document.querySelectorAll(".archive").forEach(archive=>{
   archive.onclick = () => {
-    
-      // Gestion du Chaos (Joker en attente)
     if(jokerEnAttente){
-      if(archives[archive.dataset.c].length === 0) return;
-  
+      if(archives[archive.dataset.c].length===0) return;
       pioche.push(...archives[archive.dataset.c]);
       archives[archive.dataset.c] = [];
       renderArchive(archive.dataset.c);
-  
-      // Marqueur visuel Joker
-      archive.insertAdjacentHTML(
-        "afterbegin",
-        "<div class='joker-marqueur'>🃏</div>"
-      );
-  
-      jokerEnAttente = false;
-
-      const btnJoker = document.getElementById("joker");
+      // Joker marqueur
+      archive.insertAdjacentHTML("afterbegin","<div class='joker-marqueur'>🃏</div>");
+      jokerEnAttente=false;
       btnJoker.classList.remove("joker-actif");
-      btnJoker.classList.add("joker-consomme");
-      
+      btnJoker.classList.add("joker-utilise");
+      attenteAction=false;
       return;
     }
 
     if(etat!=="action") return;
     const sel=[...document.querySelectorAll(".carte.selectionnee")];
     if(sel.length!==1) return;
-
     const d=sel[0];
-    if(d.dataset.couleur !== archive.dataset.c) return;
+    if(d.dataset.couleur!==archive.dataset.c) return;
 
-    archives[archive.dataset.c].push({
-      valeur:+d.dataset.valeur,
-      label:d.dataset.label,
-      couleur:d.dataset.couleur
-    });
-
+    archives[archive.dataset.c].push({valeur:+d.dataset.valeur,label:d.dataset.label,couleur:d.dataset.couleur});
     d.remove();
     renderArchive(archive.dataset.c);
     etat="pioche";
     verifierVictoire();
+    attenteAction=false;
   };
 });
 
 /* =====================================================
-   RENDU DES ARCHIVES
+   RENDU ARCHIVES
 ===================================================== */
 function renderArchive(c){
   const cont=document.querySelector(`.archive[data-c="${c}"] .archive-cartes`);
   cont.innerHTML="";
-  archives[c]
-    .sort((a,b)=>a.valeur-b.valeur)
-    .forEach(carte=>{
+  archives[c].sort((a,b)=>a.valeur-b.valeur).forEach(carte=>{
       cont.appendChild(creerCarteHTML(carte,false));
-    });
+  });
 }
 
 /* =====================================================
-   DÉFAUSSE (RÈGLES COMPLÈTES)
+   DEFAUSSE
 ===================================================== */
 document.getElementById("defausser").onclick = () => {
   if(etat!=="action") return;
-
   const sel=[...document.querySelectorAll(".carte.selectionnee")];
-  if(sel.length < 2) return;
-
+  if(sel.length<2) return;
   const v=sel.map(c=>+c.dataset.valeur).sort((a,b)=>a-b);
 
   // Même valeur
   if(v[0]===v[1]){
-    sel.forEach(c=>c.remove());
-    etat="pioche";
-    return;
-  }
-
-  // 6 + 9 => rejouer sans piocher
-  if(v[0]===6 && v[1]===9){
-    sel.forEach(c=>c.classList.remove("selectionnee"));
-    return;
-  }
-
-  // 10 + Roi => vider zone centrale puis piocher 2
-  if(v[0]===10 && v[1]===13){
-    centre.innerHTML="";
-    sel.forEach(c=>c.remove());
-    etat="pioche";
-    document.getElementById("piocher").click();
-    return;
-  }
-
-  // 10 + As => regarder 3 cartes (simplifié : pas d’effet UI ici)
-  if(v[0]===1 && v[1]===10){
-    sel.forEach(c=>c.remove());
-    etat="pioche";
-    return;
-  }
-
-  // 2 + 5 => défausse 1 carte supplémentaire au choix + pioche
-  if(sel.length === 3){
-    const valeursSel = sel.map(c => +c.dataset.valeur);
-    const aUn2 = valeursSel.includes(2);
-    const aUn5 = valeursSel.includes(5);
-  
-    if(aUn2 && aUn5){
-      sel.forEach(c => c.remove());
-      etat = "pioche";
-      document.getElementById("piocher").click();
+      sel.forEach(c=>c.remove());
+      etat="pioche";
+      attenteAction=false;
       return;
-    }
+  }
+  // 6 + 9
+  if(v[0]===6 && v[1]===9){
+      sel.forEach(c=>c.classList.remove("selectionnee"));
+      return;
+  }
+  // 10 + Roi
+  if(v[0]===10 && v[1]===13){
+      centre.innerHTML="";
+      sel.forEach(c=>c.remove());
+      etat="pioche";
+      document.getElementById("piocher").click();
+      attenteAction=false;
+      return;
+  }
+  // 10 + As
+  if(v[0]===1 && v[1]===10){
+      sel.forEach(c=>c.remove());
+      etat="pioche";
+      attenteAction=false;
+      return;
+  }
+  // 2+5 avec carte supplémentaire
+  if(sel.length===3){
+      const vals=sel.map(c=>+c.dataset.valeur);
+      if(vals.includes(2)&&vals.includes(5)){
+          sel.forEach(c=>c.remove());
+          etat="pioche";
+          document.getElementById("piocher").click();
+          attenteAction=false;
+          return;
+      }
   }
 };
 
 /* =====================================================
    JOKER / CHAOS
 ===================================================== */
-  document.getElementById("joker").onclick = () => {
-    if(jokerUtilise && !jokerEnAttente){
+btnJoker.onclick = () => {
+  if(jokerUtilise && !jokerEnAttente){
       alert("Défaite — Chaos incontrôlé");
       location.reload();
-    }
-  
-    // Empêcher activation si aucune archive n’a de cartes
-    const nonVides = couleurs.filter(c => archives[c].length);
-    if(nonVides.length === 0) return;
-  
-    jokerUtilise = true;
-    jokerEnAttente = true;
-  };
+  }
+  const nonVides = couleurs.filter(c=>archives[c].length);
+  if(nonVides.length===0) return;
+
+  jokerUtilise=true;
+  jokerEnAttente=true;
+  btnJoker.classList.add("joker-actif");
+};
 
 /* =====================================================
    CONDITION DE VICTOIRE
 ===================================================== */
 function verifierVictoire(){
   couleurs.forEach(c=>{
-    if(archives[c].length===10){
-      alert("Victoire 🏆 Archive stabilisée");
-    }
+      if(archives[c].length===10){
+          alert("Victoire 🏆 Archive stabilisée");
+      }
   });
 }
 
@@ -422,6 +348,5 @@ function verifierVictoire(){
 ===================================================== */
 creerPaquet();
 </script>
-
 </body>
 </html>
