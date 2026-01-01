@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>L’Archiviste</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background: #0f172a;
+      color: #e5e7eb;
+      padding: 16px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 16px;
+      font-size: 1.6rem;
+    }
+
+    .zone {
+      border: 2px dashed #475569;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 20px;
+    }
+
+    .zone-title {
+      text-align: center;
+      margin-bottom: 8px;
+      font-size: 1rem;
+      color: #94a3b8;
+    }
+
+    .cartes {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* CARTE */
+    .carte {
+      width: 70px;
+      height: 100px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+      color: black;
+      position: relative;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+
+    .carte.rouge {
+      color: #b91c1c;
+    }
+
+    .carte.selectionnee {
+      outline: 3px solid #38bdf8;
+      transform: translateY(-6px);
+      box-shadow: 0 8px 14px rgba(0,0,0,0.6);
+    }
+
+    .valeur {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
+
+    .symbole {
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      font-size: 0.9rem;
+    }
+
+    .centre {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2rem;
+    }
+
+    @media (min-width: 600px) {
+      .carte {
+        width: 80px;
+        height: 120px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>🂡 L’Archiviste</h1>
+
+  <div class="zone">
+    <div class="zone-title">Zone Centrale</div>
+
+    <div class="cartes">
+      <div class="carte" data-valeur="6" data-couleur="♠">
+        <div class="valeur">6</div>
+        <div class="centre">♠</div>
+        <div class="symbole">♠</div>
+      </div>
+
+      <div class="carte rouge" data-valeur="9" data-couleur="♥">
+        <div class="valeur">9</div>
+        <div class="centre">♥</div>
+        <div class="symbole">♥</div>
+      </div>
+
+      <div class="carte rouge" data-valeur="10" data-couleur="♦">
+        <div class="valeur">10</div>
+        <div class="centre">♦</div>
+        <div class="symbole">♦</div>
+      </div>
+
+      <div class="carte" data-valeur="R" data-couleur="♣">
+        <div class="valeur">R</div>
+        <div class="centre">♣</div>
+        <div class="symbole">♣</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Sélection / désélection des cartes
+    const cartes = document.querySelectorAll('.carte');
+
+    cartes.forEach(carte => {
+      carte.addEventListener('click', () => {
+        carte.classList.toggle('selectionnee');
+      });
+    });
+  </script>
+
+</body>
+</html>
