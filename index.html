@@ -6,87 +6,32 @@
 <title>L’Archiviste</title>
 
 <style>
-body {
-  background:#0f172a; color:#e5e7eb; padding:16px;
-  font-family:system-ui;
-}
-h1 { text-align:center; margin-bottom:12px }
+body{background:#0f172a;color:#e5e7eb;padding:16px;font-family:system-ui}
+h1{text-align:center;margin-bottom:10px}
+button{width:100%;padding:12px;margin-bottom:8px;border:none;border-radius:10px;background:#38bdf8;color:#0f172a;font-weight:bold}
+.zone{border:2px dashed #475569;border-radius:12px;padding:10px;margin-bottom:14px}
+.zone-title{text-align:center;margin-bottom:6px;color:#94a3b8}
+.cartes{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;min-height:110px}
 
-button {
-  width:100%; padding:12px; margin-bottom:10px;
-  border:none; border-radius:10px;
-  background:#38bdf8; color:#0f172a; font-weight:bold;
-}
+.carte{width:70px;height:100px;background:#fff;border-radius:10px;color:#000;position:relative;box-shadow:0 4px 8px rgba(0,0,0,.4)}
+.carte.rouge{color:#b91c1c}
+.carte.selectionnee{outline:3px solid #38bdf8;transform:translateY(-6px)}
 
-.zone {
-  border:2px dashed #475569;
-  border-radius:12px;
-  padding:10px;
-  margin-bottom:16px;
-}
+.valeur{position:absolute;top:6px;left:6px;font-weight:bold}
+.centre{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2rem}
 
-.zone-title {
-  text-align:center;
-  margin-bottom:6px;
-  color:#94a3b8;
-}
+.archives{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.archive{border:2px solid #475569;border-radius:10px;padding:6px;position:relative}
+.archive h3{text-align:center;margin-bottom:4px}
 
-.cartes {
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  justify-content:center;
-  min-height:110px;
-}
+.archive-cartes{position:relative}
+.archive-cartes .carte{position:absolute;left:0}
 
-.carte {
-  width:70px; height:100px;
-  background:#fff;
-  border-radius:10px;
-  color:#000;
-  position:relative;
-  cursor:pointer;
-  box-shadow:0 4px 8px rgba(0,0,0,.4);
-}
-
-.carte.rouge { color:#b91c1c }
-.carte.selectionnee {
-  outline:3px solid #38bdf8;
-  transform:translateY(-6px);
-}
-
-.valeur { position:absolute; top:6px; left:6px; font-weight:bold }
-.symbole { position:absolute; bottom:6px; right:6px }
-.centre {
-  position:absolute; inset:0;
-  display:flex; align-items:center; justify-content:center;
-  font-size:2rem;
-}
-
-.archives {
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:8px;
-}
-
-.archive {
-  border:2px solid #475569;
-  border-radius:10px;
-  padding:6px;
-}
-
-.archive h3 {
-  text-align:center;
-  margin-bottom:4px;
-}
-
-.archive-cartes {
-  position:relative;
-  height:160px;
-}
-.archive-cartes .carte {
+.joker-marqueur{
   position:absolute;
-  left:0;
+  top:-14px;
+  right:4px;
+  font-size:1.2rem;
 }
 </style>
 </head>
@@ -107,70 +52,56 @@ button {
 <div class="zone">
   <div class="zone-title">Archives</div>
   <div class="archives">
-    <div class="archive" data-c="♠">
-      <h3>♠</h3>
-      <div class="archive-cartes"></div>
-    </div>
-    <div class="archive" data-c="♥">
-      <h3 style="color:#b91c1c">♥</h3>
-      <div class="archive-cartes"></div>
-    </div>
-    <div class="archive" data-c="♦">
-      <h3 style="color:#b91c1c">♦</h3>
-      <div class="archive-cartes"></div>
-    </div>
-    <div class="archive" data-c="♣">
-      <h3>♣</h3>
-      <div class="archive-cartes"></div>
-    </div>
+    <div class="archive" data-c="♠"><h3>♠</h3><div class="archive-cartes"></div></div>
+    <div class="archive" data-c="♥"><h3 style="color:#b91c1c">♥</h3><div class="archive-cartes"></div></div>
+    <div class="archive" data-c="♦"><h3 style="color:#b91c1c">♦</h3><div class="archive-cartes"></div></div>
+    <div class="archive" data-c="♣"><h3>♣</h3><div class="archive-cartes"></div></div>
   </div>
 </div>
 
 <script>
-const centre = document.getElementById("centre");
-let pioche=[], archives={ "♠":[], "♥":[], "♦":[], "♣":[] };
-let jokerActif=false;
+const centre=document.getElementById("centre");
+let pioche=[],etat="pioche",jokerUtilise=false;
+let archives={"♠":[], "♥":[], "♦":[], "♣":[]};
 
-const valeurs=[
-["A",1],["2",2],["3",3],["4",4],["5",5],["6",6],
-["7",7],["8",8],["9",9],["10",10],["D",12],["R",13]
-];
+const valeurs=[["A",1],["2",2],["3",3],["4",4],["5",5],["6",6],["7",7],["8",8],["9",9],["10",10],["D",12],["R",13]];
 const couleurs=["♠","♥","♦","♣"];
 
 function creerPaquet(){
   pioche=[];
   couleurs.forEach(c=>valeurs.forEach(v=>pioche.push({l:v[0],v:v[1],c})));
-  pioche.push({l:"🃏",v:0,c:"J"});
-  pioche.push({l:"🃏",v:0,c:"J"});
   pioche.sort(()=>Math.random()-.5);
 }
 
-function carteHTML(c){
+function carteHTML(c,interactive=true){
   const d=document.createElement("div");
   d.className="carte"+((c.c=="♥"||c.c=="♦")?" rouge":"");
-  d.dataset.v=c.v; d.dataset.l=c.l; d.dataset.c=c.c;
   d.innerHTML=`<div class=valeur>${c.l}</div><div class=centre>${c.c}</div>`;
-  d.onclick=()=>d.classList.toggle("selectionnee");
+  if(interactive){
+    d.onclick=()=>d.classList.toggle("selectionnee");
+  }
+  d.dataset.v=c.v; d.dataset.c=c.c;
   return d;
 }
 
 document.getElementById("piocher").onclick=()=>{
-  for(let i=0;i<2;i++) if(pioche.length)
-    centre.appendChild(carteHTML(pioche.pop()));
+  if(etat!=="pioche") return;
+  for(let i=0;i<2;i++) if(pioche.length) centre.appendChild(carteHTML(pioche.pop()));
+  etat="action";
 };
 
 document.querySelectorAll(".archive").forEach(a=>{
   a.onclick=()=>{
+    if(etat!=="action") return;
     const sel=[...document.querySelectorAll(".carte.selectionnee")];
     if(sel.length!==1) return;
     const d=sel[0];
     if(d.dataset.c!==a.dataset.c) return;
 
-    archives[a.dataset.c].push({
-      v:+d.dataset.v, l:d.dataset.l, c:d.dataset.c
-    });
+    archives[a.dataset.c].push({v:+d.dataset.v,l:d.querySelector(".valeur").textContent,c:d.dataset.c});
     d.remove();
     renderArchive(a.dataset.c);
+    etat="pioche";
     verifierVictoire();
   };
 });
@@ -179,35 +110,42 @@ function renderArchive(c){
   const cont=document.querySelector(`.archive[data-c="${c}"] .archive-cartes`);
   cont.innerHTML="";
   archives[c].sort((a,b)=>a.v-b.v).forEach((carte,i)=>{
-    const d=carteHTML(carte);
+    const d=carteHTML(carte,false);
     d.style.top=(i*10)+"px";
     cont.appendChild(d);
   });
+  cont.style.height=(archives[c].length*10+100)+"px";
 }
 
 document.getElementById("defausser").onclick=()=>{
+  if(etat!=="action") return;
   const sel=[...document.querySelectorAll(".carte.selectionnee")];
-  if(sel.length!==2) return;
-  const v=sel.map(c=>+c.dataset.v).sort((a,b)=>a-b);
-  if(v[0]===v[1]) sel.forEach(c=>c.remove());
+  if(sel.length===2){
+    const v=sel.map(c=>+c.dataset.v);
+    if(v[0]===v[1]){ sel.forEach(c=>c.remove()); etat="pioche"; }
+  }
 };
 
 document.getElementById("joker").onclick=()=>{
-  jokerActif=true;
-  const archivesNonVides=Object.keys(archives).filter(c=>archives[c].length);
-  if(!archivesNonVides.length) return;
-  const c=archivesNonVides[Math.floor(Math.random()*archivesNonVides.length)];
+  if(jokerUtilise){ alert("Défaite — Chaos incontrôlé"); location.reload(); }
+  jokerUtilise=true;
+
+  const nonVides=couleurs.filter(c=>archives[c].length);
+  if(!nonVides.length) return;
+  const c=nonVides[Math.floor(Math.random()*nonVides.length)];
+
   pioche.push(...archives[c]);
   archives[c]=[];
   renderArchive(c);
+
+  const a=document.querySelector(`.archive[data-c="${c}"]`);
+  a.insertAdjacentHTML("beforeend","<div class='joker-marqueur'>🃏</div>");
 };
 
 function verifierVictoire(){
-  for(const c of couleurs){
-    if(archives[c].length===10){
-      alert("Victoire ! Archive stabilisée 🏆");
-    }
-  }
+  couleurs.forEach(c=>{
+    if(archives[c].length===10) alert("Victoire 🏆 Archive stabilisée");
+  });
 }
 
 creerPaquet();
