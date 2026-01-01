@@ -25,6 +25,24 @@
       font-size: 1.6rem;
     }
 
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 16px;
+      border: none;
+      border-radius: 10px;
+      background: #38bdf8;
+      color: #0f172a;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background: #64748b;
+      cursor: not-allowed;
+    }
+
     .zone {
       border: 2px dashed #475569;
       border-radius: 12px;
@@ -46,7 +64,6 @@
       justify-content: center;
     }
 
-    /* CARTE */
     .carte {
       width: 70px;
       height: 100px;
@@ -55,9 +72,10 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.4);
       color: black;
       position: relative;
-      cursor: pointer;
       user-select: none;
-      transition: transform 0.1s ease, box-shadow 0.1s ease;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+      touch-action: manipulation;
     }
 
     .carte.rouge {
@@ -67,7 +85,6 @@
     .carte.selectionnee {
       outline: 3px solid #38bdf8;
       transform: translateY(-6px);
-      box-shadow: 0 8px 14px rgba(0,0,0,0.6);
     }
 
     .valeur {
@@ -92,13 +109,6 @@
       transform: translate(-50%, -50%);
       font-size: 2rem;
     }
-
-    @media (min-width: 600px) {
-      .carte {
-        width: 80px;
-        height: 120px;
-      }
-    }
   </style>
 </head>
 
@@ -106,45 +116,106 @@
 
   <h1>🂡 L’Archiviste</h1>
 
+  <button id="piocherBtn">Piocher (2 cartes)</button>
+
   <div class="zone">
     <div class="zone-title">Zone Centrale</div>
-
-    <div class="cartes">
-      <div class="carte" data-valeur="6" data-couleur="♠">
-        <div class="valeur">6</div>
-        <div class="centre">♠</div>
-        <div class="symbole">♠</div>
-      </div>
-
-      <div class="carte rouge" data-valeur="9" data-couleur="♥">
-        <div class="valeur">9</div>
-        <div class="centre">♥</div>
-        <div class="symbole">♥</div>
-      </div>
-
-      <div class="carte rouge" data-valeur="10" data-couleur="♦">
-        <div class="valeur">10</div>
-        <div class="centre">♦</div>
-        <div class="symbole">♦</div>
-      </div>
-
-      <div class="carte" data-valeur="R" data-couleur="♣">
-        <div class="valeur">R</div>
-        <div class="centre">♣</div>
-        <div class="symbole">♣</div>
-      </div>
-    </div>
+    <div class="cartes" id="zoneCentrale"></div>
   </div>
 
   <script>
-    // Sélection / désélection des cartes
-    const cartes = document.querySelectorAll('.carte');
+    /* ===== ÉTAT DU JEU ===== */
 
-    cartes.forEach(carte => {
-      carte.addEventListener('click', () => {
-        carte.classList.toggle('selectionnee');
+    let pioche = [];
+    const zoneCentrale = document.getElementById('zoneCentrale');
+    const piocherBtn = document.getElementById('piocherBtn');
+
+    const couleurs = ['♠', '♥', '♦', '♣'];
+    const valeurs = [
+      { label: 'A', valeur: 1 },
+      { label: '2', valeur: 2 },
+      { label: '3', valeur: 3 },
+      { label: '4', valeur: 4 },
+      { label: '5', valeur: 5 },
+      { label: '6', valeur: 6 },
+      { label: '7', valeur: 7 },
+      { label: '8', valeur: 8 },
+      { label: '9', valeur: 9 },
+      { label: '10', valeur: 10 },
+      { label: 'D', valeur: 12 },
+      { label: 'R', valeur: 13 }
+    ];
+
+    /* ===== INITIALISATION DU PAQUET ===== */
+
+    function creerPaquet() {
+      pioche = [];
+      couleurs.forEach(couleur => {
+        valeurs.forEach(v => {
+          pioche.push({
+            label: v.label,
+            valeur: v.valeur,
+            couleur: couleur
+          });
+        });
       });
-    });
+      melanger(pioche);
+    }
+
+    function melanger(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    /* ===== AFFICHAGE DES CARTES ===== */
+
+    function creerCarteHTML(carte) {
+      const div = document.createElement('div');
+      div.classList.add('carte');
+      if (carte.couleur === '♥' || carte.couleur === '♦') {
+        div.classList.add('rouge');
+      }
+
+      div.innerHTML = `
+        <div class="valeur">${carte.label}</div>
+        <div class="centre">${carte.couleur}</div>
+        <div class="symbole">${carte.couleur}</div>
+      `;
+
+      const toggle = (e) => {
+        e.preventDefault();
+        div.classList.toggle('selectionnee');
+      };
+
+      div.addEventListener('click', toggle);
+      div.addEventListener('touchstart', toggle);
+
+      return div;
+    }
+
+    /* ===== ACTION : PIOCHER ===== */
+
+    function piocherCartes() {
+      if (pioche.length === 0) {
+        piocherBtn.disabled = true;
+        alert("La pioche est vide");
+        return;
+      }
+
+      for (let i = 0; i < 2; i++) {
+        if (pioche.length === 0) break;
+        const carte = pioche.pop();
+        zoneCentrale.appendChild(creerCarteHTML(carte));
+      }
+    }
+
+    piocherBtn.addEventListener('click', piocherCartes);
+
+    /* ===== LANCEMENT DU JEU ===== */
+
+    creerPaquet();
   </script>
 
 </body>
