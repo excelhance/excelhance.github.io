@@ -291,59 +291,61 @@ document.getElementById("defausser").onclick = () => {
       return;
   }
 
-  // 10 + Roi => vider zone centrale + piocher 2 cartes
+  // 10 + Roi => vider zone centrale + piocher 2 cartes si pas re-pioche
   if(v[0] === 10 && v[1] === 13){
       centre.innerHTML = "";
       sel.forEach(c => c.remove());
-      etat = "action";
-      attenteAction = false;
 
-      for(let i=0; i<2; i++){
-          if(pioche.length && centre.children.length < 7){
-              centre.appendChild(creerCarteHTML(pioche.pop()));
+      etat = "action";
+
+      if(!attenteAction){
+          for(let i=0; i<2; i++){
+              if(pioche.length && centre.children.length < 7){
+                  centre.appendChild(creerCarteHTML(pioche.pop()));
+              }
           }
+          attenteAction = false;
       }
+
       return;
   }
 
-  // 10 + As => regarder 3 cartes (UI simplifiée) + piocher 2 cartes
+  // 10 + As => regarder 3 cartes (UI simplifiée) + pioche 2 cartes si pas re-pioche
   if(v[0] === 1 && v[1] === 10){
       sel.forEach(c => c.remove());
       etat = "action";
-      attenteAction = false;
 
-      for(let i=0; i<2; i++){
-          if(pioche.length && centre.children.length < 7){
-              centre.appendChild(creerCarteHTML(pioche.pop()));
+      if(!attenteAction){
+          for(let i=0; i<2; i++){
+              if(pioche.length && centre.children.length < 7){
+                  centre.appendChild(creerCarteHTML(pioche.pop()));
+              }
           }
+          attenteAction = false;
       }
+
       return;
   }
 
   // 2 + 5 avec carte supplémentaire
   if(sel.length === 3){
-    const vals = sel.map(c => +c.dataset.valeur);
-    if(vals.includes(2) && vals.includes(5)){
-        sel.forEach(c => c.remove());
+      const vals = sel.map(c => +c.dataset.valeur);
+      if(vals.includes(2) && vals.includes(5)){
+          sel.forEach(c => c.remove());
+          etat = "action";
 
-        // On est dans une action normale, pas une re-pioche
-        if(!attenteAction){
-            etat = "action";
-            attenteAction = false;
+          if(!attenteAction){
+              for(let i=0; i<2; i++){
+                  if(pioche.length && centre.children.length < 7){
+                      centre.appendChild(creerCarteHTML(pioche.pop()));
+                  }
+              }
+              attenteAction = false;
+          }
 
-            for(let i=0; i<2; i++){
-                if(pioche.length && centre.children.length < 7){
-                    centre.appendChild(creerCarteHTML(pioche.pop()));
-                }
-            }
-        } else {
-            // Si c'était une re-pioche, ne pas déclencher la pioche normale
-            etat = "action";
-        }
-
-        return;
-    }
-  }  
+          return;
+      }
+  }
 };
 
 /* =====================================================
