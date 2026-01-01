@@ -223,17 +223,28 @@ function creerCarteHTML(carte, interactive=true){
 document.getElementById("piocher").onclick = () => {
   if(etat !== "pioche") return;
 
-  // Pioche interdite si piocher 2 cartes dépasse 7 cartes
-  if(centre.children.length + 2 > 7){
+  const cartesActuelles = centre.children.length;
+
+  // Détecte si c'est une re-pioche (aucune sélection ni Joker actif)
+  const sel = [...document.querySelectorAll(".carte.selectionnee")];
+  const rePioche = (sel.length === 0 && !jokerEnAttente);
+
+  const cartesADeposer = rePioche ? 3 : 2;
+
+  // Vérifie si pioche possible sans dépasser 7 cartes
+  if(cartesActuelles + cartesADeposer > 7){
     alert("Zone Centrale saturée, pioche impossible");
     return;
   }
 
-  for(let i=0;i<2;i++){
+  // Dépose les cartes
+  for(let i=0; i<cartesADeposer; i++){
     if(pioche.length && centre.children.length < 7){
       centre.appendChild(creerCarteHTML(pioche.pop()));
     }
   }
+
+  // Passe en état action après pioche
   etat = "action";
 };
 
