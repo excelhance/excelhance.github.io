@@ -270,47 +270,69 @@ function renderArchive(c){
    DEFAUSSE
 ===================================================== */
 document.getElementById("defausser").onclick = () => {
-  if(etat!=="action") return;
-  const sel=[...document.querySelectorAll(".carte.selectionnee")];
-  if(sel.length<2) return;
-  const v=sel.map(c=>+c.dataset.valeur).sort((a,b)=>a-b);
+  if(etat !== "action") return;
+
+  const sel = [...document.querySelectorAll(".carte.selectionnee")];
+  if(sel.length < 2) return;
+
+  const v = sel.map(c => +c.dataset.valeur).sort((a,b) => a-b);
 
   // Même valeur
-  if(v[0]===v[1]){
-      sel.forEach(c=>c.remove());
-      etat="pioche";
-      attenteAction=false;
+  if(v[0] === v[1]){
+      sel.forEach(c => c.remove());
+      etat = "action";
+      attenteAction = false;
       return;
   }
-  // 6 + 9
-  if(v[0]===6 && v[1]===9){
-      sel.forEach(c=>c.classList.remove("selectionnee"));
+
+  // 6 + 9 => rejouer sans piocher
+  if(v[0] === 6 && v[1] === 9){
+      sel.forEach(c => c.classList.remove("selectionnee"));
       return;
   }
-  // 10 + Roi
-  if(v[0]===10 && v[1]===13){
-      centre.innerHTML="";
-      sel.forEach(c=>c.remove());
-      etat="pioche";
-      document.getElementById("piocher").click();
-      attenteAction=false;
+
+  // 10 + Roi => vider zone centrale + piocher 2 cartes
+  if(v[0] === 10 && v[1] === 13){
+      centre.innerHTML = "";
+      sel.forEach(c => c.remove());
+      etat = "action";
+      attenteAction = false;
+
+      for(let i=0; i<2; i++){
+          if(pioche.length && centre.children.length < 7){
+              centre.appendChild(creerCarteHTML(pioche.pop()));
+          }
+      }
       return;
   }
-  // 10 + As
-  if(v[0]===1 && v[1]===10){
-      sel.forEach(c=>c.remove());
-      etat="pioche";
-      attenteAction=false;
+
+  // 10 + As => regarder 3 cartes (UI simplifiée) + piocher 2 cartes
+  if(v[0] === 1 && v[1] === 10){
+      sel.forEach(c => c.remove());
+      etat = "action";
+      attenteAction = false;
+
+      for(let i=0; i<2; i++){
+          if(pioche.length && centre.children.length < 7){
+              centre.appendChild(creerCarteHTML(pioche.pop()));
+          }
+      }
       return;
   }
-  // 2+5 avec carte supplémentaire
-  if(sel.length===3){
-      const vals=sel.map(c=>+c.dataset.valeur);
-      if(vals.includes(2)&&vals.includes(5)){
-          sel.forEach(c=>c.remove());
-          etat="pioche";
-          document.getElementById("piocher").click();
-          attenteAction=false;
+
+  // 2 + 5 avec carte supplémentaire
+  if(sel.length === 3){
+      const vals = sel.map(c => +c.dataset.valeur);
+      if(vals.includes(2) && vals.includes(5)){
+          sel.forEach(c => c.remove());
+          etat = "action";
+          attenteAction = false;
+
+          for(let i=0; i<2; i++){
+              if(pioche.length && centre.children.length < 7){
+                  centre.appendChild(creerCarteHTML(pioche.pop()));
+              }
+          }
           return;
       }
   }
