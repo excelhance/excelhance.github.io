@@ -322,20 +322,28 @@ document.getElementById("defausser").onclick = () => {
 
   // 2 + 5 avec carte supplémentaire
   if(sel.length === 3){
-      const vals = sel.map(c => +c.dataset.valeur);
-      if(vals.includes(2) && vals.includes(5)){
-          sel.forEach(c => c.remove());
-          etat = "action";
-          attenteAction = false;
+    const vals = sel.map(c => +c.dataset.valeur);
+    if(vals.includes(2) && vals.includes(5)){
+        sel.forEach(c => c.remove());
 
-          for(let i=0; i<2; i++){
-              if(pioche.length && centre.children.length < 7){
-                  centre.appendChild(creerCarteHTML(pioche.pop()));
-              }
-          }
-          return;
-      }
-  }
+        // On est dans une action normale, pas une re-pioche
+        if(!attenteAction){
+            etat = "action";
+            attenteAction = false;
+
+            for(let i=0; i<2; i++){
+                if(pioche.length && centre.children.length < 7){
+                    centre.appendChild(creerCarteHTML(pioche.pop()));
+                }
+            }
+        } else {
+            // Si c'était une re-pioche, ne pas déclencher la pioche normale
+            etat = "action";
+        }
+
+        return;
+    }
+  }  
 };
 
 /* =====================================================
