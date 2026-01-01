@@ -276,7 +276,7 @@ document.getElementById("defausser").onclick = () => {
   if(etat!=="action") return;
 
   const sel=[...document.querySelectorAll(".carte.selectionnee")];
-  if(sel.length!==2) return;
+  if(sel.length < 2) return;
 
   const v=sel.map(c=>+c.dataset.valeur).sort((a,b)=>a-b);
 
