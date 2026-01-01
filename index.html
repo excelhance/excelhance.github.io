@@ -101,7 +101,7 @@ button.joker-utilise { background:#dc2626; color:#fff; }
     font-weight: bold;
     color: #06b6d4; /* bleu cyan */
     font-size: 0.9rem;
-    margin-bottom: 2px; /* espace entre compteur et icône de l'archive */
+    margin-bottom: 4px; /* espace entre compteur et icône de l'archive */
 }
 
 /* Cartes réduites dans les archives */
@@ -310,7 +310,7 @@ function renderArchive(c){
   if(!compteurEl){
       compteurEl = document.createElement("div");
       compteurEl.className = "compteur";
-      archiveDiv.insertBefore(compteurEl, archiveDiv.querySelector("h3"));
+      archiveDiv.insertBefore(compteurEl, archiveDiv.querySelector(".archive-cartes"));
   }
   compteurEl.textContent = archives[c].length;
 }
