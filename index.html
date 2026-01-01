@@ -318,24 +318,27 @@ document.getElementById("defausser").onclick = () => {
       return;
   }
 
-  // 10 + Roi => vider zone centrale + piocher 2 cartes si pas re-pioche
+  // 10 + Roi => vider zone centrale + pioche automatique de 2 cartes
   if(v[0] === 10 && v[1] === 13){
+      // Vider Zone Centrale et retirer les cartes sélectionnées
       centre.innerHTML = "";
       sel.forEach(c => c.remove());
-
-      etat = "action";
-
-      if(!attenteAction){
-          for(let i=0; i<2; i++){
-              if(pioche.length && centre.children.length < 7){
-                  centre.appendChild(creerCarteHTML(pioche.pop()));
-              }
+  
+      // Pioche automatique de 2 cartes
+      const maxPioche = Math.min(2, 7 - centre.children.length);
+      for(let i=0; i<maxPioche; i++){
+          if(pioche.length){
+              centre.appendChild(creerCarteHTML(pioche.pop()));
           }
-          attenteAction = false;
       }
-
+  
+      // Passer en attente d'action utilisateur
+      etat = "action";
+      attenteAction = true;
+  
       return;
   }
+
 
   // 10 + As => regarder 3 cartes (UI simplifiée) + pioche 2 cartes si pas re-pioche
   if(v[0] === 1 && v[1] === 10){
