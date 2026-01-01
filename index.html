@@ -79,6 +79,15 @@ button.joker-consomme {
   transform:translateY(-6px);
 }
 
+@keyframes slideIn {
+  0% { transform: translateY(-30px); opacity:0; }
+  100% { transform: translateY(0); opacity:1; }
+}
+
+.carte.repioche {
+  animation: slideIn 0.4s ease forwards;
+}
+
 .valeur {
   position:absolute;
   top:6px;
@@ -218,17 +227,16 @@ function creerCarteHTML(carte, interactive=true){
 }
 
 /* =====================================================
-   PIOCHE
+   PIOCHE + RE-PIOCHE AVEC ANIMATION
 ===================================================== */
 document.getElementById("piocher").onclick = () => {
-  if(etat !== "pioche") return;
-
-  const cartesActuelles = centre.children.length;
-
-  // Détecte si c'est une re-pioche (aucune sélection ni Joker actif)
   const sel = [...document.querySelectorAll(".carte.selectionnee")];
   const rePioche = (sel.length === 0 && !jokerEnAttente);
 
+  // Si ce n'est pas une re-pioche et que l'état n'est pas pioche, bloquer
+  if(!rePioche && etat !== "pioche") return;
+
+  const cartesActuelles = centre.children.length;
   const cartesADeposer = rePioche ? 3 : 2;
 
   // Vérifie si pioche possible sans dépasser 7 cartes
@@ -240,7 +248,9 @@ document.getElementById("piocher").onclick = () => {
   // Dépose les cartes
   for(let i=0; i<cartesADeposer; i++){
     if(pioche.length && centre.children.length < 7){
-      centre.appendChild(creerCarteHTML(pioche.pop()));
+      const c = creerCarteHTML(pioche.pop());
+      if(rePioche) c.classList.add("repioche"); // animation spéciale
+      centre.appendChild(c);
     }
   }
 
