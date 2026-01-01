@@ -231,12 +231,14 @@ function creerCarteHTML(carte, interactive=true){
 ===================================================== */
 document.getElementById("piocher").onclick = () => {
   const sel = [...document.querySelectorAll(".carte.selectionnee")];
-  const rePioche = (sel.length === 0 && !jokerEnAttente);
-
-  // Si ce n'est pas une re-pioche et que l'état n'est pas pioche, bloquer
+  
+  // Re-pioche uniquement si état="action" et aucune carte sélectionnée et Joker pas actif
+  const rePioche = (etat === "action" && sel.length === 0 && !jokerEnAttente);
+  
+  // Bloque le clic si pas de pioche possible
   if(!rePioche && etat !== "pioche") return;
-
-  const cartesActuelles = centre.children.length;
+  
+  // Nombre de cartes à déposer selon contexte
   const cartesADeposer = rePioche ? 3 : 2;
 
   // Vérifie si pioche possible sans dépasser 7 cartes
