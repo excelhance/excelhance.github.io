@@ -207,8 +207,10 @@ btnPioche.onclick = () => {
       cartesADeposer = 2;
       premierePioche = false;
   } else if(attenteAction && sel.length===0 && !jokerEnAttente){
+      // Re-pioche volontaire => pénalité
       cartesADeposer = 3;
   } else {
+      // Pioche standard ou contrainte
       cartesADeposer = 2;
   }
 
@@ -334,10 +336,54 @@ document.getElementById("defausser").onclick = () => {
         return;
     }
 
-    // ===== 6 + 9 =====
+    // ===== 2 + 5 + 1 carte supplémentaire =====
+    if(sel.length === 3){
+        const vals = sel.map(c => +c.dataset.valeur);
+        if(vals.includes(2) && vals.includes(5)){
+            sel.forEach(c => c.remove());
+
+            // Pioche automatique de 2 cartes max
+            const maxPioche = Math.min(2, 7 - centre.children.length);
+            for(let i=0; i<maxPioche; i++){
+                if(pioche.length){
+                    centre.appendChild(creerCarteHTML(pioche.pop()));
+                }
+            }
+
+            etat = "action";       // attente action utilisateur
+            attenteAction = true;   // empêche re-pioche immédiate
+            return;
+        }
+    }
+
+    // ===== 6 + 9 => défausser les 2 cartes et rejouer SANS repiocher =====
     if(v[0] === 6 && v[1] === 9){
-        sel.forEach(c => c.classList.remove("selectionnee"));  // juste désélection
+        sel.forEach(c => c.remove());  // Défausse des cartes
         return;  // rejouer immédiatement, aucune pioche
+    }
+
+    // ===== 10 + Dame => retirer un Joker actif =====
+    if(v[0] === 10 && v[1] === 12){
+        if(jokerUtilise){
+            // Réinitialisation Joker
+            jokerUtilise = false;
+            jokerEnAttente = false;
+    
+            // Bouton Joker -> état normal
+            btnJoker.classList.remove("joker-utilise","joker-actif");
+            btnJoker.style.backgroundColor = "";
+            btnJoker.style.color = "";
+    
+            // Suppression de l’icône Joker sur l’archive
+            document.querySelectorAll(".joker-marqueur").forEach(j => j.remove());
+        }
+    
+        // Défausse des cartes
+        sel.forEach(c => c.remove());
+    
+        etat = "pioche";
+        attenteAction = false; // pioche standard ensuite
+        return;
     }
 
     // ===== 10 + Roi =====
@@ -365,26 +411,6 @@ document.getElementById("defausser").onclick = () => {
         etat = "pioche";       // prochaine action : pioche normale
         attenteAction = false;
         return;
-    }
-
-    // ===== 2 + 5 + 1 carte supplémentaire =====
-    if(sel.length === 3){
-        const vals = sel.map(c => +c.dataset.valeur);
-        if(vals.includes(2) && vals.includes(5)){
-            sel.forEach(c => c.remove());
-
-            // Pioche automatique de 2 cartes max
-            const maxPioche = Math.min(2, 7 - centre.children.length);
-            for(let i=0; i<maxPioche; i++){
-                if(pioche.length){
-                    centre.appendChild(creerCarteHTML(pioche.pop()));
-                }
-            }
-
-            etat = "action";       // attente action utilisateur
-            attenteAction = true;   // empêche re-pioche immédiate
-            return;
-        }
     }
 };
 
