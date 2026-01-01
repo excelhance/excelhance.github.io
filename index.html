@@ -341,15 +341,6 @@ document.getElementById("defausser").onclick = () => {
     jokerEnAttente = true;
   };
 
-  const nonVides=couleurs.filter(c=>archives[c].length);
-  if(!nonVides.length) return;
-
-  const c=nonVides[Math.floor(Math.random()*nonVides.length)];
-  pioche.push(...archives[c]);
-  archives[c]=[];
-  renderArchive(c);
-};
-
 /* =====================================================
    CONDITION DE VICTOIRE
 ===================================================== */
