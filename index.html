@@ -285,6 +285,9 @@ document.querySelectorAll(".archive").forEach(archive => {
     if(jokerEnAttente){
         const arch = archives[archiveEl.dataset.c];
         if(arch.length === 0) return;
+
+        // Bloquer toute sélection de cartes centrale pendant le Joker
+        [...centre.querySelectorAll(".carte")].forEach(c => c.classList.remove("selectionnee"));
   
         // === Réintégration contrôlée des cartes d’archive dans la pioche ===
         const nbCartesProtegees = Math.min(3, pioche.length);
@@ -299,7 +302,6 @@ document.querySelectorAll(".archive").forEach(archive => {
             const resteMelange = melangerTableau([...restePioche, ...cartesArchiveMelangees]);
             nouvellePioche = [...resteMelange, ...cartesProtegees];
         }
-  
         pioche = nouvellePioche;
   
         // Vider l'archive et rafraîchir l'affichage
@@ -307,8 +309,7 @@ document.querySelectorAll(".archive").forEach(archive => {
         renderArchive(archiveEl.dataset.c);
   
         // Vider la Zone Centrale
-        while(centre.firstChild){
-            centre.removeChild(centre.firstChild);
+        while(centre.firstChild){centre.removeChild(centre.firstChild);
         }
   
         // Marqueur visuel Joker
@@ -327,6 +328,9 @@ document.querySelectorAll(".archive").forEach(archive => {
         jokerEnAttente = false;
         attenteAction = false;
         etat = "pioche"; // jeu reprend normalement
+
+        // Stop propagation pour éviter conflit avec cartes sélectionnées
+        e.stopPropagation();
         return;
     }
   
