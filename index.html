@@ -417,6 +417,7 @@ document.getElementById("defausser").onclick = () => {
         if(vals.includes(2) && vals.includes(5)){
             sel.forEach(c => c.remove());
 
+            /*
             // Pioche automatique de 2 cartes max
             const maxPioche = Math.min(2, 7 - centre.children.length);
             for(let i=0; i<maxPioche; i++){
@@ -424,6 +425,7 @@ document.getElementById("defausser").onclick = () => {
                     centre.appendChild(creerCarteHTML(pioche.pop()));
                 }
             }
+            */
 
             etat = "action";       // attente action utilisateur
             attenteAction = true;   // empêche re-pioche immédiate
@@ -463,20 +465,67 @@ document.getElementById("defausser").onclick = () => {
 
     // ===== 10 + Roi =====
     if(v[0] === 10 && v[1] === 13){
-        // Vider la Zone Centrale et retirer les cartes sélectionnées
+    
+        // === 1. Récupération des cartes présentes en Zone Centrale ===
+        const cartesCentre = [...centre.querySelectorAll(".carte")].map(c => ({
+            valeur: +c.dataset.valeur,
+            label: c.dataset.label,
+            couleur: c.dataset.couleur
+        }));
+    
+        // Nettoyage visuel Zone Centrale + cartes sélectionnées
         centre.innerHTML = "";
         sel.forEach(c => c.remove());
+    
+        // === 2. Mélange des cartes issues de la Zone Centrale ===
+        const cartesCentreMelangees = melangerTableau(cartesCentre);
+    
+        // === 3. Réintégration contrôlée dans la pioche ===
+        const nbCartesProtegees = Math.min(3, pioche.length);
+    
+        // Cartes protégées en haut de pile (ordre conservé)
+        const cartesProtegees = pioche.slice(-nbCartesProtegees);
+    
+        // Reste de la pioche
+        const restePioche = pioche.slice(0, pioche.length - nbCartesProtegees);
+    
+        let nouvellePioche;
+    
+        if (pioche.length < 3) {
+            // Cas pile < 3 : conserver l’ordre existant puis ajouter les cartes mélangées
+            nouvellePioche = [
+                ...cartesProtegees,
+                ...cartesCentreMelangees
+            ];
+        } else {
+            // Cas normal : mélange du reste + cartes du centre
+            const resteMelange = melangerTableau([
+                ...restePioche,
+                ...cartesCentreMelangees
+            ]);
+    
+            nouvellePioche = [
+                ...resteMelange,
+                ...cartesProtegees
+            ];
+        }
+    
+        // Application de la nouvelle pioche
+        pioche = nouvellePioche;
 
-        // Pioche automatique de 2 cartes max
+        /*
+        // === 4. Pioche automatique de 2 cartes max ===
         const maxPioche = Math.min(2, 7 - centre.children.length);
-        for(let i=0; i<maxPioche; i++){
+        for(let i = 0; i < maxPioche; i++){
             if(pioche.length){
                 centre.appendChild(creerCarteHTML(pioche.pop()));
             }
         }
-
-        etat = "action";       // attente de l'action utilisateur
-        attenteAction = true;   // empêche re-pioche immédiate
+        */
+    
+        // === 5. Reprise normale du jeu ===
+        etat = "action";
+        attenteAction = true;
         return;
     }
 
