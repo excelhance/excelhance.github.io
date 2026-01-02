@@ -275,104 +275,76 @@ btnPioche.onclick = () => {
    ARCHIVES
 ===================================================== */
 document.querySelectorAll(".archive").forEach(archive => {
-  archive.onclick = () => {
+    archive.addEventListener("click", (e) => {
 
-    // ===== Gestion du Chaos (Joker en attente) =====
-    if(jokerEnAttente){
-        const arch = archives[archive.dataset.c];
-        if(arch.length === 0) return;
+      // ===== Gestion Joker prioritaire =====
+      if(jokerEnAttente){
+          const arch = archives[archive.dataset.c];
+          if(arch.length === 0) return;
 
-        // === Réintégration contrôlée des cartes d’archive dans la pioche ===
-        // Nombre de cartes à protéger en haut de la pioche
-        const nbCartesProtegees = Math.min(3, pioche.length);
+          // Réintégration contrôlée dans la pioche (comme avant)
+          const nbCartesProtegees = Math.min(3, pioche.length);
+          const cartesProtegees = pioche.slice(-nbCartesProtegees);
+          const restePioche = pioche.slice(0, pioche.length - nbCartesProtegees);
 
-        // Cartes actuellement en haut de la pioche (ordre conservé)
-        const cartesProtegees = pioche.slice(-nbCartesProtegees);
+          const cartesArchiveMelangees = melangerTableau([...arch]);
 
-        // Reste de la pioche
-        const restePioche = pioche.slice(0, pioche.length - nbCartesProtegees);
+          let nouvellePioche;
+          if(pioche.length < 3){
+              nouvellePioche = [...cartesProtegees, ...cartesArchiveMelangees];
+          } else {
+              const resteMelange = melangerTableau([...restePioche, ...cartesArchiveMelangees]);
+              nouvellePioche = [...resteMelange, ...cartesProtegees];
+          }
 
-        // Mélange des cartes issues de l’archive entre elles
-        const cartesArchiveMelangees = melangerTableau([...arch]);
+          pioche = nouvellePioche;
+          archives[archive.dataset.c] = [];
+          renderArchive(archive.dataset.c);
 
-        let nouvellePioche;
+          // Vider Zone Centrale
+          while(centre.firstChild) centre.removeChild(centre.firstChild);
 
-        if (pioche.length < 3) {
-            // Cas pile < 3 : on conserve l’ordre existant, puis on ajoute les cartes mélangées
-            nouvellePioche = [
-                ...cartesProtegees,
-                ...cartesArchiveMelangees
-            ];
-        } else {
-            // Cas normal : mélange du reste de la pioche + cartes archive
-            const resteMelange = melangerTableau([
-                ...restePioche,
-                ...cartesArchiveMelangees
-            ]);
+          // Marqueur visuel
+          const marqueur = document.createElement("div");
+          marqueur.className = "joker-marqueur";
+          marqueur.textContent = "🃏";
+          marqueur.style.position = "absolute";
+          marqueur.style.top = "4px";
+          marqueur.style.right = "4px";
+          archive.querySelector("h3").appendChild(marqueur);
 
-            nouvellePioche = [
-                ...resteMelange,
-                ...cartesProtegees
-            ];
+          // Visuel bouton Joker
+          btnJoker.style.backgroundColor = "#dc2626";
+          btnJoker.style.color = "#fff";
+          btnJoker.classList.remove("joker-actif");
+
+          jokerEnAttente = false;
+          attenteAction = false;
+
+          e.stopPropagation();
+          return;
         }
 
-        // Remplacement de la pioche
-        pioche = nouvellePioche;
+        // ===== Classement normal =====
+        if(etat !== "action") return;
+        const sel = [...document.querySelectorAll(".carte.selectionnee")];
+        if(sel.length !== 1) return;
+        const d = sel[0];
+        if(d.dataset.couleur !== archive.dataset.c) return;
 
-        // Vider l’archive et rafraîchir l’affichage
-        archives[archive.dataset.c] = [];
+        archives[archive.dataset.c].push({
+            valeur: +d.dataset.valeur,
+            label: d.dataset.label,
+            couleur: d.dataset.couleur
+        });
+
+        d.remove();
         renderArchive(archive.dataset.c);
 
-        // Vider la Zone Centrale
-        while(centre.firstChild){
-            centre.removeChild(centre.firstChild);
-        }
-
-        // Marqueur visuel Joker (au-dessus du titre, sans décaler l'icône)
-        const marqueur = document.createElement("div");
-        marqueur.className = "joker-marqueur";
-        marqueur.textContent = "🃏";
-        marqueur.style.position = "absolute";
-        marqueur.style.top = "4px";
-        marqueur.style.right = "4px";
-        archive.querySelector("h3").appendChild(marqueur);
-
-        // Changer visuel du bouton Joker
-        const btnJoker = document.getElementById("joker");
-        btnJoker.style.backgroundColor = "#dc2626"; // rouge léger
-        btnJoker.style.color = "#fff";
-        btnJoker.classList.remove("joker-actif"); // Joker consommé
-
-        // Reprise normale
-        jokerEnAttente = false;
+        etat = "pioche";
+        verifierVictoire();
         attenteAction = false;
-
-        return;
-    }
-
-    // ===== Classement d'une carte dans l'archive (mode normal) =====
-    if(etat !== "action") return;
-
-    const sel = [...document.querySelectorAll(".carte.selectionnee")];
-    if(sel.length !== 1) return;
-
-    const d = sel[0];
-    if(d.dataset.couleur !== archive.dataset.c) return;
-
-    archives[archive.dataset.c].push({
-        valeur: +d.dataset.valeur,
-        label: d.dataset.label,
-        couleur: d.dataset.couleur
     });
-
-    d.remove();
-    renderArchive(archive.dataset.c);
-
-    // Reprise normale du jeu
-    etat = "pioche";
-    verifierVictoire();
-    attenteAction = false;
-};
 });
 
 /* =====================================================
