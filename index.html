@@ -37,9 +37,11 @@ button {
   margin-bottom:12px;
 }
 
-#popup-10as .cartes {
-  justify-content:center;
-  margin-bottom:8px;
+.popup-10as .cartes{
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 8px;
 }
 
 #popup-10as button {
@@ -427,17 +429,18 @@ document.getElementById("defausser").onclick = () => {
     }
 
     // ===== 10 + As =====
-    if(v[0] === 1 && v[1] === 10){
+    if (v[0] === 1 && v[1] === 10) {
+    
         // Défausse des cartes sélectionnées
         sel.forEach(c => c.remove());
     
-        // Prélever les 3 prochaines cartes de la pioche (sans les retirer définitivement)
+        // Prélever jusqu’à 3 cartes (sécurité)
         cartesVision10As = pioche.slice(-3);
     
-        // Affichage popup
+        // Construction popup
         const popup = document.getElementById("popup-10as");
         popup.innerHTML = `
-          <div class="cartes"></div>
+          <div class="cartes" style="display:flex;gap:6px;justify-content:center;margin-bottom:8px"></div>
           <div style="display:flex;gap:8px;justify-content:center">
             <button id="btn-conserver">Conserver</button>
             <button id="btn-remelanger">Retour dans la pile</button>
@@ -449,50 +452,53 @@ document.getElementById("defausser").onclick = () => {
             zoneCartes.appendChild(creerCarteHTML(c, false));
         });
     
+        // Affichage forcé
         popup.style.display = "block";
-        vision10AsActive = true;
+        popup.style.position = "relative";
+        popup.style.zIndex = "50";
     
-        // Désactivation temporaire du jeu
-        etat = "action";
+        // État bloquant
+        vision10AsActive = true;
+        etat = "bloque";        // ⬅️ IMPORTANT
         attenteAction = true;
     
         return;
     }
-
 };
-// Gestion des boutons Conserver / Retour dans la pile 
 document.addEventListener("click", e => {
-  if(!vision10AsActive) return;
+  if (!vision10AsActive) return;
 
   // === Conserver ===
-  if(e.target.id === "btn-conserver"){
-      // Ne rien faire : les cartes restent au sommet
+  if (e.target.id === "btn-conserver") {
+      // Les cartes restent au sommet
       fermerPopup10As();
   }
 
   // === Retour dans la pile ===
-  if(e.target.id === "btn-remelanger"){
-      // Retirer les 3 cartes du sommet
+  if (e.target.id === "btn-remelanger") {
+
+      // Retirer les cartes du sommet
       pioche.splice(-cartesVision10As.length, cartesVision10As.length);
 
-      // Les remettre aléatoirement dans la pioche
+      // Réinsertion aléatoire
       pioche.push(...cartesVision10As);
-      pioche.sort(()=>Math.random()-.5);
+      pioche.sort(() => Math.random() - 0.5);
 
       fermerPopup10As();
   }
 });
 
 function fermerPopup10As(){
-  document.getElementById("popup-10as").style.display = "none";
+  const popup = document.getElementById("popup-10as");
+  popup.style.display = "none";
+
   cartesVision10As = [];
   vision10AsActive = false;
 
   // Reprise normale du jeu
-  etat = "pioche";
+  etat = "pioche";        // le joueur doit piocher
   attenteAction = false;
 }
-
 
 /* =====================================================
    JOKER / CHAOS
