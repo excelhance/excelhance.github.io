@@ -162,7 +162,7 @@ button.joker-utilise { background:#dc2626; color:#fff; }
 <h1>🂡  L’Archiviste  🂡</h1>
 
 <div id="zone-actions">
-  <button id="piocher">Piocher (2)</button>
+  <button id="piocher">PIOCHER</button>
   <button id="defausser">Défausser</button>
   <button id="joker">Activer Joker</button>
 </div>
@@ -469,13 +469,13 @@ document.getElementById("defausser").onclick = () => {
         popup.style.display = "block";
         popup.style.position = "relative";
         popup.style.zIndex = "50";
+        vision10AsActive = true;
 
         // Blocage UI principale
         document.getElementById("zone-actions").classList.add("ui-bloquee");
 
         // État bloquant
-        vision10AsActive = true;
-        etat = "bloque";        // ⬅️ IMPORTANT
+        etat = "action";        // ⬅️ IMPORTANT
         attenteAction = true;
     
         return;
@@ -505,17 +505,15 @@ document.addEventListener("click", e => {
 });
 
 function fermerPopup10As(){
-  const popup = document.getElementById("popup-10as");
-  popup.style.display = "none";
-
+  document.getElementById("popup-10as").style.display = "none";
   cartesVision10As = [];
   vision10AsActive = false;
 
-  // Déblocage UI
+  // Débloquer les boutons de jeu
   document.getElementById("zone-actions").classList.remove("ui-bloquee");
 
   // Reprise normale du jeu
-  etat = "pioche";        // le joueur doit piocher
+  etat = "pioche";
   attenteAction = false;
 }
 
