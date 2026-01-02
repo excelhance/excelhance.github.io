@@ -286,91 +286,83 @@ btnPioche.onclick = () => {
 document.querySelectorAll(".archive").forEach(archive => {
   archive.onclick = () => {
 
-    // Gestion du Chaos (Joker en attente)
-    if(jokerEnAttente){
-      
-      const arch = archives[archive.dataset.c];
-      if(arch.length === 0) return;
+    /* ===============================
+       MODE JOKER – CHAOS
+    =============================== */
+    if (jokerEnAttente === true) {
 
-      // === Réintégration contrôlée des cartes d’archive dans la pioche ===
-      // === 1. Récupération des cartes présentes en Zone Centrale ===
-      const cartesCentre = [...centre.querySelectorAll(".carte")].map(c => ({
-          valeur: +c.dataset.valeur,
-          label: c.dataset.label,
-          couleur: c.dataset.couleur
-      }));
+      // 🔒 Consommation immédiate du Joker (verrou)
+      jokerEnAttente = false;
+      attenteAction = false;
+      etat = "pioche";
 
-      // Vider la Zone Centrale
+      const couleur = archive.dataset.c;
+      const arch = archives[couleur];
+      if (!arch || arch.length === 0) return;
+
+      /* --- Nettoyage Zone Centrale --- */
       centre.innerHTML = "";
-      
-      const nbCartesProtegees = Math.min(3, pioche.length); // Nombre de cartes à protéger en haut de la pioche
-      const cartesProtegees = pioche.slice(-nbCartesProtegees); // Cartes actuellement en haut de la pioche (ordre conservé)
-      const restePioche = pioche.slice(0, pioche.length - nbCartesProtegees); // Reste de la pioche
-      const cartesArchiveMelangees = melangerTableau([...arch]); // Mélange des cartes issues de l’archive entre elles
-      let nouvellePioche;
-      
-      if (pioche.length < 3) {
-          // Cas pile < 3 : on conserve l’ordre existant, puis on ajoute les cartes mélangées
-          nouvellePioche = [
-              ...cartesProtegees,
-              ...cartesArchiveMelangees
+
+      /* --- Reconstruction de la pioche --- */
+      const nbProtegees = Math.min(3, pioche.length);
+      const cartesProtegees = pioche.slice(-nbProtegees);
+      const restePioche = pioche.slice(0, pioche.length - nbProtegees);
+      const cartesArchive = melangerTableau([...arch]);
+
+      pioche = (pioche.length < 3)
+        ? [...cartesProtegees, ...cartesArchive]
+        : [
+            ...melangerTableau([...restePioche, ...cartesArchive]),
+            ...cartesProtegees
           ];
-      } else {
-          // Cas normal : mélange du reste de la pioche + cartes archive
-          const resteMelange = melangerTableau([
-              ...restePioche,
-              ...cartesArchiveMelangees
-          ]);
-          nouvellePioche = [
-              ...resteMelange,
-              ...cartesProtegees
-          ];
+
+      /* --- Vidage archive --- */
+      archives[couleur] = [];
+      renderArchive(couleur);
+
+      /* --- Marqueur visuel Joker --- */
+      if (!archive.querySelector(".joker-marqueur")) {
+        const marqueur = document.createElement("div");
+        marqueur.className = "joker-marqueur";
+        marqueur.textContent = "🃏";
+        marqueur.style.position = "absolute";
+        marqueur.style.top = "4px";
+        marqueur.style.right = "4px";
+        archive.querySelector("h3").appendChild(marqueur);
       }
-      pioche = nouvellePioche; // Remplacement de la pioche
-      // Vider l’archive et rafraîchir l’affichage
-      archives[archive.dataset.c] = [];
-      renderArchive(archive.dataset.c);
 
-    // Marqueur visuel Joker (au-dessus du titre, sans décaler l'icône)
-    const marqueur = document.createElement("div");
-    marqueur.className = "joker-marqueur";
-    marqueur.textContent = "🃏";
-    marqueur.style.position = "absolute";
-    marqueur.style.top = "4px";
-    marqueur.style.right = "4px";
-    archive.querySelector("h3").appendChild(marqueur);
-
-    // Changer visuel du bouton Joker
+      /* --- Bouton Joker : état utilisé --- */
       btnJoker.classList.remove("joker-actif");
-    btnJoker.classList.add("joker-utilise");
-    btnJoker.style.backgroundColor = "#dc2626"; // rouge léger
-    btnJoker.style.color = "#fff";
+      btnJoker.classList.add("joker-utilise");
+      btnJoker.style.backgroundColor = "#dc2626";
+      btnJoker.style.color = "#fff";
 
-    jokerEnAttente = false;
-    etat = "pioche";
-    attenteAction = false;
-    return;
+      return;
     }
 
-    // Classement d'une carte dans l'archive
-    if(etat !== "action") return;
-    const sel = [...document.querySelectorAll(".carte.selectionnee")];
-    if(sel.length !== 1) return;
-    const d = sel[0];
-    if(d.dataset.couleur !== archive.dataset.c) return;
+    /* ===============================
+       MODE NORMAL – CLASSEMENT
+    =============================== */
+    if (etat !== "action") return;
+
+    const sel = document.querySelectorAll(".carte.selectionnee");
+    if (sel.length !== 1) return;
+
+    const carte = sel[0];
+    if (carte.dataset.couleur !== archive.dataset.c) return;
 
     archives[archive.dataset.c].push({
-      valeur: +d.dataset.valeur,
-      label: d.dataset.label,
-      couleur: d.dataset.couleur
+      valeur: +carte.dataset.valeur,
+      label: carte.dataset.label,
+      couleur: carte.dataset.couleur
     });
-    d.remove();
+
+    carte.remove();
     renderArchive(archive.dataset.c);
 
     etat = "pioche";
-    verifierVictoire();
     attenteAction = false;
-    return;
+    verifierVictoire();
   };
 });
 
