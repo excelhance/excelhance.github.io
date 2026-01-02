@@ -43,6 +43,10 @@ button {
   gap: 6px;
   margin-bottom: 8px;
 }
+.popup-10as .carte {
+  pointer-events: none;
+  cursor: default;
+}
 
 #popup-10as button {
   width:48%;
@@ -145,15 +149,24 @@ button.joker-utilise { background:#dc2626; color:#fff; }
   right:2px;
   font-size:1rem;
 }
+
+/* pour bloquer les 3 boutons de jeu en présence de la popup As+10 */
+.ui-bloquee {
+  pointer-events: none;
+  opacity: 0.6;
+}  
 </style>
 </head>
 <body>
 
 <h1>🂡  L’Archiviste  🂡</h1>
 
-<button id="piocher">PIOCHER (2)</button>
-<button id="defausser">Défausser</button>
-<button id="joker">Activer Joker</button>
+<div id="zone-actions">
+  <button id="piocher">Piocher (2)</button>
+  <button id="defausser">Défausser</button>
+  <button id="joker">Activer Joker</button>
+</div>
+  
 <div id="popup-10as" style="display:none;"></div>
 
 <div class="zone">
@@ -456,7 +469,10 @@ document.getElementById("defausser").onclick = () => {
         popup.style.display = "block";
         popup.style.position = "relative";
         popup.style.zIndex = "50";
-    
+
+        // Blocage UI principale
+        document.getElementById("zone-actions").classList.add("ui-bloquee");
+
         // État bloquant
         vision10AsActive = true;
         etat = "bloque";        // ⬅️ IMPORTANT
@@ -494,6 +510,9 @@ function fermerPopup10As(){
 
   cartesVision10As = [];
   vision10AsActive = false;
+
+  // Déblocage UI
+  document.getElementById("zone-actions").classList.remove("ui-bloquee");
 
   // Reprise normale du jeu
   etat = "pioche";        // le joueur doit piocher
