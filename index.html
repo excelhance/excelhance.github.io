@@ -613,11 +613,20 @@ btnJoker.onclick = () => {
       alert("Défaite — Chaos incontrôlé");
       location.reload();
   }
+
+  // Vérifier qu'il y a des archives non vides
   const nonVides = couleurs.filter(c=>archives[c].length);
   if(nonVides.length===0) return;
 
-  jokerUtilise=true;
-  jokerEnAttente=true;
+  // Activer le Joker
+  jokerUtilise = true;
+  jokerEnAttente = true;
+
+  // Forcer l'état pour autoriser le clic sur une archive
+  etat = "action";         // ✅ nécessaire pour que archive.onclick fonctionne
+  attenteAction = true;     // ✅ bloque toute autre action du jeu
+
+  // Visuel du bouton Joker
   btnJoker.classList.add("joker-actif");
 };
 
