@@ -282,33 +282,70 @@ document.querySelectorAll(".archive").forEach(archive => {
       const arch = archives[archive.dataset.c];
       if(arch.length === 0) return;
 
-      // Vider l'archive choisie et remettre ses cartes dans la pioche
-      pioche.push(...arch);
-      archives[archive.dataset.c] = [];
-      renderArchive(archive.dataset.c);
+    // === Réintégration contrôlée des cartes d’archive dans la pioche ===
+    // Nombre de cartes à protéger en haut de la pioche
+    const nbCartesProtegees = Math.min(3, pioche.length);
+    
+    // Cartes actuellement en haut de la pioche (ordre conservé)
+    const cartesProtegees = pioche.slice(-nbCartesProtegees);
+    
+    // Reste de la pioche
+    const restePioche = pioche.slice(0, pioche.length - nbCartesProtegees);
+    
+    // Mélange des cartes issues de l’archive entre elles
+    const cartesArchiveMelangees = melangerTableau([...arch]);
+    
+    let nouvellePioche;
+    
+    if (pioche.length < 3) {
+        // Cas pile < 3 : on conserve l’ordre existant, puis on ajoute les cartes mélangées
+        nouvellePioche = [
+            ...cartesProtegees,
+            ...cartesArchiveMelangees
+        ];
+    } else {
+        // Cas normal : mélange du reste de la pioche + cartes archive
+        const resteMelange = melangerTableau([
+            ...restePioche,
+            ...cartesArchiveMelangees
+        ]);
+    
+        nouvellePioche = [
+            ...resteMelange,
+            ...cartesProtegees
+        ];
+    }
+    
+    // Remplacement de la pioche
+    pioche = nouvellePioche;
+    
+    // Vider l’archive et rafraîchir l’affichage
+    archives[archive.dataset.c] = [];
+    renderArchive(archive.dataset.c);
+    // ================================================================
 
-      // Vider la Zone Centrale
-      while(centre.firstChild){
-        centre.removeChild(centre.firstChild);
-      }
+    // Vider la Zone Centrale
+    while(centre.firstChild){
+      centre.removeChild(centre.firstChild);
+    }
 
-      // Marqueur visuel Joker (au-dessus du titre, sans décaler l'icône)
-      const marqueur = document.createElement("div");
-      marqueur.className = "joker-marqueur";
-      marqueur.textContent = "🃏";
-      marqueur.style.position = "absolute";
-      marqueur.style.top = "4px";
-      marqueur.style.right = "4px";
-      archive.querySelector("h3").appendChild(marqueur);
+    // Marqueur visuel Joker (au-dessus du titre, sans décaler l'icône)
+    const marqueur = document.createElement("div");
+    marqueur.className = "joker-marqueur";
+    marqueur.textContent = "🃏";
+    marqueur.style.position = "absolute";
+    marqueur.style.top = "4px";
+    marqueur.style.right = "4px";
+    archive.querySelector("h3").appendChild(marqueur);
 
-      // Changer visuel du bouton Joker
-      const btnJoker = document.getElementById("joker");
-      btnJoker.style.backgroundColor = "#dc2626"; // rouge léger
-      btnJoker.style.color = "#fff";
+    // Changer visuel du bouton Joker
+    const btnJoker = document.getElementById("joker");
+    btnJoker.style.backgroundColor = "#dc2626"; // rouge léger
+    btnJoker.style.color = "#fff";
 
-      jokerEnAttente = false;
-      attenteAction = false;
-      return;
+    jokerEnAttente = false;
+    attenteAction = false;
+    return;
     }
 
     // Classement d'une carte dans l'archive
