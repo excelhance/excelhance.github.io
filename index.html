@@ -389,14 +389,6 @@ document.getElementById("defausser").onclick = () => {
         if(vals.includes(2) && vals.includes(5)){
             sel.forEach(c => c.remove());
 
-            // Pioche automatique de 2 cartes max
-            const maxPioche = Math.min(2, 7 - centre.children.length);
-            for(let i=0; i<maxPioche; i++){
-                if(pioche.length){
-                    centre.appendChild(creerCarteHTML(pioche.pop()));
-                }
-            }
-
             etat = "action";       // attente action utilisateur
             attenteAction = true;   // empêche re-pioche immédiate
             return;
@@ -438,14 +430,6 @@ document.getElementById("defausser").onclick = () => {
         // Vider la Zone Centrale et retirer les cartes sélectionnées
         centre.innerHTML = "";
         sel.forEach(c => c.remove());
-
-        // Pioche automatique de 2 cartes max
-        const maxPioche = Math.min(2, 7 - centre.children.length);
-        for(let i=0; i<maxPioche; i++){
-            if(pioche.length){
-                centre.appendChild(creerCarteHTML(pioche.pop()));
-            }
-        }
 
         etat = "pioche";       // attente de l'action utilisateur
         attenteAction = false;   // empêche re-pioche immédiate
