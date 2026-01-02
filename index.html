@@ -277,76 +277,78 @@ btnPioche.onclick = () => {
    ARCHIVES
 ===================================================== */
 document.querySelectorAll(".archive").forEach(archive => {
-    archive.addEventListener("click", (e) => {
-
-      // ===== Gestion Joker prioritaire =====
-      if(jokerEnAttente){
-          const arch = archives[archive.dataset.c];
-          if(arch.length === 0) return;
-
-          // Réintégration contrôlée dans la pioche (comme avant)
-          const nbCartesProtegees = Math.min(3, pioche.length);
-          const cartesProtegees = pioche.slice(-nbCartesProtegees);
-          const restePioche = pioche.slice(0, pioche.length - nbCartesProtegees);
-
-          const cartesArchiveMelangees = melangerTableau([...arch]);
-
-          let nouvellePioche;
-          if(pioche.length < 3){
-              nouvellePioche = [...cartesProtegees, ...cartesArchiveMelangees];
-          } else {
-              const resteMelange = melangerTableau([...restePioche, ...cartesArchiveMelangees]);
-              nouvellePioche = [...resteMelange, ...cartesProtegees];
-          }
-
-          pioche = nouvellePioche;
-          archives[archive.dataset.c] = [];
-          renderArchive(archive.dataset.c);
-
-          // Vider Zone Centrale
-          while(centre.firstChild) centre.removeChild(centre.firstChild);
-
-          // Marqueur visuel
-          const marqueur = document.createElement("div");
-          marqueur.className = "joker-marqueur";
-          marqueur.textContent = "🃏";
-          marqueur.style.position = "absolute";
-          marqueur.style.top = "4px";
-          marqueur.style.right = "4px";
-          archive.querySelector("h3").appendChild(marqueur);
-
-          // Visuel bouton Joker
-          btnJoker.style.backgroundColor = "#dc2626";
-          btnJoker.style.color = "#fff";
-          btnJoker.classList.remove("joker-actif");
-
-          jokerEnAttente = false;
-          attenteAction = false;
-
-          e.stopPropagation();
-          return;
+  archive.addEventListener("click", e => {
+    const archiveEl = e.currentTarget; // l'archive cliquée
+  
+    // Gestion du Chaos (Joker en attente)
+    if(jokerEnAttente){
+        const arch = archives[archiveEl.dataset.c];
+        if(arch.length === 0) return;
+  
+        // === Réintégration contrôlée des cartes d’archive dans la pioche ===
+        const nbCartesProtegees = Math.min(3, pioche.length);
+        const cartesProtegees = pioche.slice(-nbCartesProtegees);
+        const restePioche = pioche.slice(0, pioche.length - nbCartesProtegees);
+        const cartesArchiveMelangees = melangerTableau([...arch]);
+        
+        let nouvellePioche;
+        if (pioche.length < 3) {
+            nouvellePioche = [...cartesProtegees, ...cartesArchiveMelangees];
+        } else {
+            const resteMelange = melangerTableau([...restePioche, ...cartesArchiveMelangees]);
+            nouvellePioche = [...resteMelange, ...cartesProtegees];
         }
-
-        // ===== Classement normal =====
-        if(etat !== "action") return;
-        const sel = [...document.querySelectorAll(".carte.selectionnee")];
-        if(sel.length !== 1) return;
-        const d = sel[0];
-        if(d.dataset.couleur !== archive.dataset.c) return;
-
-        archives[archive.dataset.c].push({
-            valeur: +d.dataset.valeur,
-            label: d.dataset.label,
-            couleur: d.dataset.couleur
-        });
-
-        d.remove();
-        renderArchive(archive.dataset.c);
-
-        etat = "pioche";
-        verifierVictoire();
+  
+        pioche = nouvellePioche;
+  
+        // Vider l'archive et rafraîchir l'affichage
+        archives[archiveEl.dataset.c] = [];
+        renderArchive(archiveEl.dataset.c);
+  
+        // Vider la Zone Centrale
+        while(centre.firstChild){
+            centre.removeChild(centre.firstChild);
+        }
+  
+        // Marqueur visuel Joker
+        const marqueur = document.createElement("div");
+        marqueur.className = "joker-marqueur";
+        marqueur.textContent = "🃏";
+        marqueur.style.position = "absolute";
+        marqueur.style.top = "4px";
+        marqueur.style.right = "4px";
+        archiveEl.querySelector("h3").appendChild(marqueur);
+  
+        // Changer visuel du bouton Joker
+        btnJoker.style.backgroundColor = "#dc2626";
+        btnJoker.style.color = "#fff";
+  
+        jokerEnAttente = false;
         attenteAction = false;
+        etat = "pioche"; // jeu reprend normalement
+        return;
+    }
+  
+    // Classement d'une carte normale
+    if(etat !== "action") return;
+    const sel = [...document.querySelectorAll(".carte.selectionnee")];
+    if(sel.length !== 1) return;
+    const d = sel[0];
+    if(d.dataset.couleur !== archiveEl.dataset.c) return;
+  
+    archives[archiveEl.dataset.c].push({
+        valeur: +d.dataset.valeur,
+        label: d.dataset.label,
+        couleur: d.dataset.couleur
     });
+    d.remove();
+    renderArchive(archiveEl.dataset.c);
+  
+    etat = "pioche";
+    verifierVictoire();
+    attenteAction = false;
+  });
+
 });
 
 /* =====================================================
