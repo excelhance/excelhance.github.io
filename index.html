@@ -55,7 +55,7 @@ button {
 }
 
 /* Bouton Joker actif/inactif */
-button.joker-actif { background:#fff; color:#0f172a; }
+button.joker-actif { pointer-events: none; background:#fff; color:#0f172a; }
 button.joker-utilise { background:#dc2626; color:#fff; }
 
 /* ===== ZONES ===== */
@@ -156,7 +156,12 @@ button.joker-utilise { background:#dc2626; color:#fff; }
 .ui-bloquee {
   pointer-events: none;
   opacity: 0.6;
-}  
+}
+/* pour bloquer les 3 boutons de jeu une fois la pop-up Victoire affichée */
+body.ui-bloquee *:not(#rejouer) {
+  pointer-events: none;
+  opacity: 0.7;
+}
 </style>
 </head>
 <body>
@@ -168,6 +173,10 @@ button.joker-utilise { background:#dc2626; color:#fff; }
   <button id="defausser">Défausser</button>
   <button id="joker">Activer Joker</button>
 </div>
+
+<button id="rejouer" style="display:none;background:#22c55e">
+  Rejouer
+</button>
   
 <div id="popup-10as" style="display:none;"></div>
 
@@ -438,8 +447,8 @@ document.getElementById("defausser").onclick = () => {
             }
         }
 
-        etat = "action";       // attente de l'action utilisateur
-        attenteAction = true;   // empêche re-pioche immédiate
+        etat = "pioche";       // attente de l'action utilisateur
+        attenteAction = false;   // empêche re-pioche immédiate
         return;
     }
 
@@ -541,7 +550,19 @@ btnJoker.onclick = () => {
 function verifierVictoire(){
   couleurs.forEach(c=>{
       if(archives[c].length===10){
-          alert("Victoire 🏆 Archive stabilisée");
+
+          alert("🏆 Archive stabilisée => VICTOIRE !");
+
+          // Blocage total du jeu
+          document.body.classList.add("ui-bloquee");
+
+          // Masquer boutons de jeu
+          document.getElementById("zone-actions").style.display = "none";
+
+          // Afficher bouton Rejouer
+          const btnReplay = document.getElementById("rejouer");
+          btnReplay.style.display = "block";
+          btnReplay.onclick = () => location.reload();
       }
   });
 }
