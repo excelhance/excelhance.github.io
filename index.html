@@ -288,6 +288,7 @@ document.querySelectorAll(".archive").forEach(archive => {
 
     // Gestion du Chaos (Joker en attente)
     if(jokerEnAttente){
+      
       const arch = archives[archive.dataset.c];
       if(arch.length === 0) return;
 
@@ -300,9 +301,7 @@ document.querySelectorAll(".archive").forEach(archive => {
       }));
 
       // Vider la Zone Centrale
-      while(centre.firstChild){
-        centre.removeChild(centre.firstChild);
-      }
+      centre.innerHTML = "";
       
       const nbCartesProtegees = Math.min(3, pioche.length); // Nombre de cartes à protéger en haut de la pioche
       const cartesProtegees = pioche.slice(-nbCartesProtegees); // Cartes actuellement en haut de la pioche (ordre conservé)
@@ -342,13 +341,14 @@ document.querySelectorAll(".archive").forEach(archive => {
     archive.querySelector("h3").appendChild(marqueur);
 
     // Changer visuel du bouton Joker
-    const btnJoker = document.getElementById("joker");
+      btnJoker.classList.remove("joker-actif");
+    btnJoker.classList.add("joker-utilise");
     btnJoker.style.backgroundColor = "#dc2626"; // rouge léger
     btnJoker.style.color = "#fff";
 
     jokerEnAttente = false;
-    etat = "action";
-    attenteAction = true;
+    etat = "pioche";
+    attenteAction = false;
     return;
     }
 
