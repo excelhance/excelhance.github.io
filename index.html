@@ -39,6 +39,7 @@ button {
 }
 
 .popup-10as .cartes{
+  cursor: default;
   display: flex;
   justify-content: center;
   gap: 6px;
@@ -101,14 +102,12 @@ button.joker-utilise { background:#dc2626; color:#fff; }
 
 /* ===== ARCHIVES ===== */
 .archives {
-  cursor: pointer;
   display:grid;
   grid-template-columns:repeat(4,1fr);
   gap:8px;
 }
 
 .archive {
-  cursor: pointer;
   border:2px solid #475569;
   border-radius:10px;
   padding:6px;
@@ -137,7 +136,6 @@ button.joker-utilise { background:#dc2626; color:#fff; }
   width:42px;
   height:60px;
   font-size:0.8rem;
-  pointer-events: none;  /* ← ajouté pour que le clic sur l'archive fonctionne */
 }
 
 /* Animation re-pioche */
@@ -278,82 +276,61 @@ btnPioche.onclick = () => {
    ARCHIVES
 ===================================================== */
 document.querySelectorAll(".archive").forEach(archive => {
-  archive.addEventListener("click", e => {
-    const archiveEl = e.currentTarget; // l'archive cliquée
-  
+  archive.onclick = () => {
+
     // Gestion du Chaos (Joker en attente)
     if(jokerEnAttente){
-        const arch = archives[archiveEl.dataset.c];
-        if(arch.length === 0) return;
+      const arch = archives[archive.dataset.c];
+      if(arch.length === 0) return;
 
-        // Bloquer toute sélection de cartes centrale pendant le Joker
-        [...centre.querySelectorAll(".carte")].forEach(c => c.classList.remove("selectionnee"));
-  
-        // === Réintégration contrôlée des cartes d’archive dans la pioche ===
-        const nbCartesProtegees = Math.min(3, pioche.length);
-        const cartesProtegees = pioche.slice(-nbCartesProtegees);
-        const restePioche = pioche.slice(0, pioche.length - nbCartesProtegees);
-        const cartesArchiveMelangees = melangerTableau([...arch]);
-        
-        let nouvellePioche;
-        if (pioche.length < 3) {
-            nouvellePioche = [...cartesProtegees, ...cartesArchiveMelangees];
-        } else {
-            const resteMelange = melangerTableau([...restePioche, ...cartesArchiveMelangees]);
-            nouvellePioche = [...resteMelange, ...cartesProtegees];
-        }
-        pioche = nouvellePioche;
-  
-        // Vider l'archive et rafraîchir l'affichage
-        archives[archiveEl.dataset.c] = [];
-        renderArchive(archiveEl.dataset.c);
-  
-        // Vider la Zone Centrale
-        while(centre.firstChild){centre.removeChild(centre.firstChild);
-        }
-  
-        // Marqueur visuel Joker
-        const marqueur = document.createElement("div");
-        marqueur.className = "joker-marqueur";
-        marqueur.textContent = "🃏";
-        marqueur.style.position = "absolute";
-        marqueur.style.top = "4px";
-        marqueur.style.right = "4px";
-        archiveEl.querySelector("h3").appendChild(marqueur);
-  
-        // Changer visuel du bouton Joker
-        btnJoker.style.backgroundColor = "#dc2626";
-        btnJoker.style.color = "#fff";
-  
-        jokerEnAttente = false;
-        attenteAction = false;
-        etat = "pioche"; // jeu reprend normalement
+      // Vider l'archive choisie et remettre ses cartes dans la pioche
+      pioche.push(...arch);
+      archives[archive.dataset.c] = [];
+      renderArchive(archive.dataset.c);
 
-        // Stop propagation pour éviter conflit avec cartes sélectionnées
-        e.stopPropagation();
-        return;
+      // Vider la Zone Centrale
+      while(centre.firstChild){
+        centre.removeChild(centre.firstChild);
+      }
+
+      // Marqueur visuel Joker (au-dessus du titre, sans décaler l'icône)
+      const marqueur = document.createElement("div");
+      marqueur.className = "joker-marqueur";
+      marqueur.textContent = "🃏";
+      marqueur.style.position = "absolute";
+      marqueur.style.top = "4px";
+      marqueur.style.right = "4px";
+      archive.querySelector("h3").appendChild(marqueur);
+
+      // Changer visuel du bouton Joker
+      const btnJoker = document.getElementById("joker");
+      btnJoker.style.backgroundColor = "#dc2626"; // rouge léger
+      btnJoker.style.color = "#fff";
+
+      jokerEnAttente = false;
+      attenteAction = false;
+      return;
     }
-  
-    // Classement d'une carte normale
+
+    // Classement d'une carte dans l'archive
     if(etat !== "action") return;
     const sel = [...document.querySelectorAll(".carte.selectionnee")];
     if(sel.length !== 1) return;
     const d = sel[0];
-    if(d.dataset.couleur !== archiveEl.dataset.c) return;
-  
-    archives[archiveEl.dataset.c].push({
-        valeur: +d.dataset.valeur,
-        label: d.dataset.label,
-        couleur: d.dataset.couleur
+    if(d.dataset.couleur !== archive.dataset.c) return;
+
+    archives[archive.dataset.c].push({
+      valeur: +d.dataset.valeur,
+      label: d.dataset.label,
+      couleur: d.dataset.couleur
     });
     d.remove();
-    renderArchive(archiveEl.dataset.c);
-  
+    renderArchive(archive.dataset.c);
+
     etat = "pioche";
     verifierVictoire();
     attenteAction = false;
-  });
-
+  };
 });
 
 /* =====================================================
@@ -404,7 +381,6 @@ document.getElementById("defausser").onclick = () => {
         if(vals.includes(2) && vals.includes(5)){
             sel.forEach(c => c.remove());
 
-            /*
             // Pioche automatique de 2 cartes max
             const maxPioche = Math.min(2, 7 - centre.children.length);
             for(let i=0; i<maxPioche; i++){
@@ -412,7 +388,6 @@ document.getElementById("defausser").onclick = () => {
                     centre.appendChild(creerCarteHTML(pioche.pop()));
                 }
             }
-            */
 
             etat = "action";       // attente action utilisateur
             attenteAction = true;   // empêche re-pioche immédiate
@@ -452,67 +427,20 @@ document.getElementById("defausser").onclick = () => {
 
     // ===== 10 + Roi =====
     if(v[0] === 10 && v[1] === 13){
-    
-        // === 1. Récupération des cartes présentes en Zone Centrale ===
-        const cartesCentre = [...centre.querySelectorAll(".carte")].map(c => ({
-            valeur: +c.dataset.valeur,
-            label: c.dataset.label,
-            couleur: c.dataset.couleur
-        }));
-    
-        // Nettoyage visuel Zone Centrale + cartes sélectionnées
+        // Vider la Zone Centrale et retirer les cartes sélectionnées
         centre.innerHTML = "";
         sel.forEach(c => c.remove());
-    
-        // === 2. Mélange des cartes issues de la Zone Centrale ===
-        const cartesCentreMelangees = melangerTableau(cartesCentre);
-    
-        // === 3. Réintégration contrôlée dans la pioche ===
-        const nbCartesProtegees = Math.min(3, pioche.length);
-    
-        // Cartes protégées en haut de pile (ordre conservé)
-        const cartesProtegees = pioche.slice(-nbCartesProtegees);
-    
-        // Reste de la pioche
-        const restePioche = pioche.slice(0, pioche.length - nbCartesProtegees);
-    
-        let nouvellePioche;
-    
-        if (pioche.length < 3) {
-            // Cas pile < 3 : conserver l’ordre existant puis ajouter les cartes mélangées
-            nouvellePioche = [
-                ...cartesProtegees,
-                ...cartesCentreMelangees
-            ];
-        } else {
-            // Cas normal : mélange du reste + cartes du centre
-            const resteMelange = melangerTableau([
-                ...restePioche,
-                ...cartesCentreMelangees
-            ]);
-    
-            nouvellePioche = [
-                ...resteMelange,
-                ...cartesProtegees
-            ];
-        }
-    
-        // Application de la nouvelle pioche
-        pioche = nouvellePioche;
 
-        /*
-        // === 4. Pioche automatique de 2 cartes max ===
+        // Pioche automatique de 2 cartes max
         const maxPioche = Math.min(2, 7 - centre.children.length);
-        for(let i = 0; i < maxPioche; i++){
+        for(let i=0; i<maxPioche; i++){
             if(pioche.length){
                 centre.appendChild(creerCarteHTML(pioche.pop()));
             }
         }
-        */
-    
-        // === 5. Reprise normale du jeu ===
-        etat = "action";
-        attenteAction = true;
+
+        etat = "action";       // attente de l'action utilisateur
+        attenteAction = true;   // empêche re-pioche immédiate
         return;
     }
 
@@ -599,22 +527,12 @@ btnJoker.onclick = () => {
   if(jokerUtilise && !jokerEnAttente){
       alert("Défaite — Chaos incontrôlé");
       location.reload();
-      return;
   }
-
-  // Vérifier qu'il y a des archives non vides
   const nonVides = couleurs.filter(c=>archives[c].length);
   if(nonVides.length===0) return;
 
-  // Activer le Joker
-  jokerUtilise = true;
-  jokerEnAttente = true;
-
-  // Forcer l'état pour autoriser le clic sur une archive
-  etat = "action";         // ✅ nécessaire pour que archive.onclick fonctionne
-  attenteAction = true;     // ✅ bloque toute autre action du jeu
-
-  // Visuel du bouton Joker
+  jokerUtilise=true;
+  jokerEnAttente=true;
   btnJoker.classList.add("joker-actif");
 };
 
