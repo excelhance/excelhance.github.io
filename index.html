@@ -389,8 +389,8 @@ document.getElementById("defausser").onclick = () => {
         if(vals.includes(2) && vals.includes(5)){
             sel.forEach(c => c.remove());
 
-            etat = "action";       // attente action utilisateur
-            attenteAction = true;   // empêche re-pioche immédiate
+            etat = "pioche";       // attente action utilisateur
+            attenteAction = false;   // empêche re-pioche immédiate
             return;
         }
     }
