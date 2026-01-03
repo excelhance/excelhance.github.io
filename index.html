@@ -517,8 +517,10 @@ function fermerPopup10As(){
 ===================================================== */
 btnJoker.onclick = () => {
   if(jokerUtilise && !jokerEnAttente){
-      alert("❌ Défaite — Chaos incontrôlé");
-      location.reload();
+      //alert("❌ Défaite — Chaos incontrôlé");
+      //location.reload();
+      finDePartie("❌ Défaite — Chaos incontrôlé");
+      return;
   }
   const nonVides = couleurs.filter(c=>archives[c].length);
   if(nonVides.length===0) return;
@@ -529,12 +531,37 @@ btnJoker.onclick = () => {
 };
 
 /* =====================================================
+   FIN D'UNE PARTIE
+===================================================== */
+function finDePartie(message){
+  alert(message);
+
+  // Blocage total du jeu
+  document.body.classList.add("ui-bloquee");
+
+  // Masquer les boutons de jeu
+  const zoneActions = document.getElementById("zone-actions");
+  if(zoneActions){
+    zoneActions.style.display = "none";
+  }
+
+  // Afficher le bouton Rejouer
+  const btnReplay = document.getElementById("rejouer");
+  if(btnReplay){
+    btnReplay.style.display = "block";
+    btnReplay.onclick = () => location.reload();
+  }
+}
+
+/* =====================================================
    CONDITION DE VICTOIRE
 ===================================================== */
 function verifierVictoire(){
   couleurs.forEach(c=>{
       if(archives[c].length===10){
 
+          finDePartie("🏆 Archive stabilisée => VICTOIRE !");
+          /*
           alert("🏆 Archive stabilisée => VICTOIRE !");
 
           // Blocage total du jeu
@@ -547,6 +574,7 @@ function verifierVictoire(){
           const btnReplay = document.getElementById("rejouer");
           btnReplay.style.display = "block";
           btnReplay.onclick = () => location.reload();
+          */
       }
   });
 }
