@@ -523,8 +523,6 @@ function fermerPopup10As(){
 ===================================================== */
 btnJoker.onclick = () => {
   if(jokerUtilise && !jokerEnAttente){
-      //alert("❌ Défaite — Chaos incontrôlé");
-      //location.reload();
       finDePartie("❌ Défaite — Chaos incontrôlé");
       return;
   }
@@ -565,22 +563,7 @@ function finDePartie(message){
 function verifierVictoire(){
   couleurs.forEach(c=>{
       if(archives[c].length===10){
-
           finDePartie("🏆 Archive stabilisée => VICTOIRE !");
-          /*
-          alert("🏆 Archive stabilisée => VICTOIRE !");
-
-          // Blocage total du jeu
-          document.body.classList.add("ui-bloquee");
-
-          // Masquer boutons de jeu
-          document.getElementById("zone-actions").style.display = "none";
-
-          // Afficher bouton Rejouer
-          const btnReplay = document.getElementById("rejouer");
-          btnReplay.style.display = "block";
-          btnReplay.onclick = () => location.reload();
-          */
       }
   });
 }
