@@ -526,8 +526,11 @@ btnJoker.onclick = () => {
   if(nonVides.length===0) return;
 
   jokerUtilise=true;
-  jokerEnAttente=true;
-  btnJoker.classList.add("joker-actif");
+  //jokerEnAttente=true;
+  //btnJoker.classList.add("joker-actif");
+  jokerEnAttente = false;
+  btnJoker.classList.remove("joker-actif");
+  btnJoker.classList.add("joker-utilise");
 };
 
 /* =====================================================
