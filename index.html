@@ -55,7 +55,7 @@ button {
 }
 
 /* Bouton Joker actif/inactif */
-button.joker-actif { pointer-events: none; background:#fff; color:#0f172a; }
+button.joker-actif { background:#fff; color:#0f172a; }
 button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
 
 /* ===== ZONES ===== */
@@ -522,7 +522,6 @@ function fermerPopup10As(){
    JOKER / CHAOS
 ===================================================== */
 btnJoker.onclick = () => {
-  jokerEnAttente = true
   if(jokerUtilise && !jokerEnAttente){
       //alert("❌ Défaite — Chaos incontrôlé");
       //location.reload();
@@ -533,7 +532,7 @@ btnJoker.onclick = () => {
   if(nonVides.length===0) return;
 
   jokerUtilise=true;
-  //jokerEnAttente=true;
+  jokerEnAttente=true;
   btnJoker.classList.add("joker-actif");
 };
 
