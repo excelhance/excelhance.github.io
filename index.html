@@ -158,7 +158,7 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
   opacity: 0.6;
 }
 /* pour bloquer les 3 boutons de jeu une fois la pop-up Victoire affichée */
-body.ui-bloquee *:not(#rejouer) {
+.victoire-ui-bloquee *:not(#rejouer) {
   pointer-events: none;
   opacity: 1;
 }
@@ -540,8 +540,8 @@ btnJoker.onclick = () => {
 function finDePartie(message){
   alert(message);
 
-  // Blocage total du jeu
-  document.body.classList.add("ui-bloquee");
+  // Blocage total du jeu (sans réduire l'opacité)
+  document.body.classList.add("victoire-ui-bloquee");
 
   // Masquer les boutons de jeu
   const zoneActions = document.getElementById("zone-actions");
