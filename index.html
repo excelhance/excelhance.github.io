@@ -285,27 +285,24 @@ btnPioche.onclick = () => {
 ===================================================== */
 document.querySelectorAll(".archive").forEach(archive => {
   archive.addEventListener("click", (e) => {
-
-    const archiveEl = e.currentTarget; // Toujours l’élément .archive cliqué
+    const archiveEl = e.currentTarget;
     const couleur = archiveEl.dataset.c;
     const arch = archives[couleur];
 
-    /* ===============================
-       MODE JOKER – CHAOS
-    =============================== */
-    if (jokerEnAttente) {
+    // --- Gestion du Joker ---
+    if(jokerEnAttente){
+      if(!arch || arch.length === 0) return;
 
-      if (!arch || arch.length === 0) return;
-
-      // 🔒 Consommation immédiate du Joker
+      // Bloquer le Joker
       jokerEnAttente = false;
-      attenteAction = false;
+      jokerUtilise = true;
       etat = "pioche";
+      attenteAction = false;
 
-      // --- Nettoyage Zone Centrale ---
+      // Vider Zone Centrale
       centre.innerHTML = "";
 
-      // --- Reconstruction pioche ---
+      // Mélanger et reconstruire pioche
       const nbProtegees = Math.min(3, pioche.length);
       const cartesProtegees = pioche.slice(-nbProtegees);
       const restePioche = pioche.slice(0, pioche.length - nbProtegees);
@@ -315,12 +312,12 @@ document.querySelectorAll(".archive").forEach(archive => {
         ? [...cartesProtegees, ...cartesArchive]
         : [...melangerTableau([...restePioche, ...cartesArchive]), ...cartesProtegees];
 
-      // --- Vider archive et rafraîchir affichage ---
+      // Vider l'archive et rafraîchir affichage
       archives[couleur] = [];
       renderArchive(couleur);
 
-      // --- Marqueur visuel Joker ---
-      if (!archiveEl.querySelector(".joker-marqueur")) {
+      // Marqueur Joker
+      if(!archiveEl.querySelector(".joker-marqueur")){
         const marqueur = document.createElement("div");
         marqueur.className = "joker-marqueur";
         marqueur.textContent = "🃏";
@@ -330,7 +327,7 @@ document.querySelectorAll(".archive").forEach(archive => {
         archiveEl.querySelector("h3").appendChild(marqueur);
       }
 
-      // --- Bouton Joker état utilisé ---
+      // Bouton Joker visuel
       btnJoker.classList.remove("joker-actif");
       btnJoker.classList.add("joker-utilise");
       btnJoker.style.backgroundColor = "#dc2626";
@@ -339,16 +336,14 @@ document.querySelectorAll(".archive").forEach(archive => {
       return;
     }
 
-    /* ===============================
-       MODE NORMAL – CLASSEMENT
-    =============================== */
-    if (etat !== "action") return;
+    // --- Classement normal ---
+    if(etat !== "action") return;
 
     const sel = document.querySelectorAll(".carte.selectionnee");
-    if (sel.length !== 1) return;
+    if(sel.length !== 1) return;
 
     const carte = sel[0];
-    if (carte.dataset.couleur !== couleur) return;
+    if(carte.dataset.couleur !== couleur) return;
 
     archives[couleur].push({
       valeur: +carte.dataset.valeur,
@@ -362,9 +357,9 @@ document.querySelectorAll(".archive").forEach(archive => {
     etat = "pioche";
     attenteAction = false;
     verifierVictoire();
-
   });
 });
+
 
 /* =====================================================
    RENDU ARCHIVES
