@@ -283,41 +283,38 @@ btnPioche.onclick = () => {
 /* =====================================================
    ARCHIVES
 ===================================================== */
-document.querySelectorAll(".archive").forEach(archive => {
-  archive.addEventListener("click", (e) => {
-    const archiveEl = e.currentTarget;
+document.querySelectorAll(".archive").forEach(archiveEl => {
+  archiveEl.addEventListener("click", (e) => {
     const couleur = archiveEl.dataset.c;
     const arch = archives[couleur];
 
     // --- Gestion du Joker ---
-    if(jokerEnAttente){
-      if(!arch || arch.length === 0) return;
+    if (jokerEnAttente) {
+      if (!arch || arch.length === 0) return;
 
-      // Bloquer le Joker
-      jokerEnAttente = false;
-      jokerUtilise = true;
-      etat = "pioche";
-      attenteAction = false;
-
-      // Vider Zone Centrale
-      centre.innerHTML = "";
-
-      // Mélanger et reconstruire pioche
-      const nbProtegees = Math.min(3, pioche.length);
-      const cartesProtegees = pioche.slice(-nbProtegees);
-      const restePioche = pioche.slice(0, pioche.length - nbProtegees);
+      // 1️⃣ Mélanger les cartes de l'archive
       const cartesArchive = melangerTableau([...arch]);
 
-      pioche = (pioche.length < 3)
-        ? [...cartesProtegees, ...cartesArchive]
-        : [...melangerTableau([...restePioche, ...cartesArchive]), ...cartesProtegees];
-
-      // Vider l'archive et rafraîchir affichage
+      // 2️⃣ Vider l'archive
       archives[couleur] = [];
       renderArchive(couleur);
 
-      // Marqueur Joker
-      if(!archiveEl.querySelector(".joker-marqueur")){
+      // 3️⃣ Vider Zone Centrale
+      centre.innerHTML = "";
+
+      // 4️⃣ Construire nouvelle pioche
+      const nbProtegees = Math.min(3, pioche.length);
+      const cartesProtegees = pioche.slice(-nbProtegees);
+      const restePioche = pioche.slice(0, pioche.length - nbProtegees);
+
+      const piocheMix = pioche.length < 3
+        ? [...cartesProtegees, ...cartesArchive]
+        : [...melangerTableau([...restePioche, ...cartesArchive]), ...cartesProtegees];
+
+      pioche = piocheMix;
+
+      // 5️⃣ Marqueur visuel Joker (si pas déjà présent)
+      if (!archiveEl.querySelector(".joker-marqueur")) {
         const marqueur = document.createElement("div");
         marqueur.className = "joker-marqueur";
         marqueur.textContent = "🃏";
@@ -327,7 +324,11 @@ document.querySelectorAll(".archive").forEach(archive => {
         archiveEl.querySelector("h3").appendChild(marqueur);
       }
 
-      // Bouton Joker visuel
+      // 6️⃣ Mettre le bouton Joker en état utilisé
+      jokerUtilise = true;
+      jokerEnAttente = false;
+      etat = "pioche";
+      attenteAction = false;
       btnJoker.classList.remove("joker-actif");
       btnJoker.classList.add("joker-utilise");
       btnJoker.style.backgroundColor = "#dc2626";
@@ -336,14 +337,14 @@ document.querySelectorAll(".archive").forEach(archive => {
       return;
     }
 
-    // --- Classement normal ---
-    if(etat !== "action") return;
+    // --- Classement normal dans l'archive ---
+    if (etat !== "action") return;
 
     const sel = document.querySelectorAll(".carte.selectionnee");
-    if(sel.length !== 1) return;
+    if (sel.length !== 1) return;
 
     const carte = sel[0];
-    if(carte.dataset.couleur !== couleur) return;
+    if (carte.dataset.couleur !== couleur) return;
 
     archives[couleur].push({
       valeur: +carte.dataset.valeur,
@@ -359,7 +360,6 @@ document.querySelectorAll(".archive").forEach(archive => {
     verifierVictoire();
   });
 });
-
 
 /* =====================================================
    RENDU ARCHIVES
