@@ -283,82 +283,62 @@ btnPioche.onclick = () => {
 /* =====================================================
    ARCHIVES
 ===================================================== */
-document.querySelectorAll(".archive").forEach(archiveEl => {
-  archiveEl.addEventListener("click", (e) => {
-    const couleur = archiveEl.dataset.c;
-    const arch = archives[couleur];
+document.querySelectorAll(".archive").forEach(archive => {
+  archive.onclick = () => {
 
-    // --- Gestion du Joker ---
-    if (jokerEnAttente) {
-      if (!arch || arch.length === 0) return;
+    // Gestion du Chaos (Joker en attente)
+    if(jokerEnAttente){
+      const arch = archives[archive.dataset.c];
+      if(arch.length === 0) return;
 
-      // 1️⃣ Mélanger les cartes de l'archive
-      const cartesArchive = melangerTableau([...arch]);
+      // Vider l'archive choisie et remettre ses cartes dans la pioche
+      pioche.push(...arch);
+      archives[archive.dataset.c] = [];
+      renderArchive(archive.dataset.c);
 
-      // 2️⃣ Vider l'archive
-      archives[couleur] = [];
-      renderArchive(couleur);
-
-      // 3️⃣ Vider Zone Centrale
-      centre.innerHTML = "";
-
-      // 4️⃣ Construire nouvelle pioche
-      const nbProtegees = Math.min(3, pioche.length);
-      const cartesProtegees = pioche.slice(-nbProtegees);
-      const restePioche = pioche.slice(0, pioche.length - nbProtegees);
-
-      const piocheMix = pioche.length < 3
-        ? [...cartesProtegees, ...cartesArchive]
-        : [...melangerTableau([...restePioche, ...cartesArchive]), ...cartesProtegees];
-
-      pioche = piocheMix;
-
-      // 5️⃣ Marqueur visuel Joker (si pas déjà présent)
-      if (!archiveEl.querySelector(".joker-marqueur")) {
-        const marqueur = document.createElement("div");
-        marqueur.className = "joker-marqueur";
-        marqueur.textContent = "🃏";
-        marqueur.style.position = "absolute";
-        marqueur.style.top = "4px";
-        marqueur.style.right = "4px";
-        archiveEl.querySelector("h3").appendChild(marqueur);
+      // Vider la Zone Centrale
+      while(centre.firstChild){
+        centre.removeChild(centre.firstChild);
       }
 
-      // 6️⃣ Mettre le bouton Joker en état utilisé
-      jokerUtilise = true;
-      jokerEnAttente = false;
-      etat = "pioche";
-      attenteAction = false;
-      btnJoker.classList.remove("joker-actif");
-      btnJoker.classList.add("joker-utilise");
-      btnJoker.style.backgroundColor = "#dc2626";
+      // Marqueur visuel Joker (au-dessus du titre, sans décaler l'icône)
+      const marqueur = document.createElement("div");
+      marqueur.className = "joker-marqueur";
+      marqueur.textContent = "🃏";
+      marqueur.style.position = "absolute";
+      marqueur.style.top = "4px";
+      marqueur.style.right = "4px";
+      archive.querySelector("h3").appendChild(marqueur);
+
+      // Changer visuel du bouton Joker
+      const btnJoker = document.getElementById("joker");
+      btnJoker.style.backgroundColor = "#dc2626"; // rouge léger
       btnJoker.style.color = "#fff";
 
+      jokerEnAttente = false;
+      attenteAction = false;
       return;
     }
 
-    // --- Classement normal dans l'archive ---
-    if (etat !== "action") return;
+    // Classement d'une carte dans l'archive
+    if(etat !== "action") return;
+    const sel = [...document.querySelectorAll(".carte.selectionnee")];
+    if(sel.length !== 1) return;
+    const d = sel[0];
+    if(d.dataset.couleur !== archive.dataset.c) return;
 
-    const sel = document.querySelectorAll(".carte.selectionnee");
-    if (sel.length !== 1) return;
-
-    const carte = sel[0];
-    if (carte.dataset.couleur !== couleur) return;
-
-    archives[couleur].push({
-      valeur: +carte.dataset.valeur,
-      label: carte.dataset.label,
-      couleur: carte.dataset.couleur
+    archives[archive.dataset.c].push({
+      valeur: +d.dataset.valeur,
+      label: d.dataset.label,
+      couleur: d.dataset.couleur
     });
-
-    carte.remove();
-    renderArchive(couleur);
+    d.remove();
+    renderArchive(archive.dataset.c);
 
     etat = "pioche";
-    attenteAction = false;
     verifierVictoire();
-  });
+    attenteAction = false;
+  };
 });
 
 /* =====================================================
