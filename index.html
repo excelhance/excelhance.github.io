@@ -267,7 +267,8 @@ btnPioche.onclick = () => {
       premierePioche = false;
   } else if(attenteAction && sel.length===0 && !jokerEnAttente){
       // Re-pioche volontaire => pénalité
-      confirmJeu("Confirmer repioche ? (⚠️ 3 cartes seront piochées)", reponse => {
+      confirmJeu("Confirmer repioche ? (⚠️ 3 cartes seront piochées au lieu de 2)", reponse => {
+      document.body.classList.add("ui-bloquee"); // ⚠️ important
       if(reponse=false){
           etat="action";
           attenteAction = true;
@@ -317,6 +318,9 @@ function confirmJeu(message, callback){
     modal.style.display = "none";
     callback(false);
   };
+
+  // Blocage total du jeu
+  document.body.classList.add("ui-bloquee");
 }
 
 /* =====================================================
