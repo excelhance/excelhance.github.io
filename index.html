@@ -593,35 +593,45 @@ function checkJeu(){
    CONDITIONS DE DEFAITE
 ===================================================== */
 function verifierDefaite(){
-
   // 1️⃣ Pioche vide
   const piocheVide = pioche.length === 0;
 
-  // 2️⃣ Aucune archive complète
-  const aucuneArchiveComplete = !couleurs.some(
-    c => archives[c].length === 10
-  );
+  // 2️⃣ Zone Centrale contenant au moins une carte
+  const zoneCentraleNonVide = centre.children.length > 0;
 
-  // 3️⃣ Actions possibles ?
-  const cartes = [...document.querySelectorAll(".carte")];
+  // 3️⃣ Aucune archive complète
+  const aucuneArchiveComplete = !couleurs.some(c => archives[c].length === 10);
 
-  // ➜ Classement possible
-  const classementPossible = cartes.some(c => {
-    const couleur = c.dataset.couleur;
-    return couleur && archives[couleur].length < 10;
-  });
+  // 4️⃣ Vérifie si au moins une action de défausse est possible dans la Zone Centrale
+  const defaussePossible = (() => {
+  const cartes = [...centre.children];
+  const valeurs = cartes.map(c => +c.dataset.valeur).sort((a,b)=>a-b);
 
-  // ➜ Défausse possible (au moins 2 cartes de même valeur)
-  const valeurs = cartes.map(c => c.dataset.valeur);
-  const defaussePossible = valeurs.some(
-    v => valeurs.filter(x => x === v).length >= 2
-  );
+  // ✅ 1. Paires de même valeur
+  const paire = valeurs.some(v => valeurs.filter(x => x === v).length >= 2);
+  if(paire) return true;
 
-  const aucuneActionPossible = !classementPossible && !defaussePossible;
+  // ✅ 2. Combinaison 2 + 5 (+ optionnellement 1 carte supplémentaire)
+  if(valeurs.includes(2) && valeurs.includes(5) && (cartes.length >= 2 && cartes.length <= 3)) return true;
 
-  // 4️⃣ Défaite
-  if (piocheVide && aucuneActionPossible && aucuneArchiveComplete) {
-    finDePartie("❌ Défaite — Pioche vide et plus aucune action possible");
+  // ✅ 3. Combinaison 6 + 9
+  if(valeurs.includes(6) && valeurs.includes(9) && cartes.length >= 2) return true;
+
+  // ✅ 4. Combinaison 10 + Dame (12)
+  if(valeurs.includes(10) && valeurs.includes(12) && jokerUtilise) return true;
+
+  // ✅ 5. Combinaison 10 + Roi (13)
+  if(valeurs.includes(10) && valeurs.includes(13) && cartes.length >= 2) return true;
+
+  // ✅ 6. Combinaison 10 + As (1)
+  if(valeurs.includes(1) && valeurs.includes(10) && cartes.length >= 2) return true;
+
+  return false; // aucune action possible
+})();
+  
+  // 5️⃣ Défaite si toutes les conditions sont réunies
+  if(piocheVide && zoneCentraleNonVide && !defaussePossible && aucuneArchiveComplete && (etat === "pioche" || etat === "repioche")){
+      finDePartie("❌ Défaite — Pioche vide et plus aucune action possible");
   }
 }
 
