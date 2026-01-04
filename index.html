@@ -261,52 +261,59 @@ function creerCarteHTML(carte, interactive=true){
    PIOCHE + RE-POCHE
 ===================================================== */
 btnPioche.onclick = () => {
+
   const sel = [...document.querySelectorAll(".carte.selectionnee")];
-  const premierePiocheAvantClic = premierePioche;
 
-  let cartesADeposer;
-  if(premierePioche){
-      cartesADeposer = 2;
-      premierePioche = false;
-  } else if(attenteAction && sel.length===0 && !jokerEnAttente){
-      // Re-pioche volontaire => pénalité
-    document.getElementById("zone-actions").classList.add("ui-bloquee"); // ⚠️ important  
-    confirmJeu("Confirmer repioche ? (⚠️ 3 cartes seront piochées au lieu de 2)", reponse => {
-    document.getElementById("zone-actions").classList.remove("ui-bloquee"); // ⚠️ important  
-      if(!reponse){
-         cartesADeposer = 0;
-      } else {cartesADeposer = 3;}
-      );
-      
-  } else {
-      // Pioche standard ou contrainte
-      cartesADeposer = 2;
-  }
+  // ===== Re-pioche volontaire avec confirmation =====
+  if (!premierePioche && attenteAction && sel.length === 0 && !jokerEnAttente) {
 
-  if(centre.children.length + cartesADeposer > 7){
-      alert("Zone Centrale saturée, pioche impossible");
-      return;
-  }
+    document.getElementById("zone-actions").classList.add("ui-bloquee");
 
-  for(let i=0;i<cartesADeposer;i++){
-      if(pioche.length && centre.children.length<7){
-          const c = creerCarteHTML(pioche.pop());
-          //if(!premierePiocheAvantClic && attenteAction && sel.length===0 && !jokerEnAttente){
-              c.classList.add("repioche");
-          //}
-          centre.appendChild(c);
+    confirmJeu(
+      "Confirmer repioche ? (⚠️ 3 cartes seront piochées au lieu de 2)",
+      reponse => {
+
+        document.getElementById("zone-actions").classList.remove("ui-bloquee");
+
+        if (!reponse) {
+          etat = "pioche";
+          attenteAction = false;
+          return;
+        }
+
+        piocherCartes(3);
       }
+    );
+
+    return; // ⛔ on sort IMPÉRATIVEMENT
   }
 
-  if(cartesADeposer = 0){
-    etat = "pioche"
-    attenteAction = false;}
-  else{
-    etat="action"
-    attenteAction = true;}
-  )
-  checkJeu(); // check d'une victoire ou d'une défaite
+  // ===== Pioche standard =====
+  const nb = premierePioche ? 2 : 2;
+  premierePioche = false;
+  piocherCartes(nb);
 };
+
+// ----------------------------------------------------
+function piocherCartes(nb){
+  if (centre.children.length + nb > 7) {
+    alert("Zone Centrale saturée, pioche impossible");
+    return;
+  }
+
+  for (let i = 0; i < nb; i++) {
+    if (pioche.length && centre.children.length < 7) {
+      const c = creerCarteHTML(pioche.pop());
+      c.classList.add("repioche");
+      centre.appendChild(c);
+    }
+  }
+
+  etat = "action";
+  attenteAction = true;
+  checkJeu();
+}
+// ----------------------------------------------------
 
 /* =====================================================
    POP-UP DE CONFIRMATION DE CERTAINES ACTIONS
