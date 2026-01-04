@@ -385,7 +385,7 @@ document.getElementById("defausser").onclick = () => {
 
     // ===== Même valeur =====
     // Détection d'au moins une paire
-    const paireExiste = v.some((v, i) => valeurs.indexOf(v) !== i);
+    const paireExiste = v.some((v, i) => v.indexOf(v) !== i);
 
     if (sel.length > 2 && paireExiste) {
        alerte("⚠️ Trop de cartes sélectionnées (max 2)");
