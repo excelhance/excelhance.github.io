@@ -597,7 +597,7 @@ function verifierDefaite(){
   const piocheVide = pioche.length === 0;
 
   // 2️⃣ Zone Centrale contenant au moins une carte
-  const zoneCentraleNonVide = centre.children.length > 0;
+  //const zoneCentraleNonVide = centre.children.length > 0;
 
   // 3️⃣ Aucune archive complète
   const aucuneArchiveComplete = !couleurs.some(c => archives[c].length === 10);
@@ -608,23 +608,23 @@ function verifierDefaite(){
   const valeurs = cartes.map(c => +c.dataset.valeur).sort((a,b)=>a-b);
 
   // ✅ 1. Paires de même valeur
-  const paire = valeurs.some(v => valeurs.filter(x => x === v).length >= 2);
+  const paire = valeurs.some(v => valeurs.filter(x => x === v).length = 2);
   if(paire) return true;
 
   // ✅ 2. Combinaison 2 + 5 (+ optionnellement 1 carte supplémentaire)
-  if(valeurs.includes(2) && valeurs.includes(5) && (cartes.length >= 2 && cartes.length <= 3)) return true;
+  if(valeurs.includes(2) && valeurs.includes(5)) return true;
 
   // ✅ 3. Combinaison 6 + 9
-  if(valeurs.includes(6) && valeurs.includes(9) && cartes.length >= 2) return true;
+  if(valeurs.includes(6) && valeurs.includes(9)) return true;
 
   // ✅ 4. Combinaison 10 + Dame (12)
-  if(valeurs.includes(10) && valeurs.includes(12) && jokerUtilise) return true;
+  if(valeurs.includes(10) && valeurs.includes(12)) return true;
 
   // ✅ 5. Combinaison 10 + Roi (13)
-  if(valeurs.includes(10) && valeurs.includes(13) && cartes.length >= 2) return true;
+  if(valeurs.includes(10) && valeurs.includes(13)) return true;
 
   // ✅ 6. Combinaison 10 + As (1)
-  if(valeurs.includes(1) && valeurs.includes(10) && cartes.length >= 2) return true;
+  if(valeurs.includes(1) && valeurs.includes(10)) return true;
 
   return false; // aucune action possible
 })();
