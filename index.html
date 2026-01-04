@@ -284,6 +284,7 @@ btnPioche.onclick = () => {
 
   etat="action";
   attenteAction = true;
+  verifierDefaite();
 };
 
 /* =====================================================
@@ -322,6 +323,7 @@ document.querySelectorAll(".archive").forEach(archive => {
       btnJoker.style.color = "#fff";
 
       jokerEnAttente = false;
+      verifierDefaite();
       attenteAction = false;
       btnJoker.classList.remove("joker-actif");
       btnJoker.classList.add("joker-utilise");
@@ -345,6 +347,7 @@ document.querySelectorAll(".archive").forEach(archive => {
 
     etat = "pioche";
     verifierVictoire();
+    verifierDefaite();
     attenteAction = false;
   };
 });
@@ -385,21 +388,21 @@ document.getElementById("defausser").onclick = () => {
 
     // ===== Même valeur =====
     if (v[0] === v[1] && sel.length === 2) {
-       sel.forEach(c => c.remove());
-       etat = "pioche";
-       attenteAction = false;  // pas de re-pioche automatique
-       return;
+      sel.forEach(c => c.remove());
+      etat = "pioche";
+      verifierDefaite();
+      attenteAction = false;  // pas de re-pioche automatique
+      return;
     }
 
-    // ===== 2 + 5 + 1 carte supplémentaire =====
-    if(v.includes(2) && v.includes(5) && sel.length >=2 && sel.length <=3){
-        //if(v.includes(2) && v.includes(5)){
+    // ===== 2 + 5 + 1 carte supplémentaire (optionnelle) =====
+    if(v.includes(2) && v.includes(5) && [2,3].includes(sel.length)){
             sel.forEach(c => c.remove());
 
             etat = "pioche";       // attente action utilisateur
+            verifierDefaite();
             attenteAction = false;   // empêche re-pioche immédiate
             return;
-        //}
     }
     if (sel.length > 2) {
        alert("⚠️ Trop de cartes sélectionnées (max 2 identiques)");
@@ -410,6 +413,7 @@ document.getElementById("defausser").onclick = () => {
     if(v[0] === 6 && v[1] === 9 && sel.length === 2){
         sel.forEach(c => c.remove());  // Défausse des cartes
 
+        verifierDefaite();
         attenteAction = false;   // empêche re-pioche immédiate
         return;  // rejouer immédiatement, aucune pioche
     }
@@ -434,6 +438,7 @@ document.getElementById("defausser").onclick = () => {
         sel.forEach(c => c.remove());
     
         etat = "pioche";
+        verifierDefaite();
         attenteAction = false; // pioche standard ensuite
         return;
     }
@@ -445,6 +450,7 @@ document.getElementById("defausser").onclick = () => {
         sel.forEach(c => c.remove());
 
         etat = "pioche";       // attente de l'action utilisateur
+        verifierDefaite();
         attenteAction = false;   // empêche re-pioche immédiate
         return;
     }
@@ -522,6 +528,7 @@ function fermerPopup10As(){
 
   // Reprise normale du jeu
   etat = "pioche";
+  verifierDefaite();
   attenteAction = false;
 }
 
