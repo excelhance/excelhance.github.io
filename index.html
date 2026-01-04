@@ -409,6 +409,8 @@ document.getElementById("defausser").onclick = () => {
     // ===== 6 + 9 => défausser les 2 cartes et rejouer SANS repiocher =====
     if(v[0] === 6 && v[1] === 9 && sel.length === 2){
         sel.forEach(c => c.remove());  // Défausse des cartes
+
+        attenteAction = false;   // empêche re-pioche immédiate
         return;  // rejouer immédiatement, aucune pioche
     }
 
