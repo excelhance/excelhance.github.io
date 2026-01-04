@@ -54,7 +54,8 @@ button {
   cursor: pointer; /* boutons cliquables */
 }
 
-/* Bouton Joker actif/inactif */
+/* Bouton Joker inactif/actif/utilisé */
+button.joker-inactif { color:#FF0000; }
 button.joker-actif { background:#fff; color:#0f172a; }
 button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
 
@@ -227,6 +228,8 @@ const archives = { "♠":[], "♥":[], "♦":[], "♣":[] };
 const couleurs = ["♠","♥","♦","♣"];
 const valeurs = [["A",1],["2",2],["3",3],["4",4],["5",5],["6",6],["7",7],["8",8],["9",9],["10",10],["D",12],["R",13]];
 
+btnJoker.classList.add("joker-inactif")
+  
 /* =====================================================
    INITIALISATION PAQUET
 ===================================================== */
