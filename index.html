@@ -391,7 +391,7 @@ document.getElementById("defausser").onclick = () => {
        alerte("⚠️ Trop de cartes sélectionnées (max 2)");
        return;
     }
-    if (sel.length = 2 && toutesIdentiques) {
+    if (sel.length === 2 && toutesIdentiques) {
        sel.forEach(c => c.remove());
        etat = "pioche";
        attenteAction = false;  // pas de re-pioche automatique
