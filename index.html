@@ -264,6 +264,11 @@ btnPioche.onclick = () => {
 
   const sel = [...document.querySelectorAll(".carte.selectionnee")];
 
+  if (centre.children.length + 2 > 7) {
+    alert("Zone Centrale saturée, pioche impossible");
+    return;
+  }
+
   // ===== Re-pioche volontaire avec confirmation =====
   if (!premierePioche && attenteAction && sel.length === 0 && !jokerEnAttente) {
 
