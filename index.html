@@ -277,7 +277,10 @@ btnPioche.onclick = () => {
     confirmJeu(
       "Confirmer repioche ? (⚠️ 3 cartes seront piochées au lieu de 2)",
       reponse => {
-
+        if (centre.children.length + 3 > 7) {
+          alert("Zone Centrale saturée, pioche impossible");
+          return;
+        }
         document.getElementById("zone-actions").classList.remove("ui-bloquee");
 
         if (!reponse) {
