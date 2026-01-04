@@ -273,7 +273,7 @@ btnPioche.onclick = () => {
     document.getElementById("zone-actions").classList.add("ui-bloquee"); // ⚠️ important  
     confirmJeu("Confirmer repioche ? (⚠️ 3 cartes seront piochées au lieu de 2)", reponse => {
     document.getElementById("zone-actions").classList.remove("ui-bloquee"); // ⚠️ important  
-      if(reponse=false){
+      if(!reponse){
           etat="action";
           attenteAction = true;
           return;
