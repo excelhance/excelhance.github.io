@@ -270,8 +270,9 @@ btnPioche.onclick = () => {
       premierePioche = false;
   } else if(attenteAction && sel.length===0 && !jokerEnAttente){
       // Re-pioche volontaire => pénalité
-      confirmJeu("Confirmer repioche ? (⚠️ 3 cartes seront piochées au lieu de 2)", reponse => {
-      document.getElementById("zone-actions").classList.remove("ui-bloquee"); // ⚠️ important
+    document.getElementById("zone-actions").classList.add("ui-bloquee"); // ⚠️ important  
+    confirmJeu("Confirmer repioche ? (⚠️ 3 cartes seront piochées au lieu de 2)", reponse => {
+    document.getElementById("zone-actions").classList.remove("ui-bloquee"); // ⚠️ important  
       if(reponse=false){
           etat="action";
           attenteAction = true;
@@ -321,9 +322,6 @@ function confirmJeu(message, callback){
     modal.style.display = "none";
     callback(false);
   };
-
-  // Blocage interfaces cliquables
-  document.getElementById("zone-actions").classList.add("ui-bloquee");
 }
 
 /* =====================================================
