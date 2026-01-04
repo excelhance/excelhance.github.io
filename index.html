@@ -284,7 +284,7 @@ btnPioche.onclick = () => {
 
   etat="action";
   attenteAction = true;
-  verifierDefaite();
+  checkJeu(); // check d'une victoire ou d'une défaite
 };
 
 /* =====================================================
@@ -323,10 +323,10 @@ document.querySelectorAll(".archive").forEach(archive => {
       btnJoker.style.color = "#fff";
 
       jokerEnAttente = false;
-      verifierDefaite();
-      attenteAction = false;
       btnJoker.classList.remove("joker-actif");
       btnJoker.classList.add("joker-utilise");
+      checkJeu(); // check d'une victoire ou d'une défaite
+      attenteAction = false;
       return;
     }
 
@@ -346,8 +346,7 @@ document.querySelectorAll(".archive").forEach(archive => {
     renderArchive(archive.dataset.c);
 
     etat = "pioche";
-    verifierVictoire();
-    verifierDefaite();
+    checkJeu(); // check d'une victoire ou d'une défaite
     attenteAction = false;
   };
 });
@@ -390,8 +389,8 @@ document.getElementById("defausser").onclick = () => {
     if (v[0] === v[1] && sel.length === 2) {
       sel.forEach(c => c.remove());
       etat = "pioche";
-      verifierDefaite();
       attenteAction = false;  // pas de re-pioche automatique
+      checkJeu(); // check d'une victoire ou d'une défaite
       return;
     }
 
@@ -400,8 +399,8 @@ document.getElementById("defausser").onclick = () => {
             sel.forEach(c => c.remove());
 
             etat = "pioche";       // attente action utilisateur
-            verifierDefaite();
             attenteAction = false;   // empêche re-pioche immédiate
+            checkJeu(); // check d'une victoire ou d'une défaite
             return;
     }
     if (sel.length > 2) {
@@ -413,8 +412,8 @@ document.getElementById("defausser").onclick = () => {
     if(v[0] === 6 && v[1] === 9 && sel.length === 2){
         sel.forEach(c => c.remove());  // Défausse des cartes
 
-        verifierDefaite();
         attenteAction = false;   // empêche re-pioche immédiate
+        checkJeu(); // check d'une victoire ou d'une défaite
         return;  // rejouer immédiatement, aucune pioche
     }
 
@@ -438,8 +437,8 @@ document.getElementById("defausser").onclick = () => {
         sel.forEach(c => c.remove());
     
         etat = "pioche";
-        verifierDefaite();
         attenteAction = false; // pioche standard ensuite
+        checkJeu(); // check d'une victoire ou d'une défaite
         return;
     }
 
@@ -450,8 +449,8 @@ document.getElementById("defausser").onclick = () => {
         sel.forEach(c => c.remove());
 
         etat = "pioche";       // attente de l'action utilisateur
-        verifierDefaite();
         attenteAction = false;   // empêche re-pioche immédiate
+        checkJeu(); // check d'une victoire ou d'une défaite
         return;
     }
 
@@ -528,8 +527,8 @@ function fermerPopup10As(){
 
   // Reprise normale du jeu
   etat = "pioche";
-  verifierDefaite();
   attenteAction = false;
+  checkJeu(); // check d'une victoire ou d'une défaite
 }
 
 /* =====================================================
@@ -542,6 +541,7 @@ btnJoker.onclick = () => {
     jokerUtilise= false;
     jokerEnAttente = false;
     btnJoker.classList.remove("joker-actif");
+    checkJeu(); // check d'une victoire ou d'une défaite
     return;
   }
   
@@ -584,6 +584,11 @@ function finDePartie(message){
   }
 }
 
+/* =====================================================*/
+function checkJeu(){
+    verifierDefaite();
+    verifierVictoire();
+}
 /* =====================================================
    CONDITIONS DE DEFAITE
 ===================================================== */
