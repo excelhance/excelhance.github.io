@@ -298,8 +298,13 @@ btnPioche.onclick = () => {
       }
   }
 
-  etat="action";
-  attenteAction = true;
+  if(cartesADeposer = 0){
+    etat = "pioche"
+    attenteAction = false;}
+  else{
+    etat="action"
+    attenteAction = true;}
+  )
   checkJeu(); // check d'une victoire ou d'une défaite
 };
 
