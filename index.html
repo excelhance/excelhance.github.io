@@ -388,6 +388,10 @@ document.getElementById("defausser").onclick = () => {
         attenteAction = false;  // pas de re-pioche automatique
         return;
     }
+    if(v[0] === v[1] && sel.length > 2){
+        alerte("⚠️ Trop de cartes sélectionnées (règle => 2 cartes de même valeur)");
+        return;
+    }
 
     // ===== 2 + 5 + 1 carte supplémentaire =====
     if(sel.length === 3){
