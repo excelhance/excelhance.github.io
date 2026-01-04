@@ -578,6 +578,42 @@ function finDePartie(message){
 }
 
 /* =====================================================
+   CONDITIONS DE DEFAITE
+===================================================== */
+function verifierDefaite(){
+
+  // 1️⃣ Pioche vide
+  const piocheVide = pioche.length === 0;
+
+  // 2️⃣ Aucune archive complète
+  const aucuneArchiveComplete = !couleurs.some(
+    c => archives[c].length === 10
+  );
+
+  // 3️⃣ Actions possibles ?
+  const cartes = [...document.querySelectorAll(".carte")];
+
+  // ➜ Classement possible
+  const classementPossible = cartes.some(c => {
+    const couleur = c.dataset.couleur;
+    return couleur && archives[couleur].length < 10;
+  });
+
+  // ➜ Défausse possible (au moins 2 cartes de même valeur)
+  const valeurs = cartes.map(c => c.dataset.valeur);
+  const defaussePossible = valeurs.some(
+    v => valeurs.filter(x => x === v).length >= 2
+  );
+
+  const aucuneActionPossible = !classementPossible && !defaussePossible;
+
+  // 4️⃣ Défaite
+  if (piocheVide && aucuneActionPossible && aucuneArchiveComplete) {
+    finDePartie("❌ Défaite — Pioche vide et plus aucune action possible");
+  }
+}
+
+/* =====================================================
    CONDITION DE VICTOIRE
 ===================================================== */
 function verifierVictoire(){
