@@ -384,14 +384,14 @@ document.getElementById("defausser").onclick = () => {
     const v = sel.map(c => +c.dataset.valeur).sort((a,b) => a-b);
 
     // ===== Même valeur =====
-    const valeurs = sel.map(c => c.dataset.valeur);
-    const toutesIdentiques = valeurs.every(v => v === valeurs[0]);
+    // Détection d'au moins une paire
+    const paireExiste = v.some((v, i) => valeurs.indexOf(v) !== i);
 
-    if (sel.length > 2 && toutesIdentiques) {
+    if (sel.length > 2 && paireExiste) {
        alerte("⚠️ Trop de cartes sélectionnées (max 2)");
        return;
     }
-    if (sel.length === 2 && toutesIdentiques) {
+    if (sel.length === 2 && paireExiste) {
        sel.forEach(c => c.remove());
        etat = "pioche";
        attenteAction = false;  // pas de re-pioche automatique
