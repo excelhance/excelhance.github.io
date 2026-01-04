@@ -608,7 +608,7 @@ function verifierDefaite(){
   const valeurs = cartes.map(c => +c.dataset.valeur).sort((a,b)=>a-b);
 
   // ✅ 1. Paires de même valeur
-  const paire = valeurs.some(v => valeurs.filter(x => x === v).length = 2);
+  const paire = valeurs.some(v => valeurs.filter(x => x === v).length === 2);
   if(paire) return true;
 
   // ✅ 2. Combinaison 2 + 5 (+ optionnellement 1 carte supplémentaire)
@@ -630,7 +630,7 @@ function verifierDefaite(){
 })();
   
   // 5️⃣ Défaite si toutes les conditions sont réunies
-  if(piocheVide && zoneCentraleNonVide && !defaussePossible && aucuneArchiveComplete && (etat === "pioche" || etat === "repioche")){
+  if(piocheVide && !defaussePossible && aucuneArchiveComplete && etat === "pioche" ){
       finDePartie("❌ Défaite — Pioche vide et plus aucune action possible");
   }
 }
