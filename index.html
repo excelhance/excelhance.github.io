@@ -56,7 +56,7 @@ button {
 
 /* Bouton Joker inactif/actif/utilisé */
 button.joker-inactif { color:#FF0000; }
-button.joker-actif { background:#fff; color:#0f172a; }
+button.joker-actif { background:#fff; color:#FF0000; }
 button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
 
 /* ===== ZONES ===== */
@@ -271,7 +271,7 @@ btnPioche.onclick = () => {
   } else if(attenteAction && sel.length===0 && !jokerEnAttente){
       // Re-pioche volontaire => pénalité
       confirmJeu("Confirmer repioche ? (⚠️ 3 cartes seront piochées au lieu de 2)", reponse => {
-      document.body.classList.add("ui-bloquee"); // ⚠️ important
+      document.getElementById("zone-actions").classList.remove("ui-bloquee"); // ⚠️ important
       if(reponse=false){
           etat="action";
           attenteAction = true;
@@ -322,8 +322,8 @@ function confirmJeu(message, callback){
     callback(false);
   };
 
-  // Blocage total du jeu
-  document.body.classList.add("ui-bloquee");
+  // Blocage interfaces cliquables
+  document.getElementById("zone-actions").classList.add("ui-bloquee");
 }
 
 /* =====================================================
