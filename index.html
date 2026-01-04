@@ -382,7 +382,7 @@ document.getElementById("defausser").onclick = () => {
     const v = sel.map(c => +c.dataset.valeur).sort((a,b) => a-b);
 
     // ===== Même valeur =====
-    if(v[0] === v[1]){
+    if(v[0] === v[1] && sel.length === 2){
         sel.forEach(c => c.remove());
         etat = "pioche";
         attenteAction = false;  // pas de re-pioche automatique
