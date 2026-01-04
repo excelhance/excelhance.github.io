@@ -186,6 +186,12 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
   
 <div id="popup-10as" style="display:none;"></div>
 
+<div id="user-confirmation" style="display:none">
+  <p id="confirmation-message"></p>
+  <button id="btn-oui">Oui</button>
+  <button id="btn-non">Non</button>
+</div>
+
 <div class="zone">
   <div class="zone-title">Zone Centrale</div>
   <div class="cartes" id="centre"></div>
@@ -261,6 +267,13 @@ btnPioche.onclick = () => {
       premierePioche = false;
   } else if(attenteAction && sel.length===0 && !jokerEnAttente){
       // Re-pioche volontaire => pénalité
+      confirmJeu("Confirmer repioche ? (⚠️ 3 cartes seront piochées)", reponse => {
+      if(reponse=false){
+          etat="action";
+          attenteAction = true;
+          return;
+      }
+      });
       cartesADeposer = 3;
   } else {
       // Pioche standard ou contrainte
@@ -286,6 +299,25 @@ btnPioche.onclick = () => {
   attenteAction = true;
   checkJeu(); // check d'une victoire ou d'une défaite
 };
+
+/* =====================================================
+   POP-UP DE CONFIRMATION DE CERTAINES ACTIONS
+===================================================== */
+function confirmJeu(message, callback){
+  const modal = document.getElementById("user-confirmation");
+  document.getElementById("confirmation-message").textContent = message;
+  modal.style.display = "block";
+
+  document.getElementById("btn-oui").onclick = () => {
+    modal.style.display = "none";
+    callback(true);
+  };
+
+  document.getElementById("btn-non").onclick = () => {
+    modal.style.display = "none";
+    callback(false);
+  };
+}
 
 /* =====================================================
    ARCHIVES
