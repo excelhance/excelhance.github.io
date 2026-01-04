@@ -275,9 +275,9 @@ btnPioche.onclick = () => {
     document.getElementById("zone-actions").classList.remove("ui-bloquee"); // ⚠️ important  
       if(!reponse){
          cartesADeposer = 0;
-      }
-      });
-      cartesADeposer = 3;
+      } else {cartesADeposer = 3;}
+      );
+      
   } else {
       // Pioche standard ou contrainte
       cartesADeposer = 2;
