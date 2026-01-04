@@ -392,14 +392,14 @@ document.getElementById("defausser").onclick = () => {
     }
 
     // ===== 2 + 5 + 1 carte supplémentaire =====
-    if(sel.length === 3){
-        if(v.includes(2) && v.includes(5)){
+    if(v.includes(2) && v.includes(5) && sel.length === 3){
+        //if(v.includes(2) && v.includes(5)){
             sel.forEach(c => c.remove());
 
             etat = "pioche";       // attente action utilisateur
             attenteAction = false;   // empêche re-pioche immédiate
             return;
-        }
+        //}
     }
     if (sel.length > 2) {
        alerte("⚠️ Trop de cartes sélectionnées (max 2)");
