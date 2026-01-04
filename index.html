@@ -406,13 +406,13 @@ document.getElementById("defausser").onclick = () => {
     }
 
     // ===== 6 + 9 => défausser les 2 cartes et rejouer SANS repiocher =====
-    if(v[0] === 6 && v[1] === 9){
+    if(v[0] === 6 && v[1] === 9 && sel.length === 2){
         sel.forEach(c => c.remove());  // Défausse des cartes
         return;  // rejouer immédiatement, aucune pioche
     }
 
     // ===== 10 + Dame => retirer un Joker actif =====
-    if(v[0] === 10 && v[1] === 12){
+    if(v[0] === 10 && v[1] === 12 && sel.length === 2){
         if(jokerUtilise){
             // Réinitialisation Joker
             jokerUtilise = false;
@@ -436,7 +436,7 @@ document.getElementById("defausser").onclick = () => {
     }
 
     // ===== 10 + Roi =====
-    if(v[0] === 10 && v[1] === 13){
+    if(v[0] === 10 && v[1] === 13 && sel.length === 2){
         // Vider la Zone Centrale et retirer les cartes sélectionnées
         centre.innerHTML = "";
         sel.forEach(c => c.remove());
@@ -447,7 +447,7 @@ document.getElementById("defausser").onclick = () => {
     }
 
     // ===== 10 + As =====
-    if (v[0] === 1 && v[1] === 10) {
+    if (v[0] === 1 && v[1] === 10 && sel.length === 2){
     
         // Défausse des cartes sélectionnées
         sel.forEach(c => c.remove());
