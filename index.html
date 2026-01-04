@@ -384,15 +384,18 @@ document.getElementById("defausser").onclick = () => {
     const v = sel.map(c => +c.dataset.valeur).sort((a,b) => a-b);
 
     // ===== Même valeur =====
-    if(v[0] === v[1] && sel.length === 2){
-        sel.forEach(c => c.remove());
-        etat = "pioche";
-        attenteAction = false;  // pas de re-pioche automatique
-        return;
+    const valeurs = sel.map(c => c.dataset.valeur);
+    const toutesIdentiques = valeurs.every(v => v === valeurs[0]);
+
+    if (sel.length > 2 && toutesIdentiques) {
+       alerte("⚠️ Trop de cartes sélectionnées (max 2)");
+       return;
     }
-    if(v[0] === v[1] && sel.length > 2){
-        alerte("⚠️ Trop de cartes sélectionnées (règle => 2 cartes de même valeur)");
-        return;
+    if (sel.length = 2 && toutesIdentiques) {
+       sel.forEach(c => c.remove());
+       etat = "pioche";
+       attenteAction = false;  // pas de re-pioche automatique
+       return;
     }
 
     // ===== 2 + 5 + 1 carte supplémentaire =====
