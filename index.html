@@ -529,13 +529,25 @@ function fermerPopup10As(){
    JOKER / CHAOS
 ===================================================== */
 btnJoker.onclick = () => {
+
+  // 🔁 Toggle OFF si le Joker est simplement en attente
+  if (jokerEnAttente) {
+    jokerEnAttente = false;
+    btnJoker.classList.remove("joker-actif");
+    return;
+  }
+  
+  // ❌ Joker déjà consommé → défaite
   if(jokerUtilise && !jokerEnAttente){
       finDePartie("❌ Défaite — Chaos incontrôlé");
       return;
   }
+
+  // ❌ Aucun archive non vide
   const nonVides = couleurs.filter(c=>archives[c].length);
   if(nonVides.length===0) return;
 
+  // ✅ Activation du Joker
   jokerUtilise=true;
   jokerEnAttente=true;
   btnJoker.classList.add("joker-actif");
