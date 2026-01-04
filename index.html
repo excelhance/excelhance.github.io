@@ -384,15 +384,7 @@ document.getElementById("defausser").onclick = () => {
     const v = sel.map(c => +c.dataset.valeur).sort((a,b) => a-b);
 
     // ===== Même valeur =====
-    // Détection d'au moins une paire
-    const valeurs = sel.map(c => c.dataset.valeur);
-    const paireExiste = valeurs.some((v, i) => valeurs.indexOf(v) !== i);
-
-    if (sel.length > 2 && paireExiste) {
-       alerte("⚠️ Trop de cartes sélectionnées (max 2)");
-       return;
-    }
-    if (sel.length === 2 && paireExiste) {
+    if (v[0] === v[1] && sel.length === 2) {
        sel.forEach(c => c.remove());
        etat = "pioche";
        attenteAction = false;  // pas de re-pioche automatique
@@ -401,14 +393,17 @@ document.getElementById("defausser").onclick = () => {
 
     // ===== 2 + 5 + 1 carte supplémentaire =====
     if(sel.length === 3){
-        const vals = sel.map(c => +c.dataset.valeur);
-        if(vals.includes(2) && vals.includes(5)){
+        if(v.includes(2) && v.includes(5)){
             sel.forEach(c => c.remove());
 
             etat = "pioche";       // attente action utilisateur
             attenteAction = false;   // empêche re-pioche immédiate
             return;
         }
+    }
+    if (sel.length > 2) {
+       alerte("⚠️ Trop de cartes sélectionnées (max 2)");
+       return;
     }
 
     // ===== 6 + 9 => défausser les 2 cartes et rejouer SANS repiocher =====
