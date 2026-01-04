@@ -532,6 +532,7 @@ btnJoker.onclick = () => {
 
   // 🔁 Toggle OFF si le Joker est simplement en attente
   if (jokerEnAttente) {
+    jokerUtilise= false;
     jokerEnAttente = false;
     btnJoker.classList.remove("joker-actif");
     return;
