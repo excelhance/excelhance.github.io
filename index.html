@@ -59,16 +59,36 @@ button.joker-inactif { color:#FF0000; }
 button.joker-actif { background:#fff; color:#FF0000; }
 button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
 
-/* ===== ZONES ===== */
-.zone {
-  border:2px dashed #475569;
-  border-radius:12px;
-  padding:10px;
-  margin-bottom:14px;
+/* ===== ZONE CENTRALE – COULEURS DYNAMIQUES ===== */
+.zone-centre-neutre {
+  border-color:#475569;
+}
+.zone-centre-neutre .zone-title {
+  color:#94a3b8;
 }
 
-.zone-title { text-align:center; margin-bottom:6px; color:#94a3b8; }
+.zone-centre-vert {
+  border-color:#22c55e;
+}
+.zone-centre-vert .zone-title {
+  color:#22c55e;
+}
 
+.zone-centre-orange {
+  border-color:#f97316;
+}
+.zone-centre-orange .zone-title {
+  color:#f97316;
+}
+
+.zone-centre-rouge {
+  border-color:#ef4444;
+}
+.zone-centre-rouge .zone-title {
+  color:#ef4444;
+}
+
+  
 .cartes {
   display:flex;
   gap:8px;
@@ -193,7 +213,7 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
   <button id="btn-non">Non</button>
 </div>
 
-<div class="zone">
+<div class="zone zone-centre-neutre" id="zone-centrale">
   <div class="zone-title">Zone Centrale</div>
   <div class="cartes" id="centre"></div>
 </div>
@@ -241,6 +261,31 @@ function creerPaquet(){
     });
   });
   pioche.sort(()=>Math.random()-.5);
+}
+
+function updateCouleurZoneCentrale(){
+  const zone = document.getElementById("zone-centrale");
+  const nb = centre.children.length;
+
+  zone.classList.remove(
+    "zone-centre-neutre",
+    "zone-centre-vert",
+    "zone-centre-orange",
+    "zone-centre-rouge"
+  );
+
+  if(nb === 0){
+    zone.classList.add("zone-centre-neutre");
+  }
+  else if(nb >= 1 && nb <= 4){
+    zone.classList.add("zone-centre-vert");
+  }
+  else if(nb === 5){
+    zone.classList.add("zone-centre-orange");
+  }
+  else { // 6 ou 7 cartes
+    zone.classList.add("zone-centre-rouge");
+  }
 }
 
 /* =====================================================
@@ -314,6 +359,7 @@ function piocherCartes(nb){
 
   etat = "action";
   attenteAction = true;
+  updateCouleurZoneCentrale();
   checkJeu();
 }
 // ----------------------------------------------------
@@ -357,6 +403,7 @@ document.querySelectorAll(".archive").forEach(archive => {
       while(centre.firstChild){
         centre.removeChild(centre.firstChild);
       }
+      updateCouleurZoneCentrale();
 
       // Marqueur visuel Joker (au-dessus du titre, sans décaler l'icône)
       const marqueur = document.createElement("div");
@@ -396,6 +443,7 @@ document.querySelectorAll(".archive").forEach(archive => {
     renderArchive(archive.dataset.c);
 
     etat = "pioche";
+    updateCouleurZoneCentrale();
     checkJeu(); // check d'une victoire ou d'une défaite
     attenteAction = false;
   };
@@ -440,6 +488,7 @@ document.getElementById("defausser").onclick = () => {
       sel.forEach(c => c.remove());
       etat = "pioche";
       attenteAction = false;  // pas de re-pioche automatique
+      updateCouleurZoneCentrale();
       checkJeu(); // check d'une victoire ou d'une défaite
       return;
     }
@@ -450,6 +499,7 @@ document.getElementById("defausser").onclick = () => {
 
             etat = "pioche";       // attente action utilisateur
             attenteAction = false;   // empêche re-pioche immédiate
+            updateCouleurZoneCentrale();
             checkJeu(); // check d'une victoire ou d'une défaite
             return;
     }
@@ -463,6 +513,7 @@ document.getElementById("defausser").onclick = () => {
         sel.forEach(c => c.remove());  // Défausse des cartes
 
         attenteAction = false;   // empêche re-pioche immédiate
+        updateCouleurZoneCentrale();
         checkJeu(); // check d'une victoire ou d'une défaite
         return;  // rejouer immédiatement, aucune pioche
     }
@@ -488,6 +539,7 @@ document.getElementById("defausser").onclick = () => {
     
         etat = "pioche";
         attenteAction = false; // pioche standard ensuite
+        updateCouleurZoneCentrale();
         checkJeu(); // check d'une victoire ou d'une défaite
         return;
     }
@@ -500,6 +552,7 @@ document.getElementById("defausser").onclick = () => {
 
         etat = "pioche";       // attente de l'action utilisateur
         attenteAction = false;   // empêche re-pioche immédiate
+        updateCouleurZoneCentrale();
         checkJeu(); // check d'une victoire ou d'une défaite
         return;
     }
@@ -578,6 +631,7 @@ function fermerPopup10As(){
   // Reprise normale du jeu
   etat = "pioche";
   attenteAction = false;
+  updateCouleurZoneCentrale();
   checkJeu(); // check d'une victoire ou d'une défaite
 }
 
@@ -591,6 +645,7 @@ btnJoker.onclick = () => {
     jokerUtilise= false;
     jokerEnAttente = false;
     btnJoker.classList.remove("joker-actif");
+    updateCouleurZoneCentrale();
     checkJeu(); // check d'une victoire ou d'une défaite
     return;
   }
@@ -700,6 +755,7 @@ function verifierVictoire(){
    LANCEMENT
 ===================================================== */
 creerPaquet();
+updateCouleurZoneCentrale();
 </script>
 </body>
 </html>
