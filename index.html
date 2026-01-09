@@ -16,6 +16,21 @@ body {
 
 h1 { text-align:center; margin-bottom:12px; }
 
+/* Conteneur flex boutons + pile */
+#zone-actions-container {
+  display: flex;
+  align-items: flex-start;  /* boutons et pile alignés en haut */
+  gap: 16px;
+}
+
+/* Flex pour boutons → prennent 70% de l’espace du conteneur */
+#zone-actions {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 70%;   /* largeur fixe 70% */
+  gap: 8px;
+}
+
 button {
   cursor: pointer; /* boutons cliquables */
   width:100%;
@@ -27,6 +42,23 @@ button {
   color:#0f172a;
   font-weight:bold;
   transition: all 0.2s;
+}
+
+/* Carte pile */
+#carte-pile {
+  width: 70px;
+  height: 100px;
+  border-radius: 10px;
+  background-image: url("https://upload.wikimedia.org/wikipedia/commons/1/15/Playing_card_back_01.svg");
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #06b6d4;
+  font-size: 0.9rem;
 }
 
 /* ===== POPUP 10 + AS ===== */
@@ -183,7 +215,7 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
 }
 
 /* pour bloquer les 3 boutons de jeu en présence de la popup As+10 */
-.ui-bloquee {
+.ui-bloquee button {
   pointer-events: none;
   opacity: 0.6;
 }
@@ -358,6 +390,11 @@ function piocherCartes(nb){
   attenteAction = true;
   updateCouleurZoneCentrale();
   checkJeu();
+}
+
+function updateCompteurPile(){
+  const cartePile = document.getElementById("carte-pile");
+  if(cartePile) cartePile.textContent = pioche.length;
 }
 // ----------------------------------------------------
 
