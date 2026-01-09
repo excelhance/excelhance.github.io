@@ -16,14 +16,9 @@ body {
 
 h1 { text-align:center; margin-bottom:12px; }
 
-#zone-actions-container {
-  display: flex;
-  align-items: flex-start; /* aligne boutons et pile en haut */
-  gap: 16px;
-}
 button {
   cursor: pointer; /* boutons cliquables */
-  width:70%;
+  width:100%;
   padding:12px;
   margin-bottom:8px;
   border:none;
@@ -32,23 +27,6 @@ button {
   color:#0f172a;
   font-weight:bold;
   transition: all 0.2s;
-}
-
-/* Carte pile à droite */
-#carte-pile {
-  width: 70px;       /* même largeur que les cartes en Zone Centrale */
-  height: 100px;     /* même hauteur */
-  border-radius: 10px;
-  background-image: url('carte_recto.png'); /* visuel de carte recto */
-  background-size: cover;
-  background-position: center;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  color: #06b6d4; /* bleu cyan pour compteur */
-  font-size: 0.9rem;
 }
 
 /* ===== POPUP 10 + AS ===== */
@@ -224,15 +202,10 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
 
 <h1>🂡&nbsp;&nbsp;L’Archiviste&nbsp;&nbsp;🂡</h1>
 
-<div id="zone-actions-container">
-  <div id="zone-actions">
-    <button id="piocher">PIOCHER</button>
-    <button id="defausser">Défausser</button>
-    <button id="joker">Activer Joker</button>
-  </div>
-
-  <!-- Carte pile à droite des boutons -->
-  <div id="carte-pile">52</div>
+<div id="zone-actions">
+  <button id="piocher">PIOCHER</button>
+  <button id="defausser">Défausser</button>
+  <button id="joker">Activer Joker</button>
 </div>
 
 <button id="rejouer" style="display:none;background:#22c55e">
@@ -312,11 +285,6 @@ function updateCouleurZoneCentrale(){
   }
 }
 
-function updateCompteurPile(){
-  const cartePile = document.getElementById("carte-pile");
-  if(cartePile) cartePile.textContent = pioche.length;
-}
-
 /* =====================================================
    CREATION CARTE HTML
 ===================================================== */
@@ -389,7 +357,6 @@ function piocherCartes(nb){
   etat = "action";
   attenteAction = true;
   updateCouleurZoneCentrale();
-  updateCompteurPile();
   checkJeu();
 }
 // ----------------------------------------------------
@@ -429,7 +396,6 @@ document.querySelectorAll(".archive").forEach(archive => {
       const cartesArchive = [...arch];          // copie des cartes de l'archive
       archives[archive.dataset.c] = [];        // vider l'archive
       renderArchive(archive.dataset.c);
-      updateCompteurPile();
       
       // Mélanger les cartes de l'archive
       cartesArchive.sort(() => Math.random() - 0.5);
@@ -808,7 +774,6 @@ function verifierVictoire(){
 ===================================================== */
 creerPaquet();
 updateCouleurZoneCentrale();
-updateCompteurPile();
 </script>
 </body>
 </html>
