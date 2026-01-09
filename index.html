@@ -342,7 +342,7 @@ btnPioche.onclick = () => {
 // ----------------------------------------------------
 function piocherCartes(nb){
   if (centre.children.length + nb > 7) {
-    alert("Zone Centrale saturée, pioche impossible");
+    alert("⚠️ Zone Centrale saturée, pioche impossible !");
     return;
   }
 
@@ -649,9 +649,10 @@ btnJoker.onclick = () => {
   
   // ❌ Joker déjà consommé → confirmer avant défaite
   if (jokerUtilise && !jokerEnAttente) {
-      confirmJeu(
-          "Le Joker a déjà été utilisé. Confirmez-vous l'activation de cette action ?",
+      document.getElementById("zone-actions").classList.add("ui-bloquee");
+      confirmJeu("⚠️ Le Joker a déjà été utilisé. Confirmez-vous l'activation de cette action ?",
           reponse => {
+              document.getElementById("zone-actions").classList.remove("ui-bloquee");
               if (reponse) finDePartie("❌ Défaite — Chaos incontrôlé");
               // si reponse = false, on ne fait rien, l'utilisateur reste dans le jeu
           }
