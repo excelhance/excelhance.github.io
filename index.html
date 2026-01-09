@@ -60,32 +60,33 @@ button.joker-actif { background:#fff; color:#FF0000; }
 button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
 
 /* ===== ZONE CENTRALE – COULEURS DYNAMIQUES ===== */
-.zone-centre-neutre {
-  border-color:#475569;
-}
-.zone-centre-neutre .zone-title {
-  color:#94a3b8;
+.zone {
+  border:2px dashed #475569;
+  border-radius:12px;
+  padding:10px;
+  margin-bottom:14px;
 }
 
-.zone-centre-vert {
+/* Couleurs dynamiques */
+.zone.vert {
   border-color:#22c55e;
 }
-.zone-centre-vert .zone-title {
+.zone.vert .zone-title {
   color:#22c55e;
 }
 
-.zone-centre-orange {
+.zone.orange {
   border-color:#f97316;
 }
-.zone-centre-orange .zone-title {
+.zone.orange .zone-title {
   color:#f97316;
 }
 
-.zone-centre-rouge {
-  border-color:#ef4444;
+.zone.rouge {
+  border-color:#dc2626;
 }
-.zone-centre-rouge .zone-title {
-  color:#ef4444;
+.zone.rouge .zone-title {
+  color:#dc2626;
 }
 
   
@@ -264,27 +265,17 @@ function creerPaquet(){
 }
 
 function updateCouleurZoneCentrale(){
-  const zone = document.getElementById("zone-centrale");
+  const zone = centre.closest(".zone");
   const nb = centre.children.length;
 
-  zone.classList.remove(
-    "zone-centre-neutre",
-    "zone-centre-vert",
-    "zone-centre-orange",
-    "zone-centre-rouge"
-  );
+  zone.classList.remove("vert","orange","rouge");
 
-  if(nb === 0){
-    zone.classList.add("zone-centre-neutre");
-  }
-  else if(nb >= 1 && nb <= 4){
-    zone.classList.add("zone-centre-vert");
-  }
-  else if(nb === 5){
-    zone.classList.add("zone-centre-orange");
-  }
-  else { // 6 ou 7 cartes
-    zone.classList.add("zone-centre-rouge");
+  if(nb >= 1 && nb <= 4){
+    zone.classList.add("vert");
+  } else if(nb === 5){
+    zone.classList.add("orange");
+  } else if(nb >= 6){
+    zone.classList.add("rouge");
   }
 }
 
