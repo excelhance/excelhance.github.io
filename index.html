@@ -647,10 +647,16 @@ btnJoker.onclick = () => {
     return;
   }
   
-  // ❌ Joker déjà consommé → défaite
-  if(jokerUtilise && !jokerEnAttente){
-      finDePartie("❌ Défaite — Chaos incontrôlé");
-      return;
+  // ❌ Joker déjà consommé → confirmer avant défaite
+  if (jokerUtilise && !jokerEnAttente) {
+      confirmJeu(
+          "Le Joker a déjà été utilisé. Confirmez-vous l'activation de cette action ?",
+          reponse => {
+              if (reponse) finDePartie("❌ Défaite — Chaos incontrôlé");
+              // si reponse = false, on ne fait rien, l'utilisateur reste dans le jeu
+          }
+      );
+      return; // on sort immédiatement pour ne pas continuer l'exécution
   }
 
   // ❌ Aucun archive non vide
