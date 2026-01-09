@@ -20,7 +20,7 @@ h1 { text-align:center; margin-bottom:12px; }
 #zone-actions-container {
   display: flex;
   align-items: flex-start;  /* boutons et pile alignés en haut */
-  gap: 16px;
+  /*gap: 16px;*/
 }
 
 /* Flex pour boutons → prennent 70% de l’espace du conteneur */
@@ -28,7 +28,7 @@ h1 { text-align:center; margin-bottom:12px; }
   display: flex;
   flex-direction: column;
   flex: 0 0 70%;   /* largeur fixe 70% */
-  gap: 8px;
+  /*gap: 8px;*/
 }
 
 button {
@@ -394,6 +394,7 @@ function piocherCartes(nb){
   etat = "action";
   attenteAction = true;
   updateCouleurZoneCentrale();
+  updateCompteurPile();
   checkJeu();
 }
 
@@ -438,6 +439,7 @@ document.querySelectorAll(".archive").forEach(archive => {
       const cartesArchive = [...arch];          // copie des cartes de l'archive
       archives[archive.dataset.c] = [];        // vider l'archive
       renderArchive(archive.dataset.c);
+      updateCompteurPile();
       
       // Mélanger les cartes de l'archive
       cartesArchive.sort(() => Math.random() - 0.5);
@@ -815,6 +817,7 @@ function verifierVictoire(){
    LANCEMENT
 ===================================================== */
 creerPaquet();
+updateCompteurPile();
 updateCouleurZoneCentrale();
 </script>
 </body>
