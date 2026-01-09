@@ -391,10 +391,24 @@ document.querySelectorAll(".archive").forEach(archive => {
       const arch = archives[archive.dataset.c];
       if(arch.length === 0) return;
 
-      // Vider l'archive choisie et remettre ses cartes dans la pioche
-      pioche.push(...arch);
-      archives[archive.dataset.c] = [];
+      // Vider l'archive choisie et remettre ses cartes dans la pioche de manière mélangée
+      const pileActuelle = pioche.slice();      // copie de la pile actuelle
+      const cartesArchive = [...arch];          // copie des cartes de l'archive
+      archives[archive.dataset.c] = [];        // vider l'archive
       renderArchive(archive.dataset.c);
+      
+      // Mélanger les cartes de l'archive
+      cartesArchive.sort(() => Math.random() - 0.5);
+      
+      if (pileActuelle.length >= 4) {
+          // Conserver les 3 premières cartes en haut, mélanger les cartes de l'archive en dessous
+          const top3 = pileActuelle.slice(0, 3);
+          const reste = pileActuelle.slice(3);
+          pioche = [...top3, ...cartesArchive, ...reste];
+      } else {
+          // Mélanger les cartes de l'archive et les mettre en dessous de la pile existante
+          pioche = [...pileActuelle, ...cartesArchive];
+      }
 
       // Vider la Zone Centrale
       while(centre.firstChild){
