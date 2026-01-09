@@ -18,7 +18,7 @@ h1 { text-align:center; margin-bottom:12px; }
 
 button {
   cursor: pointer; /* boutons cliquables */
-  width:100%;
+  width:70%;
   padding:12px;
   margin-bottom:8px;
   border:none;
@@ -206,6 +206,12 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
   <button id="piocher">PIOCHER</button>
   <button id="defausser">Défausser</button>
   <button id="joker">Activer Joker</button>
+
+    <!-- Carte pile à droite -->
+  <div id="pile" style="width:70px; height:100px; background:#fff; border-radius:10px; position:relative; box-shadow:0 4px 8px rgba(0,0,0,.4); display:flex; align-items:center; justify-content:center;">
+    <div id="compteur-pile" style="font-weight:bold; font-size:1rem; color:#06b6d4;"></div>
+  </div>
+  
 </div>
 
 <button id="rejouer" style="display:none;background:#22c55e">
@@ -285,6 +291,12 @@ function updateCouleurZoneCentrale(){
   }
 }
 
+function updateCompteurPile(){
+    const compteur = document.getElementById("compteur-pile");
+    if(!compteur) return;
+    compteur.textContent = pioche.length; // nombre de cartes restantes dans la pioche
+}
+
 /* =====================================================
    CREATION CARTE HTML
 ===================================================== */
@@ -357,6 +369,7 @@ function piocherCartes(nb){
   etat = "action";
   attenteAction = true;
   updateCouleurZoneCentrale();
+  updateCompteurPile();
   checkJeu();
 }
 // ----------------------------------------------------
@@ -396,6 +409,7 @@ document.querySelectorAll(".archive").forEach(archive => {
       const cartesArchive = [...arch];          // copie des cartes de l'archive
       archives[archive.dataset.c] = [];        // vider l'archive
       renderArchive(archive.dataset.c);
+      updateCompteurPile();
       
       // Mélanger les cartes de l'archive
       cartesArchive.sort(() => Math.random() - 0.5);
@@ -774,6 +788,7 @@ function verifierVictoire(){
 ===================================================== */
 creerPaquet();
 updateCouleurZoneCentrale();
+updateCompteurPile();
 </script>
 </body>
 </html>
