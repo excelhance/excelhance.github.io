@@ -221,6 +221,11 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
   pointer-events: none;
   opacity: 0.6;
 }
+/* Bouton désactivé individuellement */
+.bouton-bloque {
+  pointer-events: none;
+  opacity: 0.6;
+}
 /* pour bloquer les 3 boutons de jeu une fois la pop-up Victoire affichée */
 .victoire-ui-bloquee *:not(#rejouer) {
   pointer-events: none;
@@ -295,7 +300,32 @@ const couleurs = ["♠","♥","♦","♣"];
 const valeurs = [["A",1],["2",2],["3",3],["4",4],["5",5],["6",6],["7",7],["8",8],["9",9],["10",10],["V",11],["D",12],["R",13]];
 
 btnJoker.classList.add("joker-inactif")
-  
+
+function bloquerBoutons(ids){
+  if(!Array.isArray(ids)) ids = [ids];
+  ids.forEach(id => {
+    const btn = document.getElementById(id);
+    if(btn) btn.classList.add("bouton-bloque");
+  });
+}
+function debloquerBoutons(ids){
+  if(!Array.isArray(ids)) ids = [ids];
+  ids.forEach(id => {
+    const btn = document.getElementById(id);
+    if(btn) btn.classList.remove("bouton-bloque");
+  });
+}
+function gererEtatBoutonsSelonSelection(){
+  const selection = document.querySelectorAll("#centre .carte.selectionnee").length;
+
+  if(selection > 0){
+    bloquerBoutons(["piocher","joker"]);
+    debloquerBoutons("defausser");
+  } else {
+    debloquerBoutons(["piocher","joker","defausser"]);
+  }
+}
+
 /* =====================================================
    INITIALISATION PAQUET
 ===================================================== */
@@ -334,7 +364,13 @@ function creerCarteHTML(carte, interactive=true){
   d.dataset.label = carte.label;
   d.dataset.couleur = carte.couleur;
   d.innerHTML = `<div class="valeur">${carte.label}</div><div class="centre">${carte.couleur}</div>`;
-  if(interactive) d.onclick = ()=>d.classList.toggle("selectionnee");
+  /*if(interactive) d.onclick = ()=>d.classList.toggle("selectionnee");*/
+  if(interactive){
+  d.onclick = () => {
+    d.classList.toggle("selectionnee");
+    gererEtatBoutonsSelonSelection();
+  };
+}
   return d;
 }
 
@@ -397,6 +433,7 @@ function piocherCartes(nb){
   attenteAction = true;
   updateCouleurZoneCentrale();
   updateCompteurPile();
+  gererEtatBoutonsSelonSelection();
   checkJeu();
 }
 
@@ -461,6 +498,7 @@ document.querySelectorAll(".archive").forEach(archive => {
         centre.removeChild(centre.firstChild);
       }
       updateCouleurZoneCentrale();
+      gererEtatBoutonsSelonSelection();
 
       // Marqueur visuel Joker (au-dessus du titre, sans décaler l'icône)
       const marqueur = document.createElement("div");
@@ -501,6 +539,7 @@ document.querySelectorAll(".archive").forEach(archive => {
 
     etat = "pioche";
     updateCouleurZoneCentrale();
+    gererEtatBoutonsSelonSelection();
     checkJeu(); // check d'une victoire ou d'une défaite
     attenteAction = false;
   };
@@ -546,6 +585,7 @@ document.getElementById("defausser").onclick = () => {
       etat = "pioche";
       attenteAction = false;  // pas de re-pioche automatique
       updateCouleurZoneCentrale();
+      gererEtatBoutonsSelonSelection();
       checkJeu(); // check d'une victoire ou d'une défaite
       return;
     }
@@ -557,6 +597,7 @@ document.getElementById("defausser").onclick = () => {
             etat = "pioche";       // attente action utilisateur
             attenteAction = false;   // empêche re-pioche immédiate
             updateCouleurZoneCentrale();
+            gererEtatBoutonsSelonSelection();
             checkJeu(); // check d'une victoire ou d'une défaite
             return;
     }
@@ -571,6 +612,7 @@ document.getElementById("defausser").onclick = () => {
 
         attenteAction = false;   // empêche re-pioche immédiate
         updateCouleurZoneCentrale();
+        gererEtatBoutonsSelonSelection();
         checkJeu(); // check d'une victoire ou d'une défaite
         return;  // rejouer immédiatement, aucune pioche
     }
@@ -597,6 +639,7 @@ document.getElementById("defausser").onclick = () => {
         etat = "pioche";
         attenteAction = false; // pioche standard ensuite
         updateCouleurZoneCentrale();
+        gererEtatBoutonsSelonSelection();
         checkJeu(); // check d'une victoire ou d'une défaite
         return;
     }
@@ -610,6 +653,7 @@ document.getElementById("defausser").onclick = () => {
         etat = "pioche";       // attente de l'action utilisateur
         attenteAction = false;   // empêche re-pioche immédiate
         updateCouleurZoneCentrale();
+        gererEtatBoutonsSelonSelection();
         checkJeu(); // check d'une victoire ou d'une défaite
         return;
     }
@@ -689,6 +733,7 @@ function fermerPopup10As(){
   etat = "pioche";
   attenteAction = false;
   updateCouleurZoneCentrale();
+  gererEtatBoutonsSelonSelection();
   checkJeu(); // check d'une victoire ou d'une défaite
 }
 
