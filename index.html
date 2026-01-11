@@ -300,6 +300,8 @@ const couleurs = ["♠","♥","♦","♣"];
 const valeurs = [["A",1],["2",2],["3",3],["4",4],["5",5],["6",6],["7",7],["8",8],["9",9],["10",10],["V",11],["D",12],["R",13]];
 
 btnJoker.classList.add("joker-inactif")
+debloquerBoutons(["piocher"]);
+bloquerBoutons(["joker","defausser"]);
 
 function bloquerBoutons(ids){
   if(!Array.isArray(ids)) ids = [ids];
@@ -439,6 +441,9 @@ function piocherCartes(nb){
     }
   }
 
+  bloquerBoutons(["piocher"]);
+  debloquerBoutons(["defausser"]);
+
   etat = "action";
   attenteAction = true;
   updateCouleurZoneCentrale();
@@ -524,6 +529,9 @@ document.querySelectorAll(".archive").forEach(archive => {
       btnJoker.style.backgroundColor = "#dc2626"; // rouge léger
       btnJoker.style.color = "#fff";
 
+      debloquerBoutons(["piocher","joker"]);
+      bloquerBoutons(["defausser"]);
+
       jokerEnAttente = false;
       btnJoker.classList.remove("joker-actif");
       btnJoker.classList.add("joker-utilise");
@@ -546,6 +554,9 @@ document.querySelectorAll(".archive").forEach(archive => {
     });
     d.remove();
     renderArchive(archive.dataset.c);
+
+    debloquerBoutons(["piocher"]);
+    bloquerBoutons(["defausser"]);
 
     etat = "pioche";
     updateCouleurZoneCentrale();
@@ -876,6 +887,7 @@ function verifierVictoire(){
 creerPaquet();
 updateCompteurPile();
 updateCouleurZoneCentrale();
+  
 </script>
 </body>
 </html>
