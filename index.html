@@ -239,6 +239,9 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
 </head>
 <body>
 
+/* =====================================================
+   ZONES HTML
+===================================================== */
 <h1>🂡&nbsp;&nbsp;L’Archiviste&nbsp;&nbsp;🂡</h1>
 
 <div id="zone-actions-container">
@@ -281,6 +284,17 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
 
 <script>
 /* =====================================================
+   CODE FONCTIONNEL
+===================================================== */
+
+/* =====================================================
+   LANCEMENT
+===================================================== */
+creerPaquet();
+updateCompteurPile();
+updateCouleurZoneCentrale();
+  
+/* =====================================================
    ÉTAT GLOBAL
 ===================================================== */
 const centre = document.getElementById("centre");
@@ -301,6 +315,9 @@ const valeurs = [["A",1],["2",2],["3",3],["4",4],["5",5],["6",6],["7",7],["8",8]
 
 btnJoker.classList.add("joker-inactif")
 
+/* =====================================================
+   GESTION DES BOUTONS DE JEU
+===================================================== */
 function bloquerBoutons(ids){
   if(!Array.isArray(ids)) ids = [ids];
   ids.forEach(id => {
@@ -337,7 +354,26 @@ function gererEtatBoutonsSelonSelection(){
 }
 
 /* =====================================================
-   INITIALISATION PAQUET
+   POP-UP DE CONFIRMATION DE CERTAINES ACTIONS
+===================================================== */
+function confirmJeu(message, callback){
+  const modal = document.getElementById("user-confirmation");
+  document.getElementById("confirmation-message").textContent = message;
+  modal.style.display = "block";
+
+  document.getElementById("btn-oui").onclick = () => {
+    modal.style.display = "none";
+    callback(true);
+  };
+
+  document.getElementById("btn-non").onclick = () => {
+    modal.style.display = "none";
+    callback(false);
+  };
+}
+
+/* =====================================================
+   INITIALISATION PAQUET DE CARTES (52 cartes triées en random)
 ===================================================== */
 function creerPaquet(){
   pioche=[];
@@ -452,25 +488,6 @@ function updateCompteurPile(){
   if(cartePile) cartePile.textContent = pioche.length;
 }
 // ----------------------------------------------------
-
-/* =====================================================
-   POP-UP DE CONFIRMATION DE CERTAINES ACTIONS
-===================================================== */
-function confirmJeu(message, callback){
-  const modal = document.getElementById("user-confirmation");
-  document.getElementById("confirmation-message").textContent = message;
-  modal.style.display = "block";
-
-  document.getElementById("btn-oui").onclick = () => {
-    modal.style.display = "none";
-    callback(true);
-  };
-
-  document.getElementById("btn-non").onclick = () => {
-    modal.style.display = "none";
-    callback(false);
-  };
-}
 
 /* =====================================================
    ARCHIVES
@@ -870,12 +887,6 @@ function verifierVictoire(){
   });
 }
 
-/* =====================================================
-   LANCEMENT
-===================================================== */
-creerPaquet();
-updateCompteurPile();
-updateCouleurZoneCentrale();
 </script>
 </body>
 </html>
