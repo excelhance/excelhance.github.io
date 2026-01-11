@@ -494,7 +494,7 @@ document.querySelectorAll(".archive").forEach(archive => {
       const cartesArchive = [...arch];          // copie des cartes de l'archive
       archives[archive.dataset.c] = [];        // vider l'archive
       renderArchive(archive.dataset.c);
-      updateCompteurPile();
+      //updateCompteurPile();
       
       // Mélanger les cartes de l'archive
       cartesArchive.sort(() => Math.random() - 0.5);
@@ -513,6 +513,7 @@ document.querySelectorAll(".archive").forEach(archive => {
       while(centre.firstChild){
         centre.removeChild(centre.firstChild);
       }
+      updateCompteurPile();
       updateCouleurZoneCentrale();
       gererEtatBoutonsSelonSelection();
 
