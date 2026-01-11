@@ -318,11 +318,15 @@ function debloquerBoutons(ids){
 function gererEtatBoutonsSelonSelection(){
   const selection = document.querySelectorAll("#centre .carte.selectionnee").length;
 
-  if(selection > 0){
-    bloquerBoutons(["piocher","joker"]);
-    debloquerBoutons("defausser");
-  } else {
+  if(selection === 0){
     debloquerBoutons(["piocher","joker","defausser"]);
+  } else if(selection === 1){
+    bloquerBoutons(["piocher","joker","defausser"]);
+  } else if(selection <= 3){
+    bloquerBoutons(["piocher","joker"]);
+    debloquerBoutons(["defausser"]);
+  } else {
+    bloquerBoutons(["piocher","joker","defausser"]);
   }
 }
 
