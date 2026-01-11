@@ -441,14 +441,13 @@ function piocherCartes(nb){
     }
   }
 
-  bloquerBoutons(["piocher"]);
-  debloquerBoutons(["defausser"]);
-
   etat = "action";
   attenteAction = true;
   updateCouleurZoneCentrale();
   updateCompteurPile();
   gererEtatBoutonsSelonSelection();
+  bloquerBoutons(["piocher"]);
+  debloquerBoutons(["defausser"]);
   checkJeu();
 }
 
