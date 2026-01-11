@@ -446,8 +446,8 @@ function piocherCartes(nb){
   updateCouleurZoneCentrale();
   updateCompteurPile();
   gererEtatBoutonsSelonSelection();
-  bloquerBoutons(["piocher"]);
-  debloquerBoutons(["defausser"]);
+  //bloquerBoutons(["piocher"]);
+  //debloquerBoutons(["defausser"]);
   checkJeu();
 }
 
@@ -526,10 +526,7 @@ document.querySelectorAll(".archive").forEach(archive => {
       // Changer visuel du bouton Joker
       const btnJoker = document.getElementById("joker");
       btnJoker.style.backgroundColor = "#dc2626"; // rouge léger
-      btnJoker.style.color = "#fff";
-
-      debloquerBoutons(["piocher","joker"]);
-      bloquerBoutons(["defausser"]);
+      btnJoker.style.color = "#fff";;
 
       jokerEnAttente = false;
       btnJoker.classList.remove("joker-actif");
@@ -553,9 +550,6 @@ document.querySelectorAll(".archive").forEach(archive => {
     });
     d.remove();
     renderArchive(archive.dataset.c);
-
-    debloquerBoutons(["piocher"]);
-    bloquerBoutons(["defausser"]);
 
     etat = "pioche";
     updateCouleurZoneCentrale();
