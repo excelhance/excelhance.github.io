@@ -317,12 +317,18 @@ function debloquerBoutons(ids){
 }
 function gererEtatBoutonsSelonSelection(){
   const selection = document.querySelectorAll("#centre .carte.selectionnee").length;
+  const valeursSelectionnees = [...document.querySelectorAll(".carte.selectionnee")].map(c => +c.dataset.valeur);
 
   if(selection === 0){
     debloquerBoutons(["piocher","joker","defausser"]);
   } else if(selection === 1){
     bloquerBoutons(["piocher","joker","defausser"]);
-  } else if(selection <= 3){
+  } else if(selection === 2){
+    bloquerBoutons(["piocher","joker"]);
+    debloquerBoutons(["defausser"]);
+  } else if (selection === 3 &&
+             valeursSelectionnees.includes(2) &&
+             valeursSelectionnees.includes(5)){
     bloquerBoutons(["piocher","joker"]);
     debloquerBoutons(["defausser"]);
   } else {
