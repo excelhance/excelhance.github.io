@@ -47,6 +47,33 @@ button {
   transition: all 0.2s;
 }
 
+#info-regles {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+#info-regles:hover {
+  background: #38bdf8;
+  color: #0f172a;
+}
+
+#pile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
 /* Carte pile */
 #carte-pile {
   width: 70px;
@@ -265,8 +292,11 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
     <button id="joker">Activer Joker</button>
   </div>
 
-  <!-- Carte pile à droite des boutons -->
-  <div id="carte-pile" title="Pioche">52</div>
+  <!-- Colonne pile + icône info -->
+  <div id="pile-container">
+    <div id="info-regles" title="Règles du jeu">I</div>
+    <div id="carte-pile" title="Pioche">52</div>
+  </div>
 </div>
 
 <button id="rejouer" style="display:none;background:#22c55e">
@@ -297,7 +327,7 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
 </div>
 
 <div id="footer-credit">
-  <a href="https://votre-url-ici" target="_blank" rel="noopener">
+  <a href="www.linkedin.com/in/nathan-fauconnier-developpeur-excel-vba-freelance" target="_blank" rel="noopener">
     Powered by N.Fauconnier × ChatGPT
   </a>
 </div>
