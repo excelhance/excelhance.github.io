@@ -36,15 +36,19 @@ h1 { text-align:center; margin-bottom:12px; }
 button {
   cursor: pointer; /* boutons cliquables */
   width:100%;
-  padding:8px 12px; /* hauteur réduite, largeur inchangée */
+  padding:6px 12px; /* hauteur réduite, largeur inchangée */
   margin-bottom:8px;
   border:none;
   border-radius:10px;
   background:#38bdf8;
   color:#0f172a;
   font-weight:bold;
-  font-size: 16px;
+  font-size: 14px;
   transition: all 0.2s;
+}
+button.regles {
+  background:#191970;
+  color:#ffffff;
 }
 
 /* Carte pile */
@@ -65,7 +69,7 @@ button {
   font-size: 1.3rem;
 }
 
-#pile-container {
+/*#pile-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -88,7 +92,7 @@ button {
 #info-regles:hover {
   background: #38bdf8;
   color: #0f172a;
-}
+}*/
 
 /* ===== POPUP 10 + AS ===== */
 #popup-10as {
@@ -316,14 +320,11 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
     <button id="piocher">PIOCHER</button>
     <button id="defausser">Défausser</button>
     <button id="joker">Activer Joker</button>
-    <!--<button id="btn-regles">RÈGLES</button>-->
+    <button.regles id="btn-regles">RÈGLES</button.regles>
   </div>
 
-  <!-- Colonne pile + icône info -->
-  <div id="pile-container">
-    <div id="info-regles" title="Règles du jeu">ℹ️</div>
-    <div id="carte-pile" title="Pioche">52</div>
-  </div>
+  <!-- Colonne pile à droite des boutons -->
+  <div id="carte-pile" title="Pioche">52</div>
 </div>
 
 <button id="rejouer" style="display:none;background:#22c55e">
@@ -460,7 +461,7 @@ function gererEtatBoutonsSelonSelection(){
 /* =====================================================
    PAGE DES REGLES
 ===================================================== */
-document.getElementById("info-regles").onclick = () => {
+document.getElementById("btn-regles").onclick = () => {
   document.getElementById("page-regles").style.display = "block";
   document.getElementById("zone-actions").classList.add("ui-bloquee");
 };
