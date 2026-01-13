@@ -67,6 +67,31 @@ button {
   font-size: 1.3rem;
 }
 
+#pile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+#info-regles {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+}
+#info-regles:hover {
+  background: #38bdf8;
+  color: #0f172a;
+}
+
 /* ===== POPUP 10 + AS ===== */
 #popup-10as {
   background:#020617;
@@ -293,11 +318,14 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
     <button id="piocher">PIOCHER</button>
     <button id="defausser">Défausser</button>
     <button id="joker">Activer Joker</button>
-    <button id="btn-regles">RÈGLES</button>
+    <!--<button id="btn-regles">RÈGLES</button>-->
   </div>
 
-  <!-- Carte pile à droite des boutons -->
-  <div id="carte-pile" title="Pioche">52</div>
+  <!-- Colonne pile + icône info -->
+  <div id="pile-container">
+    <div id="info-regles" title="Règles du jeu">ℹ️</div>
+    <div id="carte-pile" title="Pioche">52</div>
+  </div>
 </div>
 
 <button id="rejouer" style="display:none;background:#22c55e">
@@ -434,7 +462,7 @@ function gererEtatBoutonsSelonSelection(){
 /* =====================================================
    PAGE DES REGLES
 ===================================================== */
-document.getElementById("btn-regles").onclick = () => {
+document.getElementById("info-regles").onclick = () => {
   document.getElementById("page-regles").style.display = "block";
   document.getElementById("zone-actions").classList.add("ui-bloquee");
 };
