@@ -16,6 +16,12 @@ body {
   touch-action: manipulation;
 }
 
+body.no-scroll {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
 h1 { text-align:center; margin-bottom:12px; }
 
 /* Conteneur flex boutons + pile */
@@ -265,6 +271,8 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
   padding: 20px;
   overflow-y: auto;
   z-index: 100;
+  -webkit-overflow-scrolling: touch; /* inertie iOS */
+  padding-bottom: 120px; /* espace suffisant sous le bouton */
 }
 
 #page-regles h2 {
@@ -442,11 +450,13 @@ function gererEtatBoutonsSelonSelection(){
    PAGE DES REGLES
 ===================================================== */
 document.getElementById("btn-regles").onclick = () => {
+  document.body.classList.add("no-scroll");
   document.getElementById("page-regles").style.display = "block";
   document.getElementById("zone-actions").classList.add("ui-bloquee");
 };
 
 document.getElementById("btn-retour-jeu").onclick = () => {
+  document.body.classList.remove("no-scroll");
   document.getElementById("page-regles").style.display = "none";
   document.getElementById("zone-actions").classList.remove("ui-bloquee");
 };
