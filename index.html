@@ -948,6 +948,27 @@ function checkJeu(){
 /* =====================================================
    CONDITIONS DE DEFAITE
 ===================================================== */
+function auMoinsUneActionPossible(defaussePossible) {
+
+  const piochePossible =
+    pioche.length > 0 &&
+    centre.children.length < 6;
+
+  const archivePossible =
+    couleurs.some(c => archives[c].length === 10);
+
+  const jokerPossible =
+    !jokerUtilise && !jokerEnAttente;
+
+  return (
+    piochePossible ||
+    defaussePossible ||
+    archivePossible ||
+    jokerPossible
+  );
+}
+
+/*
 function verifierDefaite(){
   // 1️⃣ Pioche vide
   const piocheVide = pioche.length === 0;
@@ -988,6 +1009,49 @@ function verifierDefaite(){
   // 5️⃣ Défaite si toutes les conditions sont réunies
   if(piocheVide && !defaussePossible && aucuneArchiveComplete && etat === "pioche" ){
       finDePartie("❌ Défaite — Pioche vide et plus aucune action possible");
+  }
+}*/
+
+function verifierDefaite(){
+
+  const piocheVide = pioche.length === 0;
+
+  const aucuneArchiveComplete =
+    !couleurs.some(c => archives[c].length === 10);
+
+  const defaussePossible = (() => {
+    const cartes = [...centre.children];
+    const valeurs = cartes.map(c => +c.dataset.valeur).sort((a,b)=>a-b);
+
+    const paire = valeurs.some(v => valeurs.filter(x => x === v).length === 2);
+    if(paire) return true;
+
+    if(valeurs.includes(2) && valeurs.includes(5)) return true;
+    if(valeurs.includes(6) && valeurs.includes(9)) return true;
+    if(valeurs.includes(10) && valeurs.includes(12)) return true;
+    if(valeurs.includes(10) && valeurs.includes(13)) return true;
+    if(valeurs.includes(1) && valeurs.includes(10)) return true;
+
+    return false;
+  })();
+
+  /* 🔒 CAS HISTORIQUE — inchangé */
+  if (
+    piocheVide &&
+    !defaussePossible &&
+    aucuneArchiveComplete &&
+    etat === "pioche"
+  ) {
+    finDePartie("❌ Défaite — Pioche vide et plus aucune action possible");
+    return;
+  }
+
+  /* 🆕 NOUVEAU CAS — pioche bloquée mais non vide */
+  if (
+    etat === "pioche" &&
+    !auMoinsUneActionPossible(defaussePossible)
+  ) {
+    finDePartie("❌ Défaite — Plus aucune action possible");
   }
 }
 
