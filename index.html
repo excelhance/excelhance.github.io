@@ -406,6 +406,8 @@ let premierePioche = true;
 let attenteAction = false;
 let vision10AsActive = false;
 let cartesVision10As = [];
+let sessionStart = null;
+let sessionTerminee = false;
 
 const archives = { "♠":[], "♥":[], "♦":[], "♣":[] };
 const couleurs = ["♠","♥","♦","♣"];
@@ -1035,26 +1037,30 @@ function verifierDefaite(){
     return false;
   })();
 
-  /* 🔒 CAS HISTORIQUE — inchangé */
-  if (
-    piocheVide &&
-    !defaussePossible &&
-    aucuneArchiveComplete &&
-    etat === "pioche"
-  ) {
-    envoyerLog("defaite", { duree: dureeSession() });
-    finDePartie("❌ Défaite — Pioche vide et plus aucune action possible");
-    return;
-  }
-
-  /* 🆕 NOUVEAU CAS — pioche bloquée mais non vide */
-  if (
-    etat === "pioche" &&
-    !auMoinsUneActionPossible(defaussePossible)
-  ) {
-    envoyerLog("defaite", { duree: dureeSession() });
-    finDePartie("❌ Défaite — Plus aucune action possible");
-  }
+      /* 🔒 CAS HISTORIQUE — inchangé */
+      if (
+        piocheVide &&
+        !defaussePossible &&
+        aucuneArchiveComplete &&
+        etat === "pioche" &&
+        !sessionTerminee
+      ) {
+        sessionTerminee = true; // ✅ marque la session comme terminée
+        envoyerLog("DEFAITE", { duree: dureeSession() });
+        finDePartie("❌ Défaite — Pioche vide et plus aucune action possible");
+        return;
+      }
+      
+      /* 🆕 NOUVEAU CAS — pioche bloquée mais non vide */
+      if (
+        etat === "pioche" &&
+        !auMoinsUneActionPossible(defaussePossible) &&
+        !sessionTerminee
+      ) {
+        sessionTerminee = true; // ✅ idem pour ce cas
+        envoyerLog("DEFAITE", { duree: dureeSession() });
+        finDePartie("❌ Défaite — Plus aucune action possible");
+      }
 }
 
 /* =====================================================
@@ -1062,8 +1068,9 @@ function verifierDefaite(){
 ===================================================== */
 function verifierVictoire(){
   couleurs.forEach(c=>{
-      if(archives[c].length===10){
-          envoyerLog("victoire", { duree: dureeSession() });
+      if(archives[c].length===10 && !sessionTerminee){
+          sessionTerminee = true;
+          envoyerLog("VICTOIRE", { duree: dureeSession() });
           finDePartie("🏆 Archive stabilisée => VICTOIRE !");
       }
   });
@@ -1075,12 +1082,6 @@ function verifierVictoire(){
 creerPaquet();
 updateCompteurPile();
 updateCouleurZoneCentrale();
-
-
-window.addEventListener("load", () => // Ouverture de la page
-  envoyerLog("page ouverte")); 
-document.getElementById("rejouer").addEventListener("click", () => { // Bouton Rejouer
-  envoyerLog("rejouer", { duree: dureeSession() });});
 
 // ENVOI DES LOGS
 function envoyerLog(action, options = {}) {
@@ -1113,10 +1114,17 @@ function getPlayerId(){
   return id;
 }
 // Chronométrer la session de jeu
-const debutSession = Date.now();
-function dureeSession(){
-  return Math.floor((Date.now() - debutSession) / 1000);
+function dureeSession() {
+  return sessionStart
+    ? Math.round((Date.now() - sessionStart) / 1000)
+    : null;
 }
+
+window.addEventListener("load", () => {
+  sessionStart = Date.now();
+  sessionTerminee = false;
+  envoyerLog("SESSION_START");
+});
 
 
 </script>
