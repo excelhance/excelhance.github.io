@@ -1092,7 +1092,7 @@ function envoyerLog(action, options = {}) {
     duree: options.duree ?? null,
     userAgent: navigator.userAgent
   });
-  if (action === "victoire" || action === "defaite") {
+  if (action === "VICTOIRE" || action === "DEFAITE") {
     navigator.sendBeacon(
       "https://script.google.com/macros/s/AKfycbwgxdT_l_ent4p_44yn3cMrmn4IFCgX935ivshKrmh7xnDMPoEURDoUEzLFDzWLHMobGw/exec",
       payload
