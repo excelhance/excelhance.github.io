@@ -1072,7 +1072,23 @@ function verifierVictoire(){
 creerPaquet();
 updateCompteurPile();
 updateCouleurZoneCentrale();
-  
+
+
+window.addEventListener("load", () => // Ouverture de la page
+  envoyerLog("page ouverte")); 
+document.getElementById("rejouer").addEventListener("click", () => { // Clic sur Rejouer
+  envoyerLog("Rejouer");});
+
+function envoyerLog(action) {
+  fetch("https://script.google.com/macros/s/AKfycbzQjnYj_NQg49maGRZ4uOVEr7qtoHj1FDV9uFdpawep39ER-OSCAAw5Z9hqZxFTwD6r5w/exec", {
+    method: "POST",
+    body: JSON.stringify({
+      action: action,
+      userAgent: navigator.userAgent
+    })
+  }).catch(err => console.warn("Erreur log:", err));
+}
+
 </script>
 </body>
 </html>
