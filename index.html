@@ -898,16 +898,20 @@ btnJoker.onclick = () => {
   
   // ❌ Joker déjà consommé → confirmer avant défaite
   if (jokerUtilise && !jokerEnAttente) {
-      document.getElementById("zone-actions").classList.add("ui-bloquee");
-      confirmJeu("⚠️ Le Joker a déjà été utilisé. Confirmez-vous l'activation de cette action ?",
-          reponse => {
-              document.getElementById("zone-actions").classList.remove("ui-bloquee");
-              if (reponse) finDePartie("❌ Défaite — Chaos incontrôlé");
-              // si reponse = false, on ne fait rien, l'utilisateur reste dans le jeu
+  document.getElementById("zone-actions").classList.add("ui-bloquee");
+  confirmJeu("⚠️ Le Joker a déjà été utilisé. Confirmez-vous l'activation de cette action ?",
+      reponse => {
+          document.getElementById("zone-actions").classList.remove("ui-bloquee");
+          if (reponse) {
+              sessionTerminee = true; // pour éviter double log
+              envoyerLog("DEFAITE", { duree: dureeSession() });
+              finDePartie("❌ Défaite — Chaos incontrôlé");
           }
-      );
-      return; // on sort immédiatement pour ne pas continuer l'exécution
-  }
+          // si reponse = false, on ne fait rien, l'utilisateur reste dans le jeu
+      }
+  );
+  return; // on sort immédiatement pour ne pas continuer l'exécution
+}
 
   // ❌ Aucun archive non vide
   const nonVides = couleurs.filter(c=>archives[c].length);
