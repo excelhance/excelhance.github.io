@@ -1083,17 +1083,25 @@ document.getElementById("rejouer").addEventListener("click", () => { // Bouton R
   envoyerLog("rejouer", { duree: dureeSession() });});
 
 // ENVOI DES LOGS
-function envoyerLog(action, options = {}){
-  fetch("https://script.google.com/macros/s/AKfycbwgxdT_l_ent4p_44yn3cMrmn4IFCgX935ivshKrmh7xnDMPoEURDoUEzLFDzWLHMobGw/exec", {
-    method: "POST",
-    body: JSON.stringify({
-      playerId: getPlayerId(),
-      action: action,
-      date: new Date().toISOString(),
-      duree: options.duree ?? null,
-      userAgent: navigator.userAgent
-    })
-  }).catch(err => console.warn("Erreur log:", err));
+function envoyerLog(action, options = {}) {
+  const payload = JSON.stringify({
+    playerId: getPlayerId(),
+    action: action,
+    date: new Date().toISOString(),
+    duree: options.duree ?? null,
+    userAgent: navigator.userAgent
+  });
+  if (action === "victoire" || action === "defaite") {
+    navigator.sendBeacon(
+      "https://script.google.com/macros/s/AKfycbwgxdT_l_ent4p_44yn3cMrmn4IFCgX935ivshKrmh7xnDMPoEURDoUEzLFDzWLHMobGw/exec",
+      payload
+    );
+  } else {
+    fetch(
+      "https://script.google.com/macros/s/AKfycbwgxdT_l_ent4p_44yn3cMrmn4IFCgX935ivshKrmh7xnDMPoEURDoUEzLFDzWLHMobGw/exec",
+      { method: "POST", body: payload }
+    ).catch(() => {});
+  }
 }
 // Générer un identifiant joueur anonyme, sans cookie
 function getPlayerId(){
