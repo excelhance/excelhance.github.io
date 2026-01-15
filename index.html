@@ -1042,6 +1042,7 @@ function verifierDefaite(){
     aucuneArchiveComplete &&
     etat === "pioche"
   ) {
+    envoyerLog("defaite", { duree: dureeSession() });
     finDePartie("❌ Défaite — Pioche vide et plus aucune action possible");
     return;
   }
@@ -1051,6 +1052,7 @@ function verifierDefaite(){
     etat === "pioche" &&
     !auMoinsUneActionPossible(defaussePossible)
   ) {
+    envoyerLog("defaite", { duree: dureeSession() });
     finDePartie("❌ Défaite — Plus aucune action possible");
   }
 }
@@ -1061,6 +1063,7 @@ function verifierDefaite(){
 function verifierVictoire(){
   couleurs.forEach(c=>{
       if(archives[c].length===10){
+          envoyerLog("victoire", { duree: dureeSession() });
           finDePartie("🏆 Archive stabilisée => VICTOIRE !");
       }
   });
@@ -1076,18 +1079,37 @@ updateCouleurZoneCentrale();
 
 window.addEventListener("load", () => // Ouverture de la page
   envoyerLog("page ouverte")); 
-document.getElementById("rejouer").addEventListener("click", () => { // Clic sur Rejouer
-  envoyerLog("Rejouer");});
+document.getElementById("rejouer").addEventListener("click", () => { // Bouton Rejouer
+  envoyerLog("rejouer", { duree: dureeSession() });});
 
-function envoyerLog(action) {
-  fetch("https://script.google.com/macros/s/AKfycbzQjnYj_NQg49maGRZ4uOVEr7qtoHj1FDV9uFdpawep39ER-OSCAAw5Z9hqZxFTwD6r5w/exec", {
+// ENVOI DES LOGS
+function envoyerLog(action, options = {}){
+  fetch("https://script.google.com/macros/s/AKfycbw06d5crAGxoahxwb1RbbUaY43eXgZ52ChdANTZJXX8R8fuPQJ7IFWU5v9z588E3Y7d/exec", {
     method: "POST",
     body: JSON.stringify({
+      playerId: getPlayerId(),
       action: action,
+      date: new Date().toISOString(),
+      duree: options.duree ?? null,
       userAgent: navigator.userAgent
     })
   }).catch(err => console.warn("Erreur log:", err));
 }
+// Générer un identifiant joueur anonyme, sans cookie
+function getPlayerId(){
+  let id = localStorage.getItem("playerId");
+  if(!id){
+    id = crypto.randomUUID();
+    localStorage.setItem("playerId", id);
+  }
+  return id;
+}
+// Chronométrer la session de jeu
+const debutSession = Date.now();
+function dureeSession(){
+  return Math.floor((Date.now() - debutSession) / 1000);
+}
+
 
 </script>
 </body>
