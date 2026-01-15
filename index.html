@@ -1018,20 +1018,21 @@ function verifierDefaite(){
   }
 }*/
 
-function verifierDefaite(){
+function verifierDefaite() {
 
+  // ✅ Vérification état actuel
   const piocheVide = pioche.length === 0;
+  const aucuneArchiveComplete = !couleurs.some(c => archives[c].length === 10);
 
-  const aucuneArchiveComplete =
-    !couleurs.some(c => archives[c].length === 10);
-
+  // 🔹 Défausse théorique possible dans la zone centrale
   const defaussePossible = (() => {
     const cartes = [...centre.children];
     const valeurs = cartes.map(c => +c.dataset.valeur).sort((a,b)=>a-b);
 
-    const paire = valeurs.some(v => valeurs.filter(x => x === v).length === 2);
-    if(paire) return true;
+    // Paires de même valeur
+    if(valeurs.some(v => valeurs.filter(x => x === v).length === 2)) return true;
 
+    // Combinaisons spéciales
     if(valeurs.includes(2) && valeurs.includes(5)) return true;
     if(valeurs.includes(6) && valeurs.includes(9)) return true;
     if(valeurs.includes(10) && valeurs.includes(12)) return true;
@@ -1041,7 +1042,17 @@ function verifierDefaite(){
     return false;
   })();
 
-  /* 🔒 CAS HISTORIQUE — inchangé */
+  // 🔹 Action réellement possible pour le joueur à ce moment
+  const actionReellePossible = (() => {
+    const piochePossible = pioche.length > 0 && centre.children.length < 6;
+    const defausseReelle = (etat === "action" && defaussePossible);
+    const archivePossible = couleurs.some(c => archives[c].length === 10);
+    const jokerPossible = !jokerUtilise && !jokerEnAttente;
+
+    return piochePossible || defausseReelle || archivePossible || jokerPossible;
+  })();
+
+  // 🔒 CAS HISTORIQUE — pioche vide + plus aucune action
   if (
     piocheVide &&
     !defaussePossible &&
@@ -1049,19 +1060,19 @@ function verifierDefaite(){
     etat === "pioche" &&
     !sessionTerminee
   ) {
-    sessionTerminee = true; // ✅ marque la session comme terminée
+    sessionTerminee = true;
     envoyerLog("DEFAITE", { duree: dureeSession() });
     finDePartie("❌ Défaite — Pioche vide et plus aucune action possible");
     return;
   }
 
-  /* 🆕 NOUVEAU CAS — pioche bloquée mais non vide */
+  // 🆕 CAS — seule action attendue impossible (ex: pioche bloquée ou Joker déjà utilisé)
   if (
     etat === "pioche" &&
-    !auMoinsUneActionPossible(defaussePossible) &&
+    !actionReellePossible &&
     !sessionTerminee
   ) {
-    sessionTerminee = true; // ✅ idem pour ce cas
+    sessionTerminee = true;
     envoyerLog("DEFAITE", { duree: dureeSession() });
     finDePartie("❌ Défaite — Plus aucune action possible");
   }
