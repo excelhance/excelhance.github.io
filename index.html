@@ -1015,11 +1015,10 @@ function verifierDefaite(){
 }*/
 
 function verifierDefaite(){
+  if(sessionTerminee) return;
 
   const piocheVide = pioche.length === 0;
-
-  const aucuneArchiveComplete =
-    !couleurs.some(c => archives[c].length === 10);
+  const aucuneArchiveComplete = !couleurs.some(c => archives[c].length === 10);
 
   const defaussePossible = (() => {
     const cartes = [...centre.children];
@@ -1027,7 +1026,6 @@ function verifierDefaite(){
 
     const paire = valeurs.some(v => valeurs.filter(x => x === v).length === 2);
     if(paire) return true;
-
     if(valeurs.includes(2) && valeurs.includes(5)) return true;
     if(valeurs.includes(6) && valeurs.includes(9)) return true;
     if(valeurs.includes(10) && valeurs.includes(12)) return true;
@@ -1037,30 +1035,13 @@ function verifierDefaite(){
     return false;
   })();
 
-      /* 🔒 CAS HISTORIQUE — inchangé */
-      if (
-        piocheVide &&
-        !defaussePossible &&
-        aucuneArchiveComplete &&
-        etat === "pioche" &&
-        !sessionTerminee
-      ) {
-        sessionTerminee = true; // ✅ marque la session comme terminée
-        envoyerLog("DEFAITE", { duree: dureeSession() });
-        finDePartie("❌ Défaite — Pioche vide et plus aucune action possible");
-        return;
-      }
-      
-      /* 🆕 NOUVEAU CAS — pioche bloquée mais non vide */
-      if (
-        etat === "pioche" &&
-        !auMoinsUneActionPossible(defaussePossible) &&
-        !sessionTerminee
-      ) {
-        sessionTerminee = true; // ✅ idem pour ce cas
-        envoyerLog("DEFAITE", { duree: dureeSession() });
-        finDePartie("❌ Défaite — Plus aucune action possible");
-      }
+  // Défaite si aucune action possible, pioche vide ou bloquée
+  if ((!auMoinsUneActionPossible(defaussePossible) && aucuneArchiveComplete) || 
+      (piocheVide && !defaussePossible && aucuneArchiveComplete)) {
+    sessionTerminee = true;
+    envoyerLog("defaite", { duree: dureeSession() });
+    finDePartie("❌ Défaite — Plus aucune action possible");
+  }
 }
 
 /* =====================================================
