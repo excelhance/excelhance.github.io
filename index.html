@@ -815,7 +815,7 @@ document.getElementById("defausser").onclick = () => {
         sel.forEach(c => c.remove());
     
         // Prélever jusqu’à 3 cartes (sécurité)
-        cartesVision10As = pioche.slice(-3);
+        cartesVision10As = pioche.slice(-3).reverse();
     
         // Construction popup
         const popup = document.getElementById("popup-10as");
