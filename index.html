@@ -249,6 +249,11 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
   opacity: 1 ;
 }
 
+#rejouer.defaite {
+  background: #dc2626; /* rouge */
+  color: #ffffff;
+}
+
 /* Ligne "Credits" */
 #footer-credit {
   margin-top: 16px;
@@ -905,7 +910,7 @@ btnJoker.onclick = () => {
           if (reponse) {
               sessionTerminee = true; // pour éviter double log
               envoyerLog("DEFAITE", { duree: dureeSession() });
-              finDePartie("❌ Défaite — Chaos incontrôlé");
+              finDePartie("❌ Défaite — Chaos incontrôlé", "DEFAITE");
           }
           // si reponse = false, on ne fait rien, l'utilisateur reste dans le jeu
       }
@@ -926,22 +931,31 @@ btnJoker.onclick = () => {
 /* =====================================================
    FIN D'UNE PARTIE
 ===================================================== */
-function finDePartie(message){
+function finDePartie(message, type = "VICTOIRE") {
   alert(message);
 
-  // Blocage total du jeu (sans réduire l'opacité)
+  // Blocage total du jeu
   document.body.classList.add("victoire-ui-bloquee");
 
   // Masquer les boutons de jeu
   const zoneActions = document.getElementById("zone-actions-container");
-  if(zoneActions){
+  if (zoneActions) {
     zoneActions.style.display = "none";
   }
 
-  // Afficher le bouton Rejouer
+  // Bouton Rejouer contextualisé
   const btnReplay = document.getElementById("rejouer");
-  if(btnReplay){
+  if (btnReplay) {
+    btnReplay.classList.remove("defaite");
     btnReplay.style.display = "block";
+
+    if (type === "DEFAITE") {
+      btnReplay.classList.add("defaite");
+      btnReplay.textContent = "☠️ DÉFAITE : REJOUER";
+    } else {
+      btnReplay.textContent = "🏆 VICTOIRE : REJOUER";
+    }
+
     btnReplay.onclick = () => location.reload();
   }
 }
@@ -1062,7 +1076,7 @@ function verifierDefaite() {
   ) {
     sessionTerminee = true;
     envoyerLog("DEFAITE", { duree: dureeSession() });
-    finDePartie("❌ Défaite — Pioche vide et plus aucune action possible");
+    finDePartie("❌ Défaite — Pioche vide et plus aucune action possible", "DEFAITE");
     return;
   }
 
@@ -1074,7 +1088,7 @@ function verifierDefaite() {
   ) {
     sessionTerminee = true;
     envoyerLog("DEFAITE", { duree: dureeSession() });
-    finDePartie("❌ Défaite — Plus aucune action possible");
+    finDePartie("❌ Défaite — Plus aucune action possible", "DEFAITE");
   }
 }
 
@@ -1086,7 +1100,7 @@ function verifierVictoire(){
       if(archives[c].length===10 && !sessionTerminee){
           sessionTerminee = true;
           envoyerLog("VICTOIRE", { duree: dureeSession() });
-          finDePartie("🏆 Archive stabilisée => VICTOIRE !");
+          finDePartie("🏆 Archive stabilisée => VICTOIRE !", "VICTOIRE");
       }
   });
 }
