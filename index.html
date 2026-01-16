@@ -1066,28 +1066,21 @@ function verifierVictoire(){
   });
 }
 
+// AFFICHAGE DES CONFETTIS LORS D'UNE VICTOIRE
 function lancerConfettisVictoire() {
-  const duration = 1800;
-  const end = Date.now() + duration;
+  confetti({
+    particleCount: 120,
+    spread: 90,
+    origin: { y: 0.6 }
+  });
 
-  (function frame() {
+  setTimeout(() => {
     confetti({
-      particleCount: 6,
-      angle: 60,
-      spread: 70,
-      origin: { x: 0 }
+      particleCount: 80,
+      spread: 120,
+      origin: { y: 0.4 }
     });
-    confetti({
-      particleCount: 6,
-      angle: 120,
-      spread: 70,
-      origin: { x: 1 }
-    });
-
-    if (Date.now() < end) {
-      requestAnimationFrame(frame);
-    }
-  })();
+  }, 300);
 }
 
 /* =====================================================
@@ -1141,16 +1134,6 @@ window.addEventListener("load", () => {
   sessionTerminee = false;
   envoyerLog("SESSION_START");
 });
-
-
-
-setTimeout(() => {
-  confetti({
-    particleCount: 200,
-    spread: 90,
-    origin: { y: 0.6 }
-  });
-}, 1000);
 
       
 </script>
