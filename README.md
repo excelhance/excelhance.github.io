@@ -3,3 +3,6 @@ Mini-Jeu "L'archiviste"
 
 URL d'accès :
 https://excelhance.github.io/
+
+Suivi des logs de connexion :
+https://docs.google.com/spreadsheets/d/1g0j135tlZhwzujl-zhumIP1fLGsOUhE-WeBukKp7_IQ/edit?gid=0#gid=0
