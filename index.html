@@ -469,6 +469,7 @@ function gererEtatBoutons() {
     bloquerBoutons("piocher"); // le bouton Pioche est bloqué
   } else if (selection === 2) {
     bloquerBoutons("piocher"); // Pioche bloquée
+    debloquerBoutons("defausser");
   } else if (selection === 3 &&
              valeursSelectionnees.includes(2) &&
              valeursSelectionnees.includes(5)) {
