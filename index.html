@@ -299,6 +299,15 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
   display: block;
   width: 70%;
 }
+
+/* Canvas utilisé par canvas-confetti */
+canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10000;
+}
+
 </style>
 </head>
 <body>
@@ -1060,8 +1069,14 @@ function verifierVictoire(){
       if(archives[c].length===10 && !sessionTerminee){
           sessionTerminee = true;
           envoyerLog("VICTOIRE", { duree: dureeSession() });
-          lancerConfettisVictoire();
           finDePartie("🏆 VICTOIRE => Archive complétée !", "VICTOIRE");
+
+          // Déclenchement des confettis après rendu réel de la pop-up
+          requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                  lancerConfettisVictoire();
+              });
+          });
       }
   });
 }
