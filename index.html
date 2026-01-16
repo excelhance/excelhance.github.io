@@ -36,7 +36,6 @@ h1 { text-align:center; margin-bottom:12px; }
   display: flex;
   flex-direction: column;
   flex: 0 0 70%;   /* largeur fixe 70% */
-  /*gap: 8px;*/
 }
 
 button {
@@ -141,7 +140,6 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
 .zone.rouge .zone-title {
   color:#dc2626;
 }
-
   
 .cartes {
   display:flex;
@@ -161,13 +159,11 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
   position:relative;
   box-shadow:0 4px 8px rgba(0,0,0,.4);
   cursor:pointer;
-  /*transition: transform 0.2s, outline 0.2s;*/
   transition: margin-top 0.2s ease, outline 0.2s ease;
 }
   
 .carte.selectionnee {
   outline:3px solid #38bdf8;
-  /*transform:translateY(-6px);*/
   margin-top: -6px;
 }
   
@@ -424,6 +420,9 @@ btnJoker.classList.add("joker-inactif")
 debloquerBoutons(["piocher"]);
 bloquerBoutons(["joker","defausser"]);
 
+/* =====================================================
+   BLOCAGE DYNAMIQUE DES BOUTONS
+===================================================== */
 function bloquerBoutons(ids){
   if(!Array.isArray(ids)) ids = [ids];
   ids.forEach(id => {
@@ -990,50 +989,6 @@ function auMoinsUneActionPossible(defaussePossible) {
   );
 }
 
-/*
-function verifierDefaite(){
-  // 1️⃣ Pioche vide
-  const piocheVide = pioche.length === 0;
-
-  // 2️⃣ Zone Centrale contenant au moins une carte
-  //const zoneCentraleNonVide = centre.children.length > 0;
-
-  // 3️⃣ Aucune archive complète
-  const aucuneArchiveComplete = !couleurs.some(c => archives[c].length === 10);
-
-  // 4️⃣ Vérifie si au moins une action de défausse est possible dans la Zone Centrale
-  const defaussePossible = (() => {
-  const cartes = [...centre.children];
-  const valeurs = cartes.map(c => +c.dataset.valeur).sort((a,b)=>a-b);
-
-  // ✅ 1. Paires de même valeur
-  const paire = valeurs.some(v => valeurs.filter(x => x === v).length === 2);
-  if(paire) return true;
-
-  // ✅ 2. Combinaison 2 + 5 (+ optionnellement 1 carte supplémentaire)
-  if(valeurs.includes(2) && valeurs.includes(5)) return true;
-
-  // ✅ 3. Combinaison 6 + 9
-  if(valeurs.includes(6) && valeurs.includes(9)) return true;
-
-  // ✅ 4. Combinaison 10 + Dame (12)
-  if(valeurs.includes(10) && valeurs.includes(12)) return true;
-
-  // ✅ 5. Combinaison 10 + Roi (13)
-  if(valeurs.includes(10) && valeurs.includes(13)) return true;
-
-  // ✅ 6. Combinaison 10 + As (1)
-  if(valeurs.includes(1) && valeurs.includes(10)) return true;
-
-  return false; // aucune action possible
-})();
-  
-  // 5️⃣ Défaite si toutes les conditions sont réunies
-  if(piocheVide && !defaussePossible && aucuneArchiveComplete && etat === "pioche" ){
-      finDePartie("❌ Défaite — Pioche vide et plus aucune action possible");
-  }
-}*/
-
 function verifierDefaite() {
 
   // ✅ Vérification état actuel
@@ -1114,7 +1069,9 @@ creerPaquet();
 updateCompteurPile();
 updateCouleurZoneCentrale();
 
-// ENVOI DES LOGS
+/* =====================================================
+   GESTION RÉCUPÉRATION DES LOGS
+===================================================== */
 function envoyerLog(action, options = {}) {
   const payload = JSON.stringify({
     playerId: getPlayerId(),
