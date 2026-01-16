@@ -1,7 +1,7 @@
 # excelhance.github.io
 Mini-Jeu "L'archiviste"
 
-URL d'accès :
+URL de la page de jeu :
 https://excelhance.github.io/
 
 Suivi des logs de connexion :
