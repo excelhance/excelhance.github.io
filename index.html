@@ -394,6 +394,9 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
   <button id="btn-retour-jeu">Retour au jeu</button>
 </div>
 
+<!-- Librairie confettis de victoire -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
 <script>
 /* =====================================================
    ÉTAT GLOBAL
@@ -1057,9 +1060,34 @@ function verifierVictoire(){
       if(archives[c].length===10 && !sessionTerminee){
           sessionTerminee = true;
           envoyerLog("VICTOIRE", { duree: dureeSession() });
+          lancerConfettisVictoire();
           finDePartie("🏆 VICTOIRE => Archive complétée !", "VICTOIRE");
       }
   });
+}
+
+function lancerConfettisVictoire() {
+  const duration = 1800;
+  const end = Date.now() + duration;
+
+  (function frame() {
+    confetti({
+      particleCount: 6,
+      angle: 60,
+      spread: 70,
+      origin: { x: 0 }
+    });
+    confetti({
+      particleCount: 6,
+      angle: 120,
+      spread: 70,
+      origin: { x: 1 }
+    });
+
+    if (Date.now() < end) {
+      requestAnimationFrame(frame);
+    }
+  })();
 }
 
 /* =====================================================
