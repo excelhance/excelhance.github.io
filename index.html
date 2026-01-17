@@ -1016,27 +1016,26 @@ function auMoinsUneActionPossible(defaussePossible) {
 
 function verifierDefaite() {
 
-  // ✅ Vérification état actuel
-  const piocheVide = pioche.length === 0;
-  const aucuneArchiveComplete = !couleurs.some(c => archives[c].length === 10);
+    // ❌ On ne teste pas tant que le jeu n’est pas stabilisé
+    if (etat !== "pioche" || attenteAction) return;
+    if (sessionTerminee) return;
 
-  // 🔹 Défausse théorique possible dans la zone centrale
-  const defaussePossible = (() => {
-    const cartes = [...centre.children];
-    const valeurs = cartes.map(c => +c.dataset.valeur).sort((a,b)=>a-b);
+    // Vérifier si une pioche est possible
+    const piochePossible = pioche.length > 0 && centre.children.length < 6;
 
-    // Paires de même valeur
-    if(valeurs.some(v => valeurs.filter(x => x === v).length === 2)) return true;
+    // Vérifier si le Joker est possible
+    const jokerPossible = !jokerUtilise && !jokerEnAttente;
 
-    // Combinaisons spéciales
-    if(valeurs.includes(2) && valeurs.includes(5)) return true;
-    if(valeurs.includes(6) && valeurs.includes(9)) return true;
-    if(valeurs.includes(10) && valeurs.includes(12)) return true;
-    if(valeurs.includes(10) && valeurs.includes(13)) return true;
-    if(valeurs.includes(1) && valeurs.includes(10)) return true;
+    // La seule action restante est-elle autorisée ?
+    const actionPossible = piochePossible || jokerPossible;
 
-    return false;
-  })();
+    // Défaite si aucune action n’est possible
+    if (!actionPossible) {
+        sessionTerminee = true;
+        envoyerLogFinal("DEFAITE", { duree: dureeSession() });
+        finDePartie("❌ Défaite — Plus aucune action possible", "DEFAITE");
+    }
+}
 
   // 🔹 Action réellement possible pour le joueur à ce moment
   const actionReellePossible = (() => {
@@ -1088,19 +1087,20 @@ function verifierDefaite() {
    CONDITION DE VICTOIRE
 ===================================================== */
 function verifierVictoire(){
-  couleurs.forEach(c=>{
-      if(archives[c].length===10 && !sessionTerminee){
-          sessionTerminee = true;
-          envoyerLogFinal("VICTOIRE", { duree: dureeSession() });
-          finDePartie("🏆 VICTOIRE => Archive complétée !", "VICTOIRE");
+  if (sessionTerminee) return;
 
-          // Déclenchement des confettis après rendu réel de la pop-up
-          requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                  lancerConfettisVictoire();
-              });
-          });
-      }
+  const couleurComplete = couleurs.find(c => archives[c].length === 10);
+  if (!couleurComplete) return;
+
+  sessionTerminee = true;
+
+  requestAnimationFrame(() => {
+    envoyerLogFinal("VICTOIRE", { duree: dureeSession() });
+    finDePartie("🏆 VICTOIRE => Archive complétée !", "VICTOIRE");
+
+    requestAnimationFrame(() => {
+      lancerConfettisVictoire();
+    });
   });
 }
 
