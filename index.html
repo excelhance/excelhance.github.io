@@ -417,6 +417,7 @@ let pioche = [];
 let etat = "pioche";
 let jokerUtilise = false;
 let jokerEnAttente = false;
+let confirmationDefaiteEnCours = false;
 let premierePioche = true;
 let attenteAction = false;
 let vision10AsActive = false;
@@ -913,37 +914,34 @@ function fermerPopup10As(){
 ===================================================== */
 btnJoker.onclick = () => {
 
-  // ❌ Joker déjà consommé → confirmation AVANT toute autre logique
-  if (jokerUtilise && !jokerEnAttente) {
+  // ⛔ Si confirmation déjà ouverte, on ignore tout
+  if (confirmationDefaiteEnCours) return;
+
+  // ❌ Joker déjà utilisé → confirmation
+  if (jokerUtilise) {
+    confirmationDefaiteEnCours = true;
     document.getElementById("zone-actions").classList.add("ui-bloquee");
 
     confirmJeu(
       "⚠️ Le Joker a déjà été utilisé. Confirmez-vous l'activation de cette action ?",
       reponse => {
+        confirmationDefaiteEnCours = false;
         document.getElementById("zone-actions").classList.remove("ui-bloquee");
 
         if (reponse) {
+          // 🔒 FORÇAGE TERMINAL
           sessionTerminee = true;
-          envoyerLogFinal("DEFAITE", { duree: dureeSession() });
           finDePartie("❌ Défaite — Chaos incontrôlé", "DEFAITE");
+          envoyerLog("DEFAITE", { duree: dureeSession() });
         }
       }
     );
     return;
   }
 
-  // 🔁 Toggle OFF uniquement si Joker en attente ET non consommé
-  if (jokerEnAttente && !jokerUtilise) {
-    jokerEnAttente = false;
-    btnJoker.classList.remove("joker-actif");
-    updateCouleurZoneCentrale();
-    checkJeu();
-    return;
-  }
-
   // ❌ Aucun archive non vide
-  const nonVides = couleurs.filter(c => archives[c].length);
-  if (nonVides.length === 0) return;
+  const nonVides = couleurs.some(c => archives[c].length > 0);
+  if (!nonVides) return;
 
   // ✅ Activation normale du Joker
   jokerUtilise = true;
@@ -985,8 +983,9 @@ function finDePartie(message, type = "VICTOIRE") {
 
 /* =====================================================*/
 function checkJeu(){
-    verifierDefaite();
-    verifierVictoire();
+  if (confirmationDefaiteEnCours || sessionTerminee) return;
+  verifierDefaite();
+  verifierVictoire();
 }
 /* =====================================================
    CONDITIONS DE DEFAITE
