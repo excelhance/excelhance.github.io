@@ -1015,28 +1015,58 @@ function auMoinsUneActionPossible(defaussePossible) {
 }
 
 function verifierDefaite() {
+  // ❌ On ne teste pas tant que le jeu n’est pas stabilisé
+  if (etat !== "pioche" || attenteAction) return;
+  if (sessionTerminee) return;
 
-    // ❌ On ne teste pas tant que le jeu n’est pas stabilisé
-    if (etat !== "pioche" || attenteAction) return;
-    if (sessionTerminee) return;
+  // 🔹 Défausse théorique possible dans la zone centrale
+  const cartes = [...centre.children];
+  const valeurs = cartes.map(c => +c.dataset.valeur).sort((a,b)=>a-b);
 
-    // Vérifier si une pioche est possible
-    const piochePossible = pioche.length > 0 && centre.children.length < 6;
+  const defaussePossible = (() => {
+    if(valeurs.some(v => valeurs.filter(x => x === v).length === 2)) return true;
+    if(valeurs.includes(2) && valeurs.includes(5)) return true;
+    if(valeurs.includes(6) && valeurs.includes(9)) return true;
+    if(valeurs.includes(10) && valeurs.includes(12)) return true;
+    if(valeurs.includes(10) && valeurs.includes(13)) return true;
+    if(valeurs.includes(1) && valeurs.includes(10)) return true;
+    return false;
+  })();
 
-    // Vérifier si le Joker est possible
-    const jokerPossible = !jokerUtilise && !jokerEnAttente;
+  // 🔹 Pioche possible
+  const piochePossible = pioche.length > 0 && centre.children.length < 6;
 
-    // La seule action restante est-elle autorisée ?
-    const actionPossible = piochePossible || jokerPossible;
+  // 🔹 Joker possible
+  const jokerPossible = !jokerUtilise && !jokerEnAttente;
 
-    // Défaite si aucune action n’est possible
-    if (!actionPossible) {
-        sessionTerminee = true;
-        envoyerLogFinal("DEFAITE", { duree: dureeSession() });
-        finDePartie("❌ Défaite — Plus aucune action possible", "DEFAITE");
-    }
+  // 🔹 Aucune archive complète
+  const aucuneArchiveComplete = !couleurs.some(c => archives[c].length === 10);
+
+  // 🔹 CAS HISTORIQUE — pioche vide + aucune action possible + aucune archive complète
+  if (pioche.length === 0 && !defaussePossible && aucuneArchiveComplete) {
+    sessionTerminee = true;
+    envoyerLogFinal("DEFAITE", { duree: dureeSession() });
+    finDePartie("❌ Défaite — Pioche vide et plus aucune action possible", "DEFAITE");
+    return;
+  }
+
+  // 🔹 CAS SPÉCIAL — Joker déjà utilisé + ≥6 cartes en Zone Centrale + seule action = pioche
+  if (jokerUtilise && !jokerEnAttente && cartes.length >= 6 && !piochePossible) {
+    sessionTerminee = true;
+    envoyerLogFinal("DEFAITE", { duree: dureeSession() });
+    finDePartie("❌ Défaite — Joker bloqué et pioche impossible", "DEFAITE");
+    return;
+  }
+
+  // 🔹 CAS GÉNÉRAL — aucune action réellement possible
+  if (!auMoinsUneActionPossible(defaussePossible)) {
+    sessionTerminee = true;
+    envoyerLogFinal("DEFAITE", { duree: dureeSession() });
+    finDePartie("❌ Défaite — Plus aucune action possible", "DEFAITE");
+    return;
+  }
 }
-
+      
   // 🔹 Action réellement possible pour le joueur à ce moment
   const actionReellePossible = (() => {
   // ===== ÉTAT : PIOCHE =====
