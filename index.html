@@ -913,40 +913,41 @@ function fermerPopup10As(){
 ===================================================== */
 btnJoker.onclick = () => {
 
-  // 🔁 Toggle OFF si le Joker est simplement en attente
-  if (jokerEnAttente) {
-    jokerUtilise= false;
+  // ❌ Joker déjà consommé → confirmation AVANT toute autre logique
+  if (jokerUtilise && !jokerEnAttente) {
+    document.getElementById("zone-actions").classList.add("ui-bloquee");
+
+    confirmJeu(
+      "⚠️ Le Joker a déjà été utilisé. Confirmez-vous l'activation de cette action ?",
+      reponse => {
+        document.getElementById("zone-actions").classList.remove("ui-bloquee");
+
+        if (reponse) {
+          sessionTerminee = true;
+          envoyerLogFinal("DEFAITE", { duree: dureeSession() });
+          finDePartie("❌ Défaite — Chaos incontrôlé", "DEFAITE");
+        }
+      }
+    );
+    return;
+  }
+
+  // 🔁 Toggle OFF uniquement si Joker en attente ET non consommé
+  if (jokerEnAttente && !jokerUtilise) {
     jokerEnAttente = false;
     btnJoker.classList.remove("joker-actif");
     updateCouleurZoneCentrale();
-    checkJeu(); // check d'une victoire ou d'une défaite
+    checkJeu();
     return;
   }
-  
-  // ❌ Joker déjà consommé → confirmer avant défaite
-  if (jokerUtilise && !jokerEnAttente) {
-  document.getElementById("zone-actions").classList.add("ui-bloquee");
-  confirmJeu("⚠️ Le Joker a déjà été utilisé. Confirmez-vous l'activation de cette action ?",
-      reponse => {
-          document.getElementById("zone-actions").classList.remove("ui-bloquee");
-          if (reponse) {
-              sessionTerminee = true; // pour éviter double log
-              envoyerLogFinal("DEFAITE", { duree: dureeSession() });
-              finDePartie("❌ Défaite — Chaos incontrôlé", "DEFAITE");
-          }
-          // si reponse = false, on ne fait rien, l'utilisateur reste dans le jeu
-      }
-  );
-  return; // on sort immédiatement pour ne pas continuer l'exécution
-}
 
   // ❌ Aucun archive non vide
-  const nonVides = couleurs.filter(c=>archives[c].length);
-  if(nonVides.length===0) return;
+  const nonVides = couleurs.filter(c => archives[c].length);
+  if (nonVides.length === 0) return;
 
-  // ✅ Activation du Joker
-  jokerUtilise=true;
-  jokerEnAttente=true;
+  // ✅ Activation normale du Joker
+  jokerUtilise = true;
+  jokerEnAttente = true;
   btnJoker.classList.add("joker-actif");
 };
 
