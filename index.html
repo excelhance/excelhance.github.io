@@ -417,7 +417,6 @@ let pioche = [];
 let etat = "pioche";
 let jokerUtilise = false;
 let jokerEnAttente = false;
-let confirmationDefaiteEnCours = false;
 let premierePioche = true;
 let attenteAction = false;
 let vision10AsActive = false;
@@ -914,38 +913,40 @@ function fermerPopup10As(){
 ===================================================== */
 btnJoker.onclick = () => {
 
-  // ⛔ Si confirmation déjà ouverte, on ignore tout
-  if (confirmationDefaiteEnCours) return;
-
-  // ❌ Joker déjà utilisé → confirmation
-  if (jokerUtilise) {
-    confirmationDefaiteEnCours = true;
-    document.getElementById("zone-actions").classList.add("ui-bloquee");
-
-    confirmJeu(
-      "⚠️ Le Joker a déjà été utilisé. Confirmez-vous l'activation de cette action ?",
-      reponse => {
-        confirmationDefaiteEnCours = false;
-        document.getElementById("zone-actions").classList.remove("ui-bloquee");
-
-        if (reponse) {
-          // 🔒 FORÇAGE TERMINAL
-          sessionTerminee = true;
-          finDePartie("❌ Défaite — Chaos incontrôlé", "DEFAITE");
-          envoyerLog("DEFAITE", { duree: dureeSession() });
-        }
-      }
-    );
+  // 🔁 Toggle OFF si le Joker est simplement en attente
+  if (jokerEnAttente) {
+    jokerUtilise= false;
+    jokerEnAttente = false;
+    btnJoker.classList.remove("joker-actif");
+    updateCouleurZoneCentrale();
+    checkJeu(); // check d'une victoire ou d'une défaite
     return;
   }
+  
+  // ❌ Joker déjà consommé → confirmer avant défaite
+  if (jokerUtilise && !jokerEnAttente) {
+  document.getElementById("zone-actions").classList.add("ui-bloquee");
+  confirmJeu("⚠️ Le Joker a déjà été utilisé. Confirmez-vous l'activation de cette action ?",
+      reponse => {
+          document.getElementById("zone-actions").classList.remove("ui-bloquee");
+          if (reponse) {
+              sessionTerminee = true; // pour éviter double log
+              envoyerLog("DEFAITE", { duree: dureeSession() });
+              finDePartie("❌ Défaite — Chaos incontrôlé", "DEFAITE");
+          }
+          // si reponse = false, on ne fait rien, l'utilisateur reste dans le jeu
+      }
+  );
+  return; // on sort immédiatement pour ne pas continuer l'exécution
+}
 
   // ❌ Aucun archive non vide
-  const nonVides = couleurs.some(c => archives[c].length > 0);
-  if (!nonVides) return;
+  const nonVides = couleurs.filter(c=>archives[c].length);
+  if(nonVides.length===0) return;
 
-  // ✅ Activation normale du Joker
-  jokerUtilise = true;
-  jokerEnAttente = true;
+  // ✅ Activation du Joker
+  jokerUtilise=true;
+  jokerEnAttente=true;
   btnJoker.classList.add("joker-actif");
 };
 
@@ -983,13 +984,8 @@ function finDePartie(message, type = "VICTOIRE") {
 
 /* =====================================================*/
 function checkJeu(){
-  if (confirmationDefaiteEnCours || sessionTerminee) return;
-
-  // ⚠️ La victoire doit être évaluée AVANT toute défaite
-  verifierVictoire();
-  if (sessionTerminee) return;
-
-  verifierDefaite();
+    verifierDefaite();
+    verifierVictoire();
 }
 /* =====================================================
    CONDITIONS DE DEFAITE
@@ -1015,77 +1011,38 @@ function auMoinsUneActionPossible(defaussePossible) {
 }
 
 function verifierDefaite() {
-  // ❌ On ne teste pas tant que le jeu n’est pas stabilisé
-  if (etat !== "pioche" || attenteAction) return;
-  if (sessionTerminee) return;
+
+  // ✅ Vérification état actuel
+  const piocheVide = pioche.length === 0;
+  const aucuneArchiveComplete = !couleurs.some(c => archives[c].length === 10);
 
   // 🔹 Défausse théorique possible dans la zone centrale
-  const cartes = [...centre.children];
-  const valeurs = cartes.map(c => +c.dataset.valeur).sort((a,b)=>a-b);
-
   const defaussePossible = (() => {
+    const cartes = [...centre.children];
+    const valeurs = cartes.map(c => +c.dataset.valeur).sort((a,b)=>a-b);
+
+    // Paires de même valeur
     if(valeurs.some(v => valeurs.filter(x => x === v).length === 2)) return true;
+
+    // Combinaisons spéciales
     if(valeurs.includes(2) && valeurs.includes(5)) return true;
     if(valeurs.includes(6) && valeurs.includes(9)) return true;
     if(valeurs.includes(10) && valeurs.includes(12)) return true;
     if(valeurs.includes(10) && valeurs.includes(13)) return true;
     if(valeurs.includes(1) && valeurs.includes(10)) return true;
+
     return false;
   })();
 
-  // 🔹 Pioche possible
-  const piochePossible = pioche.length > 0 && centre.children.length < 6;
-
-  // 🔹 Joker possible
-  const jokerPossible = !jokerUtilise && !jokerEnAttente;
-
-  // 🔹 Aucune archive complète
-  const aucuneArchiveComplete = !couleurs.some(c => archives[c].length === 10);
-
-  // 🔹 CAS HISTORIQUE — pioche vide + aucune action possible + aucune archive complète
-  if (pioche.length === 0 && !defaussePossible && aucuneArchiveComplete) {
-    sessionTerminee = true;
-    envoyerLogFinal("DEFAITE", { duree: dureeSession() });
-    finDePartie("❌ Défaite — Pioche vide et plus aucune action possible", "DEFAITE");
-    return;
-  }
-
-  // 🔹 CAS SPÉCIAL — Joker déjà utilisé + ≥6 cartes en Zone Centrale + seule action = pioche
-  if (jokerUtilise && !jokerEnAttente && cartes.length >= 6 && !piochePossible) {
-    sessionTerminee = true;
-    envoyerLogFinal("DEFAITE", { duree: dureeSession() });
-    finDePartie("❌ Défaite — Joker bloqué et pioche impossible", "DEFAITE");
-    return;
-  }
-
-  // 🔹 CAS GÉNÉRAL — aucune action réellement possible
-  if (!auMoinsUneActionPossible(defaussePossible)) {
-    sessionTerminee = true;
-    envoyerLogFinal("DEFAITE", { duree: dureeSession() });
-    finDePartie("❌ Défaite — Plus aucune action possible", "DEFAITE");
-    return;
-  }
-}
-      
   // 🔹 Action réellement possible pour le joueur à ce moment
   const actionReellePossible = (() => {
-  // ===== ÉTAT : PIOCHE =====
-  if (etat === "pioche") {
-    return (
-      pioche.length > 0 &&
-      centre.children.length < 6
-    );
-  }
-  // ===== ÉTAT : ACTION =====
-  if (etat === "action") {
-    return (
-      defaussePossible ||
-      couleurs.some(c => archives[c].length === 10) ||
-      (!jokerUtilise && !jokerEnAttente)
-    );
-  }
-  return false;
-})();
+    const piochePossible = pioche.length > 0 && centre.children.length < 6;
+    const defausseReelle = (etat === "action" && defaussePossible);
+    const archivePossible = couleurs.some(c => archives[c].length === 10);
+    const jokerPossible = !jokerUtilise && !jokerEnAttente;
+
+    return piochePossible || defausseReelle || archivePossible || jokerPossible;
+  })();
 
   // 🔒 CAS HISTORIQUE — pioche vide + plus aucune action
   if (
@@ -1096,7 +1053,7 @@ function verifierDefaite() {
     !sessionTerminee
   ) {
     sessionTerminee = true;
-    envoyerLogFinal("DEFAITE", { duree: dureeSession() });
+    envoyerLog("DEFAITE", { duree: dureeSession() });
     finDePartie("❌ Défaite — Pioche vide et plus aucune action possible", "DEFAITE");
     return;
   }
@@ -1108,7 +1065,7 @@ function verifierDefaite() {
     !sessionTerminee
   ) {
     sessionTerminee = true;
-    envoyerLogFinal("DEFAITE", { duree: dureeSession() });
+    envoyerLog("DEFAITE", { duree: dureeSession() });
     finDePartie("❌ Défaite — Plus aucune action possible", "DEFAITE");
   }
 }
@@ -1117,20 +1074,19 @@ function verifierDefaite() {
    CONDITION DE VICTOIRE
 ===================================================== */
 function verifierVictoire(){
-  if (sessionTerminee) return;
+  couleurs.forEach(c=>{
+      if(archives[c].length===10 && !sessionTerminee){
+          sessionTerminee = true;
+          envoyerLog("VICTOIRE", { duree: dureeSession() });
+          finDePartie("🏆 VICTOIRE => Archive complétée !", "VICTOIRE");
 
-  const couleurComplete = couleurs.find(c => archives[c].length === 10);
-  if (!couleurComplete) return;
-
-  sessionTerminee = true;
-
-  requestAnimationFrame(() => {
-    envoyerLogFinal("VICTOIRE", { duree: dureeSession() });
-    finDePartie("🏆 VICTOIRE => Archive complétée !", "VICTOIRE");
-
-    requestAnimationFrame(() => {
-      lancerConfettisVictoire();
-    });
+          // Déclenchement des confettis après rendu réel de la pop-up
+          requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                  lancerConfettisVictoire();
+              });
+          });
+      }
   });
 }
 
@@ -1181,21 +1137,6 @@ function envoyerLog(action, options = {}) {
       { method: "POST", body: payload }
     ).catch(() => {});
   }
-}
-function envoyerLogFinal(action, data = {}) {
-  const payload = JSON.stringify({
-    type: "FIN_PARTIE",
-    action,
-    duree: data.duree,
-    sessionId,
-    userAgent: navigator.userAgent,
-    timestamp: Date.now()
-  });
-
-  navigator.sendBeacon(
-    "https://script.google.com/macros/s/AKfycbwgxdT_l_ent4p_44yn3cMrmn4IFCgX935ivshKrmh7xnDMPoEURDoUEzLFDzWLHMobGw/exec",
-    payload
-  );
 }
 // Générer un identifiant joueur anonyme, sans cookie
 function getPlayerId(){
