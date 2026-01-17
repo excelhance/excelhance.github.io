@@ -984,8 +984,12 @@ function finDePartie(message, type = "VICTOIRE") {
 /* =====================================================*/
 function checkJeu(){
   if (confirmationDefaiteEnCours || sessionTerminee) return;
-  verifierDefaite();
+
+  // ⚠️ La victoire doit être évaluée AVANT toute défaite
   verifierVictoire();
+  if (sessionTerminee) return;
+
+  verifierDefaite();
 }
 /* =====================================================
    CONDITIONS DE DEFAITE
