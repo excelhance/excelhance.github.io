@@ -1040,13 +1040,23 @@ function verifierDefaite() {
 
   // 🔹 Action réellement possible pour le joueur à ce moment
   const actionReellePossible = (() => {
-    const piochePossible = pioche.length > 0 && centre.children.length < 6;
-    const defausseReelle = (etat === "action" && defaussePossible);
-    const archivePossible = couleurs.some(c => archives[c].length === 10);
-    const jokerPossible = !jokerUtilise && !jokerEnAttente;
-
-    return piochePossible || defausseReelle || archivePossible || jokerPossible;
-  })();
+  // ===== ÉTAT : PIOCHE =====
+  if (etat === "pioche") {
+    return (
+      pioche.length > 0 &&
+      centre.children.length < 6
+    );
+  }
+  // ===== ÉTAT : ACTION =====
+  if (etat === "action") {
+    return (
+      defaussePossible ||
+      couleurs.some(c => archives[c].length === 10) ||
+      (!jokerUtilise && !jokerEnAttente)
+    );
+  }
+  return false;
+})();
 
   // 🔒 CAS HISTORIQUE — pioche vide + plus aucune action
   if (
