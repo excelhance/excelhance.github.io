@@ -931,7 +931,7 @@ btnJoker.onclick = () => {
           document.getElementById("zone-actions").classList.remove("ui-bloquee");
           if (reponse) {
               sessionTerminee = true; // pour éviter double log
-              envoyerLog("DEFAITE", { duree: dureeSession() });
+              envoyerLogFinal("DEFAITE", { duree: dureeSession() });
               finDePartie("❌ Défaite — Chaos incontrôlé", "DEFAITE");
           }
           // si reponse = false, on ne fait rien, l'utilisateur reste dans le jeu
@@ -1053,7 +1053,7 @@ function verifierDefaite() {
     !sessionTerminee
   ) {
     sessionTerminee = true;
-    envoyerLog("DEFAITE", { duree: dureeSession() });
+    envoyerLogFinal("DEFAITE", { duree: dureeSession() });
     finDePartie("❌ Défaite — Pioche vide et plus aucune action possible", "DEFAITE");
     return;
   }
@@ -1065,7 +1065,7 @@ function verifierDefaite() {
     !sessionTerminee
   ) {
     sessionTerminee = true;
-    envoyerLog("DEFAITE", { duree: dureeSession() });
+    envoyerLogFinal("DEFAITE", { duree: dureeSession() });
     finDePartie("❌ Défaite — Plus aucune action possible", "DEFAITE");
   }
 }
@@ -1077,7 +1077,7 @@ function verifierVictoire(){
   couleurs.forEach(c=>{
       if(archives[c].length===10 && !sessionTerminee){
           sessionTerminee = true;
-          envoyerLog("VICTOIRE", { duree: dureeSession() });
+          envoyerLogFinal("VICTOIRE", { duree: dureeSession() });
           finDePartie("🏆 VICTOIRE => Archive complétée !", "VICTOIRE");
 
           // Déclenchement des confettis après rendu réel de la pop-up
@@ -1137,6 +1137,21 @@ function envoyerLog(action, options = {}) {
       { method: "POST", body: payload }
     ).catch(() => {});
   }
+}
+function envoyerLogFinal(action, data = {}) {
+  const payload = JSON.stringify({
+    type: "FIN_PARTIE",
+    action,
+    duree: data.duree,
+    sessionId,
+    userAgent: navigator.userAgent,
+    timestamp: Date.now()
+  });
+
+  navigator.sendBeacon(
+    "https://script.google.com/macros/s/AKfycbwgxdT_l_ent4p_44yn3cMrmn4IFCgX935ivshKrmh7xnDMPoEURDoUEzLFDzWLHMobGw/exec",
+    payload
+  );
 }
 // Générer un identifiant joueur anonyme, sans cookie
 function getPlayerId(){
