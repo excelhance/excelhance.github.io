@@ -1073,20 +1073,20 @@ function verifierDefaite() {
 /* =====================================================
    CONDITION DE VICTOIRE
 ===================================================== */
-function verifierVictoire() {
-  couleurs.forEach(c => {
-    if (archives[c].length === 10 && !sessionTerminee) {
-      sessionTerminee = true;
-      envoyerLog("VICTOIRE", { duree: dureeSession() });
-      finDePartie("🏆 VICTOIRE => Archive complétée !", "VICTOIRE");
+function verifierVictoire(){
+  couleurs.forEach(c=>{
+      if(archives[c].length===10 && !sessionTerminee){
+          sessionTerminee = true;
+          envoyerLog("VICTOIRE", { duree: dureeSession() });
+          finDePartie("🏆 VICTOIRE => Archive complétée !", "VICTOIRE");
 
-      // Confettis après rendu
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          lancerConfettisVictoire();
-        });
-      });
-    }
+          // Déclenchement des confettis après rendu réel de la pop-up
+          requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                  lancerConfettisVictoire();
+              });
+          });
+      }
   });
 }
 
@@ -1119,27 +1119,25 @@ gererEtatBoutons();
    GESTION RÉCUPÉRATION DES LOGS
 ===================================================== */
 function envoyerLog(action, options = {}) {
-  const payload = {
+  const payload = JSON.stringify({
     playerId: getPlayerId(),
-    action,
+    action: action,
     date: new Date().toISOString(),
     duree: options.duree ?? null,
     userAgent: navigator.userAgent
-  };
-
-  fetch(
-    "https://script.google.com/macros/s/AKfycbyIOWAVgeHhrCRHAE83czcYP0QQJenABczxuZaQuy1sdXZY4oVYv8o7VeyjZDNiy9FLWQ/exec",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload),
-      keepalive: true   // 🔴 CRUCIAL pour Chrome Desktop
-    }
-  ).catch(() => {});
+  });
+  if (action === "VICTOIRE" || action === "DEFAITE") {
+    navigator.sendBeacon(
+      "https://script.google.com/macros/s/AKfycbwgxdT_l_ent4p_44yn3cMrmn4IFCgX935ivshKrmh7xnDMPoEURDoUEzLFDzWLHMobGw/exec",
+      payload
+    );
+  } else {
+    fetch(
+      "https://script.google.com/macros/s/AKfycbwgxdT_l_ent4p_44yn3cMrmn4IFCgX935ivshKrmh7xnDMPoEURDoUEzLFDzWLHMobGw/exec",
+      { method: "POST", body: payload }
+    ).catch(() => {});
+  }
 }
-
 // Générer un identifiant joueur anonyme, sans cookie
 function getPlayerId(){
   let id = localStorage.getItem("playerId");
