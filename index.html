@@ -1053,13 +1053,8 @@ function verifierDefaite() {
     !sessionTerminee
   ) {
     sessionTerminee = true;
+    envoyerLog("DEFAITE", { duree: dureeSession() });
     finDePartie("❌ Défaite — Pioche vide et plus aucune action possible", "DEFAITE");
-    
-    // ⏱️ Envoi différé, hors du cycle critique
-    setTimeout(() => {
-      envoyerLog("DEFAITE", { duree: dureeSession() });
-    }, 150);
-        
     return;
   }
 
@@ -1070,12 +1065,8 @@ function verifierDefaite() {
     !sessionTerminee
   ) {
     sessionTerminee = true;
+    envoyerLog("DEFAITE", { duree: dureeSession() });
     finDePartie("❌ Défaite — Plus aucune action possible", "DEFAITE");
-
-    // ⏱️ Envoi différé, hors du cycle critique
-    setTimeout(() => {
-      envoyerLog("DEFAITE", { duree: dureeSession() });
-    }, 150);
   }
 }
 
@@ -1086,13 +1077,8 @@ function verifierVictoire() {
   couleurs.forEach(c => {
     if (archives[c].length === 10 && !sessionTerminee) {
       sessionTerminee = true;
-
+      envoyerLog("VICTOIRE", { duree: dureeSession() });
       finDePartie("🏆 VICTOIRE => Archive complétée !", "VICTOIRE");
-
-      // ⏱️ Envoi différé, hors du cycle critique
-      setTimeout(() => {
-        envoyerLog("VICTOIRE", { duree: dureeSession() });
-      }, 150);
 
       // Confettis après rendu
       requestAnimationFrame(() => {
@@ -1133,48 +1119,25 @@ gererEtatBoutons();
    GESTION RÉCUPÉRATION DES LOGS
 ===================================================== */
 function envoyerLog(action, options = {}) {
-
-  const data = {
+  const payload = {
     playerId: getPlayerId(),
-    action: action,
+    action,
     date: new Date().toISOString(),
     duree: options.duree ?? null,
     userAgent: navigator.userAgent
   };
 
-  const url = "https://script.google.com/macros/s/AKfycbxaxWJni1EyA8HpcYFumvqO0ajnFMM6tGY4b0ylBRbB8ElwdmxSjBA5A6-PoQwR_y9C_w/exec";
-
-  // ⚠️ Blob OBLIGATOIRE pour Chrome Desktop + Apps Script
-  const blob = new Blob(
-    [JSON.stringify(data)],
-    { type: "text/plain;charset=UTF-8" }
-  );
-
-  if (action === "VICTOIRE" || action === "DEFAITE") {
-
-    let beaconOK = false;
-
-    try {
-      beaconOK = navigator.sendBeacon(url, blob);
-    } catch (e) {
-      beaconOK = false;
-    }
-
-    // 🔒 Fallback garanti
-    if (!beaconOK) {
-      fetch(url, {
-        method: "POST",
-        body: blob,
-        keepalive: true
-      }).catch(() => {});
-    }
-
-  } else {
-    fetch(url, {
+  fetch(
+    "https://script.google.com/macros/s/AKfycbyIOWAVgeHhrCRHAE83czcYP0QQJenABczxuZaQuy1sdXZY4oVYv8o7VeyjZDNiy9FLWQ/exec",
+    {
       method: "POST",
-      body: blob
-    }).catch(() => {});
-  }
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload),
+      keepalive: true   // 🔴 CRUCIAL pour Chrome Desktop
+    }
+  ).catch(() => {});
 }
 
 // Générer un identifiant joueur anonyme, sans cookie
