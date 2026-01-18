@@ -1053,8 +1053,13 @@ function verifierDefaite() {
     !sessionTerminee
   ) {
     sessionTerminee = true;
-    envoyerLog("DEFAITE", { duree: dureeSession() });
     finDePartie("❌ Défaite — Pioche vide et plus aucune action possible", "DEFAITE");
+    
+    // ⏱️ Envoi différé, hors du cycle critique
+    setTimeout(() => {
+      envoyerLog("DEFAITE", { duree: dureeSession() });
+    }, 150);
+        
     return;
   }
 
@@ -1065,28 +1070,37 @@ function verifierDefaite() {
     !sessionTerminee
   ) {
     sessionTerminee = true;
-    envoyerLog("DEFAITE", { duree: dureeSession() });
     finDePartie("❌ Défaite — Plus aucune action possible", "DEFAITE");
+
+    // ⏱️ Envoi différé, hors du cycle critique
+    setTimeout(() => {
+      envoyerLog("DEFAITE", { duree: dureeSession() });
+    }, 150);
   }
 }
 
 /* =====================================================
    CONDITION DE VICTOIRE
 ===================================================== */
-function verifierVictoire(){
-  couleurs.forEach(c=>{
-      if(archives[c].length===10 && !sessionTerminee){
-          sessionTerminee = true;
-          envoyerLog("VICTOIRE", { duree: dureeSession() });
-          finDePartie("🏆 VICTOIRE => Archive complétée !", "VICTOIRE");
+function verifierVictoire() {
+  couleurs.forEach(c => {
+    if (archives[c].length === 10 && !sessionTerminee) {
+      sessionTerminee = true;
 
-          // Déclenchement des confettis après rendu réel de la pop-up
-          requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                  lancerConfettisVictoire();
-              });
-          });
-      }
+      finDePartie("🏆 VICTOIRE => Archive complétée !", "VICTOIRE");
+
+      // ⏱️ Envoi différé, hors du cycle critique
+      setTimeout(() => {
+        envoyerLog("VICTOIRE", { duree: dureeSession() });
+      }, 150);
+
+      // Confettis après rendu
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          lancerConfettisVictoire();
+        });
+      });
+    }
   });
 }
 
