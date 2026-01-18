@@ -1126,18 +1126,36 @@ function envoyerLog(action, options = {}) {
     duree: options.duree ?? null,
     userAgent: navigator.userAgent
   });
+
+  const url = "https://script.google.com/macros/s/AKfycbwgxdT_l_ent4p_44yn3cMrmn4IFCgX935ivshKrmh7xnDMPoEURDoUEzLFDzWLHMobGw/exec";
+
   if (action === "VICTOIRE" || action === "DEFAITE") {
-    navigator.sendBeacon(
-      "https://script.google.com/macros/s/AKfycbwgxdT_l_ent4p_44yn3cMrmn4IFCgX935ivshKrmh7xnDMPoEURDoUEzLFDzWLHMobGw/exec",
-      payload
-    );
+
+    let beaconEnvoye = false;
+
+    try {
+      beaconEnvoye = navigator.sendBeacon(url, payload);
+    } catch (e) {
+      beaconEnvoye = false;
+    }
+
+    // 🔒 Fallback Chrome / Desktop
+    if (!beaconEnvoye) {
+      fetch(url, {
+        method: "POST",
+        body: payload,
+        keepalive: true
+      }).catch(() => {});
+    }
+
   } else {
-    fetch(
-      "https://script.google.com/macros/s/AKfycbwgxdT_l_ent4p_44yn3cMrmn4IFCgX935ivshKrmh7xnDMPoEURDoUEzLFDzWLHMobGw/exec",
-      { method: "POST", body: payload }
-    ).catch(() => {});
+    fetch(url, {
+      method: "POST",
+      body: payload
+    }).catch(() => {});
   }
 }
+
 // Générer un identifiant joueur anonyme, sans cookie
 function getPlayerId(){
   let id = localStorage.getItem("playerId");
