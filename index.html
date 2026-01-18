@@ -1119,31 +1119,38 @@ gererEtatBoutons();
    GESTION RÉCUPÉRATION DES LOGS
 ===================================================== */
 function envoyerLog(action, options = {}) {
-  const payload = JSON.stringify({
+
+  const data = {
     playerId: getPlayerId(),
     action: action,
     date: new Date().toISOString(),
     duree: options.duree ?? null,
     userAgent: navigator.userAgent
-  });
+  };
 
   const url = "https://script.google.com/macros/s/AKfycbwgxdT_l_ent4p_44yn3cMrmn4IFCgX935ivshKrmh7xnDMPoEURDoUEzLFDzWLHMobGw/exec";
 
+  // ⚠️ Blob OBLIGATOIRE pour Chrome Desktop + Apps Script
+  const blob = new Blob(
+    [JSON.stringify(data)],
+    { type: "text/plain;charset=UTF-8" }
+  );
+
   if (action === "VICTOIRE" || action === "DEFAITE") {
 
-    let beaconEnvoye = false;
+    let beaconOK = false;
 
     try {
-      beaconEnvoye = navigator.sendBeacon(url, payload);
+      beaconOK = navigator.sendBeacon(url, blob);
     } catch (e) {
-      beaconEnvoye = false;
+      beaconOK = false;
     }
 
-    // 🔒 Fallback Chrome / Desktop
-    if (!beaconEnvoye) {
+    // 🔒 Fallback garanti
+    if (!beaconOK) {
       fetch(url, {
         method: "POST",
-        body: payload,
+        body: blob,
         keepalive: true
       }).catch(() => {});
     }
@@ -1151,7 +1158,7 @@ function envoyerLog(action, options = {}) {
   } else {
     fetch(url, {
       method: "POST",
-      body: payload
+      body: blob
     }).catch(() => {});
   }
 }
