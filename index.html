@@ -1122,25 +1122,37 @@ function verifierDefaite() {
 
 // Animation des têtes de mort 💀
 function lancerAnimationDefaite() {
-  const skull = confetti.shapeFromText({ text: "❌", scalar: 5 });
+  const numSkulls = 12; // nombre de têtes de mort
+  const colors = ["#dc2626"]; // rouge
+  const minSize = 40; // taille minimale en px
+  const maxSize = 80; // taille maximale en px
 
-  const duration = 1500;
-  const end = Date.now() + duration;
+  for (let i = 0; i < numSkulls; i++) {
+    const skull = document.createElement("div");
+    skull.textContent = "💀";
+    skull.style.position = "fixed";
+    skull.style.top = "-100px";
+    skull.style.left = `${Math.random() * 90}vw`;
+    skull.style.fontSize = `${minSize + Math.random() * (maxSize - minSize)}px`;
+    skull.style.color = colors[0];
+    skull.style.zIndex = 9999;
+    skull.style.pointerEvents = "none";
+    document.body.appendChild(skull);
 
-  (function frame() {
-    confetti({
-      particleCount: 4,
-      shapes: [skull],
-      spread: 80,
-      startVelocity: 30,
-      gravity: 1.2,
-      origin: { x: Math.random(), y: -0.1 }
-    });
-
-    if (Date.now() < end) {
-      requestAnimationFrame(frame);
+    // Animation JS simple : chute verticale
+    let y = -100;
+    const vitesse = 2 + Math.random() * 3; // vitesse aléatoire
+    function frame() {
+      y += vitesse;
+      skull.style.top = y + "px";
+      if (y < window.innerHeight + 100) {
+        requestAnimationFrame(frame);
+      } else {
+        skull.remove(); // nettoyage après sortie de l'écran
+      }
     }
-  })();
+    requestAnimationFrame(frame);
+  }
 }
 
 // Animation tremblement écran
