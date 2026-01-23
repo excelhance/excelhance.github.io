@@ -1120,26 +1120,22 @@ function verifierDefaite() {
 
 // Animation des têtes de mort 💀
 function lancerAnimationDefaite() {
-  const duration = 1800;
+  const skull = confetti.shapeFromText({ text: "☠️", scalar: 1.8 });
+
+  const duration = 1500;
   const end = Date.now() + duration;
+
   (function frame() {
     confetti({
       particleCount: 6,
-      angle: 90,
-      spread: 45,
+      shapes: [skull],
+      colors: ["#dc2626"], // rouge
+      spread: 80,
       startVelocity: 30,
-      gravity: 1.3,
-      ticks: 300,
-      origin: {
-        x: Math.random(),
-        y: -0.1
-      },
-      shapes: ['text'],
-      scalar: 1.5,
-      text: { value: '💀' },
-      shadowBlur: 10,
-      shadowColor: '#dc2626' // rouge sombre
+      gravity: 1.2,
+      origin: { x: Math.random(), y: -0.1 }
     });
+
     if (Date.now() < end) {
       requestAnimationFrame(frame);
     }
