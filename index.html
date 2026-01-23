@@ -954,7 +954,7 @@ btnJoker.onclick = () => {
    FIN D'UNE PARTIE
 ===================================================== */
 function finDePartie(message, type = "VICTOIRE") {
-  alert(message);
+  //alert(message);
 
   // Blocage total du jeu
   document.body.classList.add("victoire-ui-bloquee");
@@ -980,6 +980,13 @@ function finDePartie(message, type = "VICTOIRE") {
 
     btnReplay.onclick = () => location.reload();
   }
+
+  // Scroll automatique en haut de l’écran
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: "smooth"
+  });
 }
 
 /* =====================================================*/
