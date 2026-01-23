@@ -950,7 +950,7 @@ btnJoker.onclick = () => {
           if (reponse) {
               sessionTerminee = true; // pour éviter double log
               envoyerLog("DEFAITE", { duree: dureeSession() });
-              finDePartie("❌ Défaite — 2ème utilisation du Joker !", "DEFAITE");
+              finDePartie("❌ 2ème utilisation du Joker —> Défaite !", "DEFAITE");
 
               requestAnimationFrame(() => {
                requestAnimationFrame(() => {
@@ -1091,7 +1091,7 @@ function verifierDefaite() {
   ) {
     sessionTerminee = true;
     envoyerLog("DEFAITE", { duree: dureeSession() });
-    finDePartie("❌ Défaite — Pioche vide et plus aucune action possible !", "DEFAITE");
+    finDePartie("❌ Pioche vide et plus aucune action possible —> Défaite !", "DEFAITE");
 
     requestAnimationFrame(() => {
      requestAnimationFrame(() => {
@@ -1110,7 +1110,7 @@ function verifierDefaite() {
   ) {
     sessionTerminee = true;
     envoyerLog("DEFAITE", { duree: dureeSession() });
-    finDePartie("❌ Défaite — Plus aucune action possible !", "DEFAITE");
+    finDePartie("❌ Plus aucune action possible —> Défaite !", "DEFAITE");
 
     requestAnimationFrame(() => {
      requestAnimationFrame(() => {
@@ -1122,7 +1122,7 @@ function verifierDefaite() {
 
 // Animation des têtes de mort 💀
 function lancerAnimationDefaite() {
-  const numSkulls = 20; // nombre de têtes de mort
+  const numSkulls = 14; // nombre de têtes de mort
   const minSize = 40; // taille minimale en px
   const maxSize = 80; // taille maximale en px
 
