@@ -978,7 +978,9 @@ btnJoker.onclick = () => {
    FIN D'UNE PARTIE
 ===================================================== */
 function finDePartie(message, type = "VICTOIRE") {
-  //alert(message);
+  if (type === "DEFAITE") {
+      alert(message);
+    } 
       
   // Blocage total du jeu
   document.body.classList.add("victoire-ui-bloquee");
@@ -1120,7 +1122,7 @@ function verifierDefaite() {
 
 // Animation des têtes de mort 💀
 function lancerAnimationDefaite() {
-  const skull = confetti.shapeFromText({ text: "☠️", scalar: 1.8 });
+  const skull = confetti.shapeFromText({ text: "💀", scalar: 2.2 });
 
   const duration = 1500;
   const end = Date.now() + duration;
