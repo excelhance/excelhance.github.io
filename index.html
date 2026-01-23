@@ -988,9 +988,9 @@ function finDePartie(message, type = "VICTOIRE") {
     behavior: "smooth"
   });
 
-  // RAZ couleur bordure Zone Centrale + titre
-  document.getElementById("centre").style.border = "";
-  document.querySelector("#zone-centrale .zone-title").style.color = "";
+  // RAZ couleur bordure Zone Centrale + titre (retour CSS d'origine)
+  const zoneCentrale = document.getElementById("centre").closest(".zone");
+  zoneCentrale.classList.remove("vert", "orange", "rouge");
 }
       
 /* =====================================================*/
