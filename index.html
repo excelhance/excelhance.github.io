@@ -1218,7 +1218,7 @@ function verifierVictoire(){
       if(archives[c].length===10 && !sessionTerminee){
           sessionTerminee = true;
           envoyerLog("VICTOIRE", { duree: dureeSession() });
-          finDePartie("🏆 VICTOIRE => Archive complétée !", "VICTOIRE");
+          finDePartie("🏆 VICTOIRE —> Archive complétée !", "VICTOIRE");
 
           // Déclenchement des confettis après rendu réel de la pop-up
           requestAnimationFrame(() => {
