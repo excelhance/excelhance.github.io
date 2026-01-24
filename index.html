@@ -1323,25 +1323,32 @@ function demarrerChrono() {
     chronoRestant--;
     document.getElementById("chrono").textContent = formatTemps(chronoRestant);
 
-    if (chronoRestant <= 0) {
-      clearInterval(chronoInterval);
+  if (chronoRestant <= 0) {
+  clearInterval(chronoInterval);
 
-      // Forcer l’affichage fina
-      chronoRestant = 0
-      afficherChrono();
+  // Forcer l’affichage final
+  chronoRestant = 0;
+  afficherChrono();
 
-      if (!sessionTerminee) {
-        sessionTerminee = true;
-        envoyerLog("DEFAITE", { duree: dureeSession() });
-        finDePartie("❌ Temps écoulé —> Défaite !", "DEFAITE");
+  if (!sessionTerminee) {
+    sessionTerminee = true;
 
+    // ⏳ Laisser Safari iOS peindre le 0:00 avant l’alert
+    setTimeout(() => {
+
+      envoyerLog("DEFAITE", { duree: dureeSession() });
+      finDePartie("❌ Temps écoulé —> Défaite !", "DEFAITE");
+
+      requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-         requestAnimationFrame(() => {
           lancerAnimationDefaite();
           lancerShakeGameOver();
-        });});
-      }
-    }
+        });
+      });
+
+    }, 50);
+  }
+}
   }, 1000);
 }
 function formatTemps(secondes) {
