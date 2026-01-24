@@ -447,6 +447,7 @@ let stats = {
   nbDefaussesNormales: 0,
   nbDefaussesSpeciales: 0,
   nbJokers: 0,
+  nbCartesPile: 0,
   startTime: null
 };
 
@@ -524,7 +525,7 @@ document.getElementById("btn-retour-jeu").onclick = () => {
    INITIALISATION PAQUET
 ===================================================== */
 function creerPaquet(){
-  stats = { nbPioches: 0, nbDefaussesNormales: 0, nbDefaussesSpeciales: 0, nbJokers: 0, startTime: Date.now() };
+  stats = { nbPioches: 0, nbDefaussesNormales: 0, nbDefaussesSpeciales: 0, nbJokers: 0, nbCartesPile: 0, startTime: Date.now() };
   pioche=[];
   couleurs.forEach(c=>{
     valeurs.forEach(v=>{
@@ -638,6 +639,7 @@ function piocherCartes(nb){
 function updateCompteurPile(){
   const cartePile = document.getElementById("carte-pile");
   if(cartePile) cartePile.textContent = pioche.length;
+  stats.nbCartesPile = pioche.length; // Stats nb pioches
 }
 // ----------------------------------------------------
 
@@ -1046,10 +1048,11 @@ const temps = `${minutes}:${secondes.toString().padStart(2,'0')}`;
 statsDiv.innerHTML = `
   <strong>-- Statistiques de la partie --</strong><br>
   Pioches : ${stats.nbPioches}<br>
-  Défausses normales : ${stats.nbDefaussesNormales}<br>
+  Défausses standards : ${stats.nbDefaussesNormales}<br>
   Défausses spéciales : ${stats.nbDefaussesSpeciales}<br>
   Jokers activés : ${stats.nbJokers}<br>
-  Durée : ${temps}
+  Pile restante : ${stats.nbCartesPile}<br>
+  Durée partie : ${temps}
 `;
 
   // Scroll automatique en haut de l’écran
