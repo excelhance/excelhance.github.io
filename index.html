@@ -442,6 +442,14 @@ let cartesVision10As = [];
 let sessionStart = null;
 let sessionTerminee = false;
 
+let stats = {
+  nbPioches: 0,
+  nbDefaussesNormales: 0,
+  nbDefaussesSpeciales: 0,
+  nbJokers: 0,
+  startTime: null
+};
+
 const archives = { "♠":[], "♥":[], "♦":[], "♣":[] };
 const couleurs = ["♠","♥","♦","♣"];
 const valeurs = [["A",1],["2",2],["3",3],["4",4],["5",5],["6",6],["7",7],["8",8],["9",9],["10",10],["V",11],["D",12],["R",13]];
@@ -516,6 +524,7 @@ document.getElementById("btn-retour-jeu").onclick = () => {
    INITIALISATION PAQUET
 ===================================================== */
 function creerPaquet(){
+  stats = { nbPioches: 0, nbDefaussesNormales: 0, nbDefaussesSpeciales: 0, nbJokers: 0, startTime: Date.now() };
   pioche=[];
   couleurs.forEach(c=>{
     valeurs.forEach(v=>{
@@ -603,7 +612,7 @@ btnPioche.onclick = () => {
 // ----------------------------------------------------
 function piocherCartes(nb){
   if (centre.children.length + nb > 7) {
-    alert("⚠️ Zone Centrale saturée, pioche impossible !");
+    alert("⛔️ Zone Centrale saturée, pioche impossible !");
     return;
   }
 
@@ -615,6 +624,7 @@ function piocherCartes(nb){
     }
   }
 
+  stats.nbPioches++ // Stats nb pioches
   etat = "action";
   attenteAction = true;
   updateCouleurZoneCentrale();
@@ -773,6 +783,7 @@ document.getElementById("defausser").onclick = () => {
       sel.forEach(c => c.remove());
       etat = "pioche";
       attenteAction = false;  // pas de re-pioche automatique
+      stats.nbDefaussesNormales++; // Stats nb défausses
       updateCouleurZoneCentrale();
       gererEtatBoutons();
       checkJeu(); // check d'une victoire ou d'une défaite
@@ -785,6 +796,7 @@ document.getElementById("defausser").onclick = () => {
 
             etat = "pioche";       // attente action utilisateur
             attenteAction = false;   // empêche re-pioche immédiate
+            stats.nbDefaussesSpeciales++; // Stats nb défausses
             updateCouleurZoneCentrale();
             gererEtatBoutons();
             checkJeu(); // check d'une victoire ou d'une défaite
@@ -800,6 +812,7 @@ document.getElementById("defausser").onclick = () => {
         sel.forEach(c => c.remove());  // Défausse des cartes
 
         attenteAction = false;   // empêche re-pioche immédiate
+        stats.nbDefaussesSpeciales++; // Stats nb défausses
         updateCouleurZoneCentrale();
         gererEtatBoutons();
         checkJeu(); // check d'une victoire ou d'une défaite
@@ -827,6 +840,7 @@ document.getElementById("defausser").onclick = () => {
     
         etat = "pioche";
         attenteAction = false; // pioche standard ensuite
+        stats.nbDefaussesSpeciales++; // Stats nb défausses
         updateCouleurZoneCentrale();
         gererEtatBoutons();
         checkJeu(); // check d'une victoire ou d'une défaite
@@ -841,6 +855,7 @@ document.getElementById("defausser").onclick = () => {
 
         etat = "pioche";       // attente de l'action utilisateur
         attenteAction = false;   // empêche re-pioche immédiate
+        stats.nbDefaussesSpeciales++; // Stats nb défausses
         updateCouleurZoneCentrale();
         gererEtatBoutons();
         checkJeu(); // check d'une victoire ou d'une défaite
@@ -921,6 +936,7 @@ function fermerPopup10As(){
   // Reprise normale du jeu
   etat = "pioche";
   attenteAction = false;
+  stats.nbDefaussesSpeciales++; // Stats nb défausses
   updateCouleurZoneCentrale();
   gererEtatBoutons();
   checkJeu(); // check d'une victoire ou d'une défaite
@@ -948,6 +964,7 @@ btnJoker.onclick = () => {
       reponse => {
           document.getElementById("zone-actions").classList.remove("ui-bloquee");
           if (reponse) {
+              stats.nbJokers++; // Stats nb Jokers activés
               sessionTerminee = true; // pour éviter double log
               envoyerLog("DEFAITE", { duree: dureeSession() });
               finDePartie("❌ 2ème utilisation du Joker —> Défaite !", "DEFAITE");
@@ -969,6 +986,7 @@ btnJoker.onclick = () => {
   if(nonVides.length===0) return;
 
   // ✅ Activation du Joker
+  stats.nbJokers++; // Stats nb Jokers activés
   jokerUtilise=true;
   jokerEnAttente=true;
   btnJoker.classList.add("joker-actif");
@@ -1006,6 +1024,31 @@ function finDePartie(message, type = "VICTOIRE") {
 
     btnReplay.onclick = () => location.reload();
   }
+
+  // Créer div de stats si pas déjà présente
+let statsDiv = document.getElementById("stats-fin");
+if(!statsDiv){
+  statsDiv = document.createElement("div");
+  statsDiv.id = "stats-fin";
+  statsDiv.style.color = "#fff";
+  statsDiv.style.textAlign = "center";
+  statsDiv.style.marginTop = "8px";
+  document.getElementById("rejouer").after(statsDiv);
+}
+// Calcul du temps
+const dureeMs = Date.now() - stats.startTime;
+const minutes = Math.floor(dureeMs/60000);
+const secondes = Math.floor((dureeMs%60000)/1000);
+const temps = `${minutes}:${secondes.toString().padStart(2,'0')}`;
+// Affichage
+statsDiv.innerHTML = `
+  <strong>Statistiques de la partie :</strong><br>
+  Pioches : ${stats.nbPioches}<br>
+  Défausses normales : ${stats.nbDefaussesNormales}<br>
+  Défausses spéciales : ${stats.nbDefaussesSpeciales}<br>
+  Jokers activés : ${stats.nbJokers}<br>
+  Durée : ${temps}
+`;
 
   // Scroll automatique en haut de l’écran
   window.scrollTo({
