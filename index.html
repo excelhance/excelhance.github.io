@@ -1025,14 +1025,16 @@ function finDePartie(message, type = "VICTOIRE") {
     btnReplay.onclick = () => location.reload();
   }
 
-  // Créer div de stats si pas déjà présente
+// Création ou récupération du div stats
 let statsDiv = document.getElementById("stats-fin");
 if(!statsDiv){
   statsDiv = document.createElement("div");
   statsDiv.id = "stats-fin";
   statsDiv.style.color = "#fff";
   statsDiv.style.textAlign = "center";
-  statsDiv.style.marginTop = "8px";
+  statsDiv.style.marginTop = "16px";    // plus d'espace au-dessus
+  statsDiv.style.marginBottom = "16px"; // plus d'espace en-dessous
+  statsDiv.style.fontSize = "0.8rem";   // réduire la taille de la police
   document.getElementById("rejouer").after(statsDiv);
 }
 // Calcul du temps
@@ -1042,7 +1044,7 @@ const secondes = Math.floor((dureeMs%60000)/1000);
 const temps = `${minutes}:${secondes.toString().padStart(2,'0')}`;
 // Affichage
 statsDiv.innerHTML = `
-  <strong>Statistiques de la partie :</strong><br>
+  <strong>--- Statistiques de la partie ---</strong><br>
   Pioches : ${stats.nbPioches}<br>
   Défausses normales : ${stats.nbDefaussesNormales}<br>
   Défausses spéciales : ${stats.nbDefaussesSpeciales}<br>
