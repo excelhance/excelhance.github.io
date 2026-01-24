@@ -38,6 +38,21 @@ h1 { text-align:center; margin-bottom:12px; }
   flex: 0 0 70%;   /* largeur fixe 70% */
 }
 
+#mode-selection,
+#timer-difficulty {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 16px 0;
+}
+#chrono {
+  text-align: center;
+  font-size: 32px;
+  font-weight: bold;
+  color: #dc2626; /* rouge vif */
+  margin-bottom: 12px;
+}
+
 button {
   cursor: pointer; /* boutons cliquables */
   width:100%;
@@ -332,6 +347,17 @@ canvas {
 
 <h1>🂡&nbsp;&nbsp;L’Archiviste&nbsp;&nbsp;🂡</h1>
 
+<div id="mode-selection">
+  <button id="mode-standard">Mode Standard</button>
+  <button id="mode-timer">Mode Contre la montre</button>
+</div>
+<div id="timer-difficulty" style="display:none">
+  <button data-time="300">Facile</button>
+  <button data-time="180">Normal</button>
+  <button data-time="120">Difficile</button>
+</div>
+<div id="chrono" style="display:none">03:00</div>
+
 <div id="zone-actions-container">
   <div id="zone-actions">
     <button id="btn-regles" class="regles">RÈGLES</button>
@@ -441,6 +467,10 @@ let vision10AsActive = false;
 let cartesVision10As = [];
 let sessionStart = null;
 let sessionTerminee = false;
+let modeJeu = null; // "standard" | "timer"
+let chronoRestant = null;
+let chronoInterval = null;
+let chronoDemarre = false;
 
 let stats = {
   nbPioches: 0,
@@ -574,6 +604,8 @@ function creerCarteHTML(carte, interactive=true){
    PIOCHE + RE-POCHE
 ===================================================== */
 btnPioche.onclick = () => {
+
+  demarrerChrono();
 
   const sel = [...document.querySelectorAll(".carte.selectionnee")];
 
@@ -1065,6 +1097,11 @@ statsDiv.innerHTML = `
   // RAZ couleur bordure Zone Centrale + titre (retour CSS d'origine)
   const zoneCentrale = document.getElementById("centre").closest(".zone");
   zoneCentrale.classList.remove("vert", "orange", "rouge");
+
+  // Clean Chrono (si partie Timer)
+  if (chronoInterval) {
+  clearInterval(chronoInterval);
+  }
 }
       
 /* =====================================================*/
@@ -1250,6 +1287,58 @@ function lancerConfettisVictoire() {
 /* =====================================================
    LANCEMENT
 ===================================================== */
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("zone-actions-container").style.display = "none";
+});
+document.getElementById("mode-standard").onclick = () => {
+  modeJeu = "standard";
+  document.getElementById("mode-selection").style.display = "none";
+  document.getElementById("zone-actions-container").style.display = "";
+};
+document.getElementById("mode-timer").onclick = () => {
+  modeJeu = "timer";
+  document.getElementById("mode-selection").style.display = "none";
+  document.getElementById("timer-difficulty").style.display = "flex";
+};
+document.querySelectorAll("#timer-difficulty button").forEach(btn => {
+  btn.onclick = () => {
+    chronoRestant = Number(btn.dataset.time);
+    document.getElementById("timer-difficulty").style.display = "none";
+    afficherChrono();
+    document.getElementById("zone-actions-container").style.display = "";
+  };
+});
+function afficherChrono() {
+  const chrono = document.getElementById("chrono");
+  chrono.textContent = formatTemps(chronoRestant);
+  chrono.style.display = "block";
+}
+function demarrerChrono() {
+  if (chronoDemarre || modeJeu !== "timer") return;
+
+  chronoDemarre = true;
+
+  chronoInterval = setInterval(() => {
+    chronoRestant--;
+    document.getElementById("chrono").textContent = formatTemps(chronoRestant);
+
+    if (chronoRestant <= 0) {
+      clearInterval(chronoInterval);
+
+      if (!sessionTerminee) {
+        sessionTerminee = true;
+        envoyerLog("DEFAITE", { duree: dureeSession() });
+        finDePartie("❌ Temps écoulé —> Défaite !", "DEFAITE");
+      }
+    }
+  }, 1000);
+}
+function formatTemps(secondes) {
+  const m = Math.floor(secondes / 60);
+  const s = secondes % 60;
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
+      
 creerPaquet();
 updateCompteurPile();
 updateCouleurZoneCentrale();
