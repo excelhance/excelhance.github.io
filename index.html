@@ -1329,6 +1329,12 @@ function demarrerChrono() {
         sessionTerminee = true;
         envoyerLog("DEFAITE", { duree: dureeSession() });
         finDePartie("❌ Temps écoulé —> Défaite !", "DEFAITE");
+
+        requestAnimationFrame(() => {
+         requestAnimationFrame(() => {
+          lancerAnimationDefaite();
+          lancerShakeGameOver();
+        });});
       }
     }
   }, 1000);
