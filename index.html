@@ -52,7 +52,25 @@ h1 { text-align:center; margin-bottom:12px; }
   color: #ff0000; /* rouge vif */
   margin-bottom: 12px;
 }
-
+/* Pulsation standard (10 → 4 s) */
+.chrono-urgent {
+  animation: pulse-chrono 0.8s infinite;
+}
+/* Pulsation critique (3 → 1 s) */
+.chrono-critique {
+  animation: pulse-chrono-fast 0.35s infinite;
+}
+@keyframes pulse-chrono {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.75; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes pulse-chrono-fast {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.25); opacity: 0.6; }
+  100% { transform: scale(1); opacity: 1; }
+}
+   
 button {
   cursor: pointer; /* boutons cliquables */
   width:100%;
@@ -1313,6 +1331,16 @@ function afficherChrono() {
   const chrono = document.getElementById("chrono");
   chrono.textContent = formatTemps(chronoRestant);
   chrono.style.display = "block";
+       
+  // Pulsation visuelle quand temps < 10 sec
+  chrono.classList.remove("chrono-urgent", "chrono-critique");
+  // 3 dernières secondes → pulsation très rapide
+  if (chronoRestant <= 3 && chronoRestant > 0) {
+    chrono.classList.add("chrono-critique");
+  // 10 → 4 secondes → pulsation normale
+  } else if (chronoRestant <= 10 && chronoRestant > 3) {
+    chrono.classList.add("chrono-urgent");
+  }
 }
 function demarrerChrono() {
   if (chronoDemarre || modeJeu !== "timer") return;
