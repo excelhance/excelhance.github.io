@@ -1326,6 +1326,10 @@ function demarrerChrono() {
     if (chronoRestant <= 0) {
       clearInterval(chronoInterval);
 
+      // Forcer l’affichage fina
+      chronoRestant = 0
+      afficherChrono();
+
       if (!sessionTerminee) {
         sessionTerminee = true;
         envoyerLog("DEFAITE", { duree: dureeSession() });
