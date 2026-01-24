@@ -38,6 +38,7 @@ h1 { text-align:center; margin-bottom:12px; }
   flex: 0 0 70%;   /* largeur fixe 70% */
 }
 
+/* Styles liés au Chrono */
 #mode-selection,
 #timer-difficulty {
   display: flex;
@@ -45,6 +46,10 @@ h1 { text-align:center; margin-bottom:12px; }
   justify-content: center;
   margin: 16px 0;
 }
+#timer-difficulty button[data-time="300"] { background-color: #10b981; } /* Facile */
+#timer-difficulty button[data-time="180"] { background-color: #3b82f6; } /* Normal */
+#timer-difficulty button[data-time="120"] { background-color: #f59e0b; } /* Difficile */
+#timer-difficulty button[data-time="60"]  { background-color: #ef4444; } /* Hardcore */
 #chrono {
   text-align: center;
   font-size: 32px;
