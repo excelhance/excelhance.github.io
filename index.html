@@ -613,7 +613,12 @@ function creerCarteHTML(carte, interactive=true){
 ===================================================== */
 btnPioche.onclick = () => {
 
-  demarrerChrono();
+  // Initialisation des timers
+  demarrerChrono(); // Chrono si Contre la montre
+  // Durée affichées dans les Stats
+  if (!stats.startTime) {
+    stats.startTime = Date.now();
+  }
 
   const sel = [...document.querySelectorAll(".carte.selectionnee")];
 
