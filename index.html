@@ -483,6 +483,8 @@ let modeJeu = null; // "standard" | "timer"
 let chronoRestant = null;
 let chronoInterval = null;
 let chronoDemarre = false;
+let chronoDebutMs = null;
+let chronoDureeInitiale = null;
 let difficulteTimer = null;
 
 let stats = {
@@ -1323,38 +1325,39 @@ function demarrerChrono() {
   if (chronoDemarre || modeJeu !== "timer") return;
 
   chronoDemarre = true;
+  chronoDebutMs = Date.now();
+  chronoDureeInitiale = chronoRestant;
 
   chronoInterval = setInterval(() => {
-    chronoRestant--;
+    const ecoulees = Math.floor((Date.now() - chronoDebutMs) / 1000);
+    chronoRestant = chronoDureeInitiale - ecoulees;
+
+    if (chronoRestant <= 0) {
+      clearInterval(chronoInterval);
+      chronoRestant = 0;
+      afficherChrono();
+
+      if (!sessionTerminee) {
+        sessionTerminee = true;
+
+        // ⏳ Laisser Safari iOS peindre le 0:00 avant l’alert
+        setTimeout(() => {
+          envoyerLog("DEFAITE", { duree: dureeSession() });
+          finDePartie("❌ Temps écoulé —> Défaite !", "DEFAITE");
+
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              lancerAnimationDefaite();
+              lancerShakeGameOver();
+            });
+          });
+        }, 50);
+      }
+      return;
+    }
+
     document.getElementById("chrono").textContent = formatTemps(chronoRestant);
-
-  if (chronoRestant <= 0) {
-  clearInterval(chronoInterval);
-
-  // Forcer l’affichage final
-  chronoRestant = 0;
-  afficherChrono();
-
-  if (!sessionTerminee) {
-    sessionTerminee = true;
-
-    // ⏳ Laisser Safari iOS peindre le 0:00 avant l’alert
-    setTimeout(() => {
-
-      envoyerLog("DEFAITE", { duree: dureeSession() });
-      finDePartie("❌ Temps écoulé —> Défaite !", "DEFAITE");
-
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          lancerAnimationDefaite();
-          lancerShakeGameOver();
-        });
-      });
-
-    }, 50);
-  }
-}
-  }, 1000);
+  }, 250);
 }
 function formatTemps(secondes) {
   const m = Math.floor(secondes / 60);
