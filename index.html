@@ -54,9 +54,8 @@ h1 { text-align:center; margin-bottom:12px; }
   text-align: center;
   font-size: 32px;
   font-weight: bold;
-  color: #ff0000; /* rouge vif */
-  /*margin-bottom: 12px;*/
-  margin: 8px 0 16px 0; /* ↑ espace avec h1 | ↓ espace avec le jeu */
+  color: #ff0000;
+  margin: 8px 0 16px 0;
 }
 
 button {
@@ -105,7 +104,7 @@ button.regles {
   margin-bottom:12px;
 }
 
-.popup-10as .cartes{
+#popup-10as .cartes{
   display: flex;
   justify-content: center;
   gap: 6px;
@@ -118,7 +117,12 @@ button.regles {
 
 #popup-10as button {
   width:48%;
-  cursor: pointer; /* boutons cliquables */
+}
+
+#popup-10as .popup-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
 }
 
 /* Bouton Joker inactif/actif/utilisé */
@@ -435,7 +439,7 @@ canvas {
       <li><strong>10 + Dame</strong> (+ supprimer un Joker actif ⭐️)</li>
       <li><strong>10 + Roi</strong> => défausse TOUTES les cartes 🔥</li>
       <li><strong>10 + As</strong> (+ voir les 3 prochaines cartes ✅)</li>
-    </ul
+    </ul>
     <p>⚠️ Les cartes défaussées n'apparaitront plus !</p>
 
     <h3>Activation du Joker</h3>
@@ -560,6 +564,17 @@ document.getElementById("btn-retour-jeu").onclick = () => {
 };
 
 /* =====================================================
+   MÉLANGE FISHER-YATES (uniforme et non biaisé)
+===================================================== */
+function melangerTableau(arr){
+  for(let i = arr.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+/* =====================================================
    INITIALISATION PAQUET
 ===================================================== */
 function creerPaquet(){
@@ -570,7 +585,7 @@ function creerPaquet(){
       pioche.push({ label:v[0], valeur:v[1], couleur:c });
     });
   });
-  pioche.sort(()=>Math.random()-.5);
+  melangerTableau(pioche);
 }
 
 function updateCouleurZoneCentrale(){
@@ -598,7 +613,6 @@ function creerCarteHTML(carte, interactive=true){
   d.dataset.label = carte.label;
   d.dataset.couleur = carte.couleur;
   d.innerHTML = `<div class="valeur">${carte.label}</div><div class="centre">${carte.couleur}</div>`;
-  /*if(interactive) d.onclick = ()=>d.classList.toggle("selectionnee");*/
   if(interactive){
   d.onclick = () => {
     d.classList.toggle("selectionnee");
@@ -650,9 +664,8 @@ btnPioche.onclick = () => {
   }
 
   // ===== Pioche standard =====
-  const nb = premierePioche ? 2 : 2;
   premierePioche = false;
-  piocherCartes(nb);
+  piocherCartes(2);
 };
 
 // ----------------------------------------------------
@@ -676,8 +689,6 @@ function piocherCartes(nb){
   updateCouleurZoneCentrale();
   updateCompteurPile();
   gererEtatBoutons();
-  //bloquerBoutons(["piocher"]);
-  //debloquerBoutons(["defausser"]);
   checkJeu();
 }
 
@@ -723,10 +734,9 @@ document.querySelectorAll(".archive").forEach(archive => {
       const cartesArchive = [...arch];          // copie des cartes de l'archive
       archives[archive.dataset.c] = [];        // vider l'archive
       renderArchive(archive.dataset.c);
-      //updateCompteurPile();
       
       // Mélanger les cartes de l'archive
-      cartesArchive.sort(() => Math.random() - 0.5);
+      melangerTableau(cartesArchive);
       
       if (pileActuelle.length >= 4) {
           // Conserver les 3 premières cartes en haut, mélanger les cartes de l'archive en dessous
@@ -758,7 +768,7 @@ document.querySelectorAll(".archive").forEach(archive => {
       // Changer visuel du bouton Joker
       const btnJoker = document.getElementById("joker");
       btnJoker.style.backgroundColor = "#dc2626"; // rouge léger
-      btnJoker.style.color = "#fff";;
+      btnJoker.style.color = "#fff";
 
       jokerEnAttente = false;
       btnJoker.classList.remove("joker-actif");
@@ -896,9 +906,8 @@ document.getElementById("defausser").onclick = () => {
 
     // ===== 10 + Roi =====
     if(v[0] === 10 && v[1] === 13 && sel.length === 2){
-        // Vider la Zone Centrale et retirer les cartes sélectionnées
+        // Vider la Zone Centrale (inclut les cartes sélectionnées)
         centre.innerHTML = "";
-        sel.forEach(c => c.remove());
 
         etat = "pioche";       // attente de l'action utilisateur
         attenteAction = false;   // empêche re-pioche immédiate
@@ -921,8 +930,8 @@ document.getElementById("defausser").onclick = () => {
         // Construction popup
         const popup = document.getElementById("popup-10as");
         popup.innerHTML = `
-          <div class="cartes" style="display:flex;gap:6px;justify-content:center;margin-bottom:8px"></div>
-          <div style="display:flex;gap:8px;justify-content:center">
+          <div class="cartes"></div>
+          <div class="popup-actions">
             <button id="btn-conserver">Conserver pour la pioche suivante</button>
             <button id="btn-remelanger">Mélanger sous la pile</button>
           </div>
@@ -966,7 +975,7 @@ document.addEventListener("click", e => {
 
       // Réinsertion aléatoire
       pioche.push(...cartesVision10As);
-      pioche.sort(() => Math.random() - 0.5);
+      melangerTableau(pioche);
 
       fermerPopup10As();
   }
@@ -1125,26 +1134,6 @@ function checkJeu(){
 /* =====================================================
    CONDITIONS DE DEFAITE
 ===================================================== */
-function auMoinsUneActionPossible(defaussePossible) {
-
-  const piochePossible =
-    pioche.length > 0 &&
-    centre.children.length < 6;
-
-  const archivePossible =
-    couleurs.some(c => archives[c].length === 10);
-
-  const jokerPossible =
-    !jokerUtilise && !jokerEnAttente;
-
-  return (
-    piochePossible ||
-    defaussePossible ||
-    archivePossible ||
-    jokerPossible
-  );
-}
-
 function verifierDefaite() {
 
   // ✅ Vérification état actuel
@@ -1157,7 +1146,7 @@ function verifierDefaite() {
     const valeurs = cartes.map(c => +c.dataset.valeur).sort((a,b)=>a-b);
 
     // Paires de même valeur
-    if(valeurs.some(v => valeurs.filter(x => x === v).length === 2)) return true;
+    if(valeurs.some(v => valeurs.filter(x => x === v).length >= 2)) return true;
 
     // Combinaisons spéciales
     if(valeurs.includes(2) && valeurs.includes(5)) return true;
