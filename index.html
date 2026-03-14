@@ -483,6 +483,7 @@ let modeJeu = null; // "standard" | "timer"
 let chronoRestant = null;
 let chronoInterval = null;
 let chronoDemarre = false;
+let difficulteTimer = null;
 
 let stats = {
   nbPioches: 0,
@@ -1099,8 +1100,10 @@ const minutes = Math.floor(dureeMs/60000);
 const secondes = Math.floor((dureeMs%60000)/1000);
 const temps = `${minutes}:${secondes.toString().padStart(2,'0')}`;
 // Affichage
+const modeLabel = modeJeu === "timer" ? `Timer | ${difficulteTimer}` : "Standard";
 statsDiv.innerHTML = `
   <strong>-- Statistiques de la partie --</strong><br>
+  Mode : ${modeLabel}<br>
   Pioches effectuées : ${stats.nbPioches}<br>
   Défausses standards : ${stats.nbDefaussesNormales}<br>
   Défausses spéciales : ${stats.nbDefaussesSpeciales}<br>
@@ -1305,6 +1308,7 @@ document.getElementById("mode-timer").onclick = () => {
 document.querySelectorAll("#timer-difficulty button").forEach(btn => {
   btn.onclick = () => {
     chronoRestant = Number(btn.dataset.time);
+    difficulteTimer = btn.textContent.split("(")[0].trim();
     document.getElementById("timer-difficulty").style.display = "none";
     afficherChrono();
     document.getElementById("zone-actions-container").style.display = "";
