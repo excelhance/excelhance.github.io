@@ -1412,17 +1412,10 @@ function envoyerLog(action, options = {}) {
     plateforme: detecterPlateforme(),
     userAgent: navigator.userAgent
   });
-  if (action === "VICTOIRE" || action === "DEFAITE") {
-    navigator.sendBeacon(
-      "https://script.google.com/macros/s/AKfycbx8aQ4ZGhMtgaCt7fZMr9tTqZmySazLjbZ4lqI5RDBac7riwlEFYaWp89PbTVhAhK1fxA/exec",
-      payload
-    );
-  } else {
-    fetch(
-      "https://script.google.com/macros/s/AKfycbx8aQ4ZGhMtgaCt7fZMr9tTqZmySazLjbZ4lqI5RDBac7riwlEFYaWp89PbTVhAhK1fxA/exec",
-      { method: "POST", body: payload }
-    ).catch(() => {});
-  }
+  fetch(
+    "https://script.google.com/macros/s/AKfycbx8aQ4ZGhMtgaCt7fZMr9tTqZmySazLjbZ4lqI5RDBac7riwlEFYaWp89PbTVhAhK1fxA/exec",
+    { method: "POST", body: payload, keepalive: true }
+  ).catch(() => {});
 }
 // Générer un identifiant joueur anonyme, sans cookie
 function getPlayerId(){
