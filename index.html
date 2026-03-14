@@ -578,7 +578,7 @@ function melangerTableau(arr){
    INITIALISATION PAQUET
 ===================================================== */
 function creerPaquet(){
-  stats = { nbPioches: 0, nbDefaussesNormales: 0, nbDefaussesSpeciales: 0, nbJokers: 0, nbCartesPile: 0, startTime: Date.now() };
+  stats = { nbPioches: 0, nbDefaussesNormales: 0, nbDefaussesSpeciales: 0, nbJokers: 0, nbCartesPile: 0, startTime: null };
   pioche=[];
   couleurs.forEach(c=>{
     valeurs.forEach(v=>{
