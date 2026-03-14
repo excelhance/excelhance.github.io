@@ -1414,12 +1414,12 @@ function envoyerLog(action, options = {}) {
   });
   if (action === "VICTOIRE" || action === "DEFAITE") {
     navigator.sendBeacon(
-      "https://script.google.com/macros/s/AKfycbwgxdT_l_ent4p_44yn3cMrmn4IFCgX935ivshKrmh7xnDMPoEURDoUEzLFDzWLHMobGw/exec",
+      "https://script.google.com/macros/s/AKfycbx8aQ4ZGhMtgaCt7fZMr9tTqZmySazLjbZ4lqI5RDBac7riwlEFYaWp89PbTVhAhK1fxA/exec",
       payload
     );
   } else {
     fetch(
-      "https://script.google.com/macros/s/AKfycbwgxdT_l_ent4p_44yn3cMrmn4IFCgX935ivshKrmh7xnDMPoEURDoUEzLFDzWLHMobGw/exec",
+      "https://script.google.com/macros/s/AKfycbx8aQ4ZGhMtgaCt7fZMr9tTqZmySazLjbZ4lqI5RDBac7riwlEFYaWp89PbTVhAhK1fxA/exec",
       { method: "POST", body: payload }
     ).catch(() => {});
   }
