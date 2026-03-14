@@ -1100,7 +1100,7 @@ const minutes = Math.floor(dureeMs/60000);
 const secondes = Math.floor((dureeMs%60000)/1000);
 const temps = `${minutes}:${secondes.toString().padStart(2,'0')}`;
 // Affichage
-const modeLabel = modeJeu === "timer" ? `Timer - ${difficulteTimer}` : "Standard";
+const modeLabel = modeJeu === "timer" ? `Timer | ${difficulteTimer}` : "Standard";
 statsDiv.innerHTML = `
   <strong>-- Statistiques de la partie --</strong><br>
   Mode : ${modeLabel}<br>
