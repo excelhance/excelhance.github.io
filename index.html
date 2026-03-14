@@ -1373,12 +1373,43 @@ gererEtatBoutons();
 /* =====================================================
    GESTION RÉCUPÉRATION DES LOGS
 ===================================================== */
+function detecterPlateforme() {
+  return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? "Mobile" : "PC";
+}
+
+function getMaxArchive() {
+  return Math.max(0, ...couleurs.map(c => archives[c].length));
+}
+
+function getStatsResume() {
+  const dureeMs = stats.startTime ? Date.now() - stats.startTime : 0;
+  const m = Math.floor(dureeMs / 60000);
+  const s = Math.floor((dureeMs % 60000) / 1000);
+  const temps = `${m}:${s.toString().padStart(2, "0")}`;
+  const mode = modeJeu === "timer" ? `Timer | ${difficulteTimer}` : "Standard";
+  return [
+    `Mode:${mode}`,
+    `Pioches:${stats.nbPioches}`,
+    `Déf.std:${stats.nbDefaussesNormales}`,
+    `Déf.spé:${stats.nbDefaussesSpeciales}`,
+    `Jokers:${stats.nbJokers}`,
+    `Pile:${stats.nbCartesPile}`,
+    `Durée:${temps}`
+  ].join(" // ");
+}
+
 function envoyerLog(action, options = {}) {
+  const isFinPartie = (action === "VICTOIRE" || action === "DEFAITE");
+  const modeLabel = modeJeu === "timer" ? `Timer | ${difficulteTimer}` : modeJeu === "standard" ? "Standard" : "";
   const payload = JSON.stringify({
     playerId: getPlayerId(),
     action: action,
     date: new Date().toISOString(),
+    mode: modeLabel,
     duree: options.duree ?? null,
+    maxArchive: isFinPartie ? getMaxArchive() : null,
+    statistiques: isFinPartie ? getStatsResume() : "",
+    plateforme: detecterPlateforme(),
     userAgent: navigator.userAgent
   });
   if (action === "VICTOIRE" || action === "DEFAITE") {
