@@ -1428,8 +1428,8 @@ function getPlayerId(){
 }
 // Chronométrer la session de jeu
 function dureeSession() {
-  return sessionStart
-    ? Math.round((Date.now() - sessionStart) / 1000)
+  return stats.startTime
+    ? Math.round((Date.now() - stats.startTime) / 1000)
     : null;
 }
 
