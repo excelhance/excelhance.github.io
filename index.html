@@ -1083,9 +1083,9 @@ function finDePartie(message, type = "VICTOIRE") {
 
     if (type === "DEFAITE") {
       btnReplay.classList.add("defaite");
-      btnReplay.textContent = "☠️ DÉFAITE : REJOUER ☠️";
+      btnReplay.textContent = "☠️  DÉFAITE : REJOUER  ☠️";
     } else {
-      btnReplay.textContent = "🏆 VICTOIRE : REJOUER 🏆";
+      btnReplay.textContent = "🏆  VICTOIRE : REJOUER  🏆";
     }
 
     btnReplay.onclick = () => location.reload();
@@ -1111,7 +1111,7 @@ const temps = `${minutes}:${secondes.toString().padStart(2,'0')}`;
 // Affichage
 const modeLabel = modeJeu === "timer" ? `Timer | ${difficulteTimer}` : "Standard";
 statsDiv.innerHTML = `
-  <strong>-- Statistiques de la partie --</strong><br>
+  <strong>--- Statistiques de la partie ---</strong><br>
   Mode : ${modeLabel}<br>
   Pioches effectuées : ${stats.nbPioches}<br>
   Défausses standards : ${stats.nbDefaussesNormales}<br>
