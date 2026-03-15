@@ -16,10 +16,16 @@ body {
   touch-action: manipulation;
 }
 
-body.no-scroll {
+body.partie-active {
   overflow: hidden;
   position: fixed;
   width: 100%;
+  height: 100%;
+}
+body.partie-active #game-wrapper {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  height: 100vh;
 }
 
 h1 { text-align:center; margin-bottom:12px; }
@@ -361,6 +367,7 @@ canvas {
 </style>
 </head>
 <body>
+<div id="game-wrapper">
 
 <h1>🂡&nbsp;&nbsp;L’Archiviste&nbsp;&nbsp;🂡</h1>
 
@@ -465,25 +472,16 @@ canvas {
   <button id="btn-retour-jeu">Retour au jeu</button>
 </div>
 
+</div><!-- /game-wrapper -->
+
 <!-- Librairie confettis de victoire -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
 <script>
-/* Bloquer le pinch-zoom sur mobile (iOS Safari ignore user-scalable=no)
-   + bloquer le pull-to-refresh Safari quand une partie est en cours */
+/* Bloquer le pinch-zoom sur mobile (iOS Safari ignore user-scalable=no) */
 let partieEnCours = false;
-let lastTouchY = 0;
-document.addEventListener("touchstart", e => {
-  lastTouchY = e.touches[0].clientY;
-}, { passive: true });
 document.addEventListener("touchmove", e => {
-  if (e.touches.length > 1) { e.preventDefault(); return; }
-  const y = e.touches[0].clientY;
-  const goingDown = y > lastTouchY;
-  lastTouchY = y;
-  if (partieEnCours && goingDown && window.scrollY <= 0) {
-    e.preventDefault();
-  }
+  if (e.touches.length > 1) e.preventDefault();
 }, { passive: false });
 
 /* =====================================================
@@ -605,7 +603,7 @@ function melangerTableau(arr){
 ===================================================== */
 function creerPaquet(){
   partieEnCours = false;
-  document.body.style.overscrollBehaviorY = "";
+  document.body.classList.remove("partie-active");
   stats = { nbPioches: 0, nbDefaussesNormales: 0, nbDefaussesSpeciales: 0, nbJokers: 0, nbCartesPile: 0, startTime: null };
   pioche=[];
   couleurs.forEach(c=>{
@@ -661,7 +659,7 @@ btnPioche.onclick = () => {
   if (!stats.startTime) {
     stats.startTime = Date.now();
     partieEnCours = true;
-    document.body.style.overscrollBehaviorY = "none";
+    document.body.classList.add("partie-active");
   }
 
   const sel = [...document.querySelectorAll(".carte.selectionnee")];
@@ -1083,7 +1081,7 @@ btnJoker.onclick = () => {
 ===================================================== */
 function finDePartie(message, type = "VICTOIRE") {
   partieEnCours = false;
-  document.body.style.overscrollBehaviorY = "";
+  document.body.classList.remove("partie-active");
   const finPartieMs = Date.now();
 
   if (type === "DEFAITE") {
