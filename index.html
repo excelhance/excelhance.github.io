@@ -774,6 +774,7 @@ document.querySelectorAll(".archive").forEach(archive => {
       btnJoker.style.color = "#fff";
 
       jokerEnAttente = false;
+      stats.nbJokers++; // Stats : Joker réellement appliqué sur une colonne Archive
       btnJoker.classList.remove("joker-actif");
       btnJoker.classList.add("joker-utilise");
       checkJeu(); // check d'une victoire ou d'une défaite
@@ -1044,8 +1045,7 @@ btnJoker.onclick = () => {
   const nonVides = couleurs.filter(c=>archives[c].length);
   if(nonVides.length===0) return;
 
-  // ✅ Activation du Joker
-  stats.nbJokers++; // Stats nb Jokers activés
+  // ✅ Activation du Joker (en attente de sélection d'une colonne Archive)
   jokerUtilise=true;
   jokerEnAttente=true;
   btnJoker.classList.add("joker-actif");
@@ -1111,7 +1111,7 @@ statsDiv.innerHTML = `
   Pioches effectuées : ${stats.nbPioches}<br>
   Défausses standards : ${stats.nbDefaussesNormales}<br>
   Défausses spéciales : ${stats.nbDefaussesSpeciales}<br>
-  Jokers activés : ${stats.nbJokers}<br>
+  Jokers utilisés : ${stats.nbJokers}<br>
   Pile restante : ${stats.nbCartesPile}<br>
   Durée partie : ${temps}
 `;
