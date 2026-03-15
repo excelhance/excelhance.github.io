@@ -472,13 +472,16 @@ canvas {
 /* Bloquer le pinch-zoom sur mobile (iOS Safari ignore user-scalable=no)
    + bloquer le pull-to-refresh Safari quand une partie est en cours */
 let partieEnCours = false;
-let touchStartY = 0;
+let lastTouchY = 0;
 document.addEventListener("touchstart", e => {
-  touchStartY = e.touches[0].clientY;
+  lastTouchY = e.touches[0].clientY;
 }, { passive: true });
 document.addEventListener("touchmove", e => {
   if (e.touches.length > 1) { e.preventDefault(); return; }
-  if (partieEnCours && window.scrollY <= 0 && e.touches[0].clientY > touchStartY) {
+  const y = e.touches[0].clientY;
+  const goingDown = y > lastTouchY;
+  lastTouchY = y;
+  if (partieEnCours && goingDown && window.scrollY <= 0) {
     e.preventDefault();
   }
 }, { passive: false });
@@ -602,6 +605,7 @@ function melangerTableau(arr){
 ===================================================== */
 function creerPaquet(){
   partieEnCours = false;
+  document.body.style.overscrollBehaviorY = "";
   stats = { nbPioches: 0, nbDefaussesNormales: 0, nbDefaussesSpeciales: 0, nbJokers: 0, nbCartesPile: 0, startTime: null };
   pioche=[];
   couleurs.forEach(c=>{
@@ -657,6 +661,7 @@ btnPioche.onclick = () => {
   if (!stats.startTime) {
     stats.startTime = Date.now();
     partieEnCours = true;
+    document.body.style.overscrollBehaviorY = "none";
   }
 
   const sel = [...document.querySelectorAll(".carte.selectionnee")];
@@ -1078,6 +1083,7 @@ btnJoker.onclick = () => {
 ===================================================== */
 function finDePartie(message, type = "VICTOIRE") {
   partieEnCours = false;
+  document.body.style.overscrollBehaviorY = "";
   const finPartieMs = Date.now();
 
   if (type === "DEFAITE") {
