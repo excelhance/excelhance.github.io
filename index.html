@@ -118,6 +118,32 @@ h1 { text-align:center; margin-bottom:12px; }
   opacity: 1;
 }
 
+/* ===== LANGUAGE TOGGLE ===== */
+#lang-toggle {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 200;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--text-muted);
+  background: var(--toggle-bg);
+  color: var(--toggle-text);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+#lang-toggle:hover {
+  opacity: 1;
+}
+
 /* Conteneur flex boutons + pile */
 #zone-actions-container {
   display: flex;
@@ -457,6 +483,7 @@ canvas {
 </head>
 <body>
 <button id="theme-toggle" title="Changer de thème">🌙</button>
+<button id="lang-toggle" title="Switch to English">🇬🇧</button>
 <div id="game-wrapper">
 
 <h1>🂡&nbsp;&nbsp;L’Archiviste&nbsp;&nbsp;🂡</h1>
@@ -590,6 +617,205 @@ canvas {
       localStorage.setItem("archiviste-theme", "light");
       themeMeta.setAttribute("content", "#ffffff");
     }
+  });
+})();
+</script>
+
+<script>
+/* ===== LANGUAGE / TRANSLATION SYSTEM ===== */
+let currentLang = localStorage.getItem("archiviste-lang") || "fr";
+
+const TRANSLATIONS = {
+  fr: {
+    pageTitle: "L'Archiviste - jeu solo",
+    gameTitle: "🂡\u00a0\u00a0L'Archiviste\u00a0\u00a0🂡",
+    modeStandard: "Partie standard",
+    modeTimer: "⏱️ Contre la montre",
+    easy: "Facile (5min)",
+    normal: "Normal (3min)",
+    hard: "Difficile (2min)",
+    hardcore: "Hardcore (1min)",
+    rules: "RÈGLES",
+    draw: "PIOCHER",
+    discard: "Défausser",
+    activateJoker: "Activer Joker",
+    replay: "REJOUER UNE PARTIE",
+    centralZone: "Zone Centrale",
+    archives: "Archives",
+    deckTitle: "Pioche",
+    yes: "Oui",
+    no: "Non",
+    confirmRedraw: "Confirmer repioche ? (⚠️ 3 cartes seront piochées au lieu de 2)",
+    confirmJoker: "⚠️ Le Joker a déjà été utilisé. Confirmez-vous l'activation de cette action ?",
+    keepForNext: "Conserver pour la pioche suivante",
+    shuffleUnder: "Mélanger sous la pile",
+    defeatReplay: "☠️  DÉFAITE : REJOUER  ☠️",
+    victoryReplay: "🏆  VICTOIRE : REJOUER  🏆",
+    zoneFull: "⛔️ Zone Centrale saturée, pioche impossible",
+    zoneFullExcl: "⛔️ Zone Centrale saturée, pioche impossible !",
+    tooManyCards: "⚠️ Trop de cartes sélectionnées (max 2 identiques)",
+    defeatEmpty: "❌ Pioche vide et plus aucune action possible —> Défaite !",
+    defeatNoAction: "❌ Plus aucune action possible —> Défaite !",
+    defeatJoker: "❌ 2ème utilisation du Joker —> Défaite !",
+    defeatTime: "❌ Temps écoulé —> Défaite !",
+    victory: "🏆 VICTOIRE —> Archive complétée !",
+    statsTitle: "--- Statistiques de la partie ---",
+    statsMode: "Mode",
+    statsDraws: "Pioches effectuées",
+    statsStdDiscards: "Défausses standards",
+    statsSpeDiscards: "Défausses spéciales",
+    statsJokers: "Jokers utilisés",
+    statsRemaining: "Pile restante",
+    statsDuration: "Durée partie",
+    changeTheme: "Changer de thème",
+    switchLang: "Switch to English",
+    backToGame: "Retour au jeu",
+    rulesTitle: "Règles du jeu — L'Archiviste",
+    rulesContent: '<p><strong>🎯 But du jeu :</strong> placer 10 cartes dans une Archive</p><h3>Tour de jeu</h3><ul><li>Piocher 2 cartes (ou 3 en cas de repioche)</li><li>Effectuer une action : archiver OU défausser OU Joker</li><li>Piocher =&gt; action =&gt; piocher ...</li></ul><h3>Zone Centrale</h3><p>Ne peut contenir que 7 cartes au maximum !</p><h3>Défausses possibles</h3><ul><li><strong>2 cartes de même valeur</strong></li><li><strong>2 + 5</strong> (+ 1 carte optionnelle ✅)</li><li><strong>6 + 9</strong> (+ rejouer SANS piocher ✅)</li><li><strong>10 + Dame</strong> (+ supprimer un Joker actif ⭐️)</li><li><strong>10 + Roi</strong> =&gt; défausse TOUTES les cartes 🔥</li><li><strong>10 + As</strong> (+ voir les 3 prochaines cartes ✅)</li></ul><p>⚠️ Les cartes défaussées n\'apparaitront plus !</p><h3>Activation du Joker</h3><ul><li>Efface une Archive qui a au moins 1 carte</li><li>Les cartes sont remélangées dans la pioche</li></ul><p>⚠️ Ne peut être utilisé qu\'une seule fois !</p><h3>Défaite</h3><ul><li>Activation d\'un 2ème Joker s\'il est déjà actif</li><li>Aucune Archive complétée + aucune action possible</li></ul>'
+  },
+  en: {
+    pageTitle: "The Archivist - solo game",
+    gameTitle: "🂡\u00a0\u00a0The Archivist\u00a0\u00a0🂡",
+    modeStandard: "Standard Game",
+    modeTimer: "⏱️ Time Attack",
+    easy: "Easy (5min)",
+    normal: "Normal (3min)",
+    hard: "Hard (2min)",
+    hardcore: "Hardcore (1min)",
+    rules: "RULES",
+    draw: "DRAW",
+    discard: "Discard",
+    activateJoker: "Activate Joker",
+    replay: "PLAY AGAIN",
+    centralZone: "Central Zone",
+    archives: "Archives",
+    deckTitle: "Deck",
+    yes: "Yes",
+    no: "No",
+    confirmRedraw: "Confirm redraw? (⚠️ 3 cards will be drawn instead of 2)",
+    confirmJoker: "⚠️ The Joker has already been used. Confirm this action?",
+    keepForNext: "Keep for the next draw",
+    shuffleUnder: "Shuffle under the deck",
+    defeatReplay: "☠️  DEFEAT: PLAY AGAIN  ☠️",
+    victoryReplay: "🏆  VICTORY: PLAY AGAIN  🏆",
+    zoneFull: "⛔️ Central Zone full, cannot draw",
+    zoneFullExcl: "⛔️ Central Zone full, cannot draw!",
+    tooManyCards: "⚠️ Too many cards selected (max 2 identical)",
+    defeatEmpty: "❌ Deck empty and no action possible —> Defeat!",
+    defeatNoAction: "❌ No action possible —> Defeat!",
+    defeatJoker: "❌ 2nd Joker use —> Defeat!",
+    defeatTime: "❌ Time's up —> Defeat!",
+    victory: "🏆 VICTORY —> Archive completed!",
+    statsTitle: "--- Game Statistics ---",
+    statsMode: "Mode",
+    statsDraws: "Draws performed",
+    statsStdDiscards: "Standard discards",
+    statsSpeDiscards: "Special discards",
+    statsJokers: "Jokers used",
+    statsRemaining: "Remaining deck",
+    statsDuration: "Game duration",
+    changeTheme: "Change theme",
+    switchLang: "Passer en français",
+    backToGame: "Back to game",
+    rulesTitle: "Game Rules — The Archivist",
+    rulesContent: '<p><strong>🎯 Goal:</strong> place 10 cards in an Archive</p><h3>Game Turn</h3><ul><li>Draw 2 cards (or 3 in case of redraw)</li><li>Perform an action: archive OR discard OR Joker</li><li>Draw =&gt; action =&gt; draw ...</li></ul><h3>Central Zone</h3><p>Can only hold 7 cards maximum!</p><h3>Possible Discards</h3><ul><li><strong>2 cards of same value</strong></li><li><strong>2 + 5</strong> (+ 1 optional card ✅)</li><li><strong>6 + 9</strong> (+ replay WITHOUT drawing ✅)</li><li><strong>10 + Queen</strong> (+ remove an active Joker ⭐️)</li><li><strong>10 + King</strong> =&gt; discards ALL cards 🔥</li><li><strong>10 + Ace</strong> (+ view next 3 cards ✅)</li></ul><p>⚠️ Discarded cards will not appear again!</p><h3>Joker Activation</h3><ul><li>Erases an Archive with at least 1 card</li><li>Cards are reshuffled into the deck</li></ul><p>⚠️ Can only be used once!</p><h3>Defeat</h3><ul><li>Activating a 2nd Joker if already active</li><li>No completed Archive + no possible action</li></ul>'
+  }
+};
+
+function t(key) {
+  return TRANSLATIONS[currentLang][key] || TRANSLATIONS.fr[key] || key;
+}
+
+/* Translate card face labels: V→J, D→Q, R→K in English */
+function displayLabel(label) {
+  if (currentLang === "en") {
+    if (label === "V") return "J";
+    if (label === "D") return "Q";
+    if (label === "R") return "K";
+  }
+  return label;
+}
+
+/* Apply current language to all static DOM elements */
+function applyLang() {
+  document.documentElement.lang = currentLang;
+  document.title = t("pageTitle");
+  document.querySelector("h1").innerHTML = t("gameTitle");
+  document.getElementById("mode-standard").textContent = t("modeStandard");
+  document.getElementById("mode-timer").textContent = t("modeTimer");
+
+  const timerBtns = document.querySelectorAll("#timer-difficulty button");
+  const timerKeys = ["easy", "normal", "hard", "hardcore"];
+  timerBtns.forEach((btn, i) => { btn.textContent = t(timerKeys[i]); });
+
+  document.getElementById("btn-regles").textContent = t("rules");
+  document.getElementById("piocher").textContent = t("draw");
+  document.getElementById("defausser").textContent = t("discard");
+  document.getElementById("joker").textContent = t("activateJoker");
+  document.getElementById("carte-pile").title = t("deckTitle");
+
+  document.getElementById("btn-oui").textContent = t("yes");
+  document.getElementById("btn-non").textContent = t("no");
+
+  /* Zone titles */
+  const zoneTitles = document.querySelectorAll(".zone-title");
+  if (zoneTitles[0]) zoneTitles[0].textContent = t("centralZone");
+  if (zoneTitles[1]) zoneTitles[1].textContent = t("archives");
+
+  /* Rules page */
+  document.querySelector("#page-regles h2").textContent = t("rulesTitle");
+  document.querySelector("#page-regles .regles-contenu").innerHTML = t("rulesContent");
+  document.getElementById("btn-retour-jeu").textContent = t("backToGame");
+
+  /* Replay button (if visible and not yet set by finDePartie) */
+  const btnReplay = document.getElementById("rejouer");
+  if (btnReplay && btnReplay.style.display !== "none") {
+    if (btnReplay.classList.contains("defaite")) {
+      btnReplay.textContent = t("defeatReplay");
+    } else {
+      btnReplay.textContent = t("victoryReplay");
+    }
+  }
+
+  /* Stats div (if visible) */
+  if (typeof rebuildStats === "function") rebuildStats();
+
+  /* Theme toggle title */
+  document.getElementById("theme-toggle").title = t("changeTheme");
+
+  /* Lang toggle */
+  const langBtn = document.getElementById("lang-toggle");
+  langBtn.textContent = currentLang === "fr" ? "🇬🇧" : "🇫🇷";
+  langBtn.title = t("switchLang");
+
+  /* Update all visible card labels */
+  document.querySelectorAll(".carte").forEach(card => {
+    const rawLabel = card.dataset.label;
+    if (rawLabel) {
+      card.querySelector(".valeur").textContent = displayLabel(rawLabel);
+    }
+  });
+
+  /* 10+As popup buttons if visible */
+  const btnConserver = document.getElementById("btn-conserver");
+  if (btnConserver) btnConserver.textContent = t("keepForNext");
+  const btnRemelanger = document.getElementById("btn-remelanger");
+  if (btnRemelanger) btnRemelanger.textContent = t("shuffleUnder");
+}
+
+/* Language toggle handler */
+(function() {
+  const langBtn = document.getElementById("lang-toggle");
+
+  /* Apply saved language on load */
+  if (currentLang === "en") {
+    applyLang();
+  }
+
+  langBtn.addEventListener("click", function() {
+    currentLang = currentLang === "fr" ? "en" : "fr";
+    localStorage.setItem("archiviste-lang", currentLang);
+    applyLang();
   });
 })();
 </script>
@@ -768,7 +994,7 @@ function creerCarteHTML(carte, interactive=true){
   d.dataset.valeur = carte.valeur;
   d.dataset.label = carte.label;
   d.dataset.couleur = carte.couleur;
-  d.innerHTML = `<div class="valeur">${carte.label}</div><div class="centre">${carte.couleur}</div>`;
+  d.innerHTML = `<div class="valeur">${displayLabel(carte.label)}</div><div class="centre">${carte.couleur}</div>`;
   if(interactive){
   d.onclick = () => {
     d.classList.toggle("selectionnee");
@@ -795,7 +1021,7 @@ btnPioche.onclick = () => {
   const sel = [...document.querySelectorAll(".carte.selectionnee")];
 
   if (centre.children.length + 2 > 7) {
-    alert("⛔️ Zone Centrale saturée, pioche impossible");
+    alert(t("zoneFull"));
     return;
   }
 
@@ -805,7 +1031,7 @@ btnPioche.onclick = () => {
     document.getElementById("zone-actions").classList.add("ui-bloquee");
 
     confirmJeu(
-      "Confirmer repioche ? (⚠️ 3 cartes seront piochées au lieu de 2)",
+      t("confirmRedraw"),
       reponse => {
 
         document.getElementById("zone-actions").classList.remove("ui-bloquee");
@@ -829,7 +1055,7 @@ btnPioche.onclick = () => {
 // ----------------------------------------------------
 function piocherCartes(nb){
   if (centre.children.length + nb > 7) {
-    alert("⛔️ Zone Centrale saturée, pioche impossible !");
+    alert(t("zoneFullExcl"));
     return;
   }
 
@@ -1019,7 +1245,7 @@ document.getElementById("defausser").onclick = () => {
             return;
     }
     if (sel.length > 2) {
-       alert("⚠️ Trop de cartes sélectionnées (max 2 identiques)");
+       alert(t("tooManyCards"));
        return;
     }
 
@@ -1091,8 +1317,8 @@ document.getElementById("defausser").onclick = () => {
         popup.innerHTML = `
           <div class="cartes"></div>
           <div class="popup-actions">
-            <button id="btn-conserver">Conserver pour la pioche suivante</button>
-            <button id="btn-remelanger">Mélanger sous la pile</button>
+            <button id="btn-conserver">${t("keepForNext")}</button>
+            <button id="btn-remelanger">${t("shuffleUnder")}</button>
           </div>
         `;
     
@@ -1175,14 +1401,14 @@ btnJoker.onclick = () => {
   // ❌ Joker déjà consommé → confirmer avant défaite
   if (jokerUtilise && !jokerEnAttente) {
   document.getElementById("zone-actions").classList.add("ui-bloquee");
-  confirmJeu("⚠️ Le Joker a déjà été utilisé. Confirmez-vous l'activation de cette action ?",
+  confirmJeu(t("confirmJoker"),
       reponse => {
           document.getElementById("zone-actions").classList.remove("ui-bloquee");
           if (reponse) {
               stats.nbJokers++; // Stats nb Jokers activés
               sessionTerminee = true; // pour éviter double log
               envoyerLog("DEFAITE", { duree: dureeSession() });
-              finDePartie("❌ 2ème utilisation du Joker —> Défaite !", "DEFAITE");
+              finDePartie(t("defeatJoker"), "DEFAITE");
 
               requestAnimationFrame(() => {
                requestAnimationFrame(() => {
@@ -1205,6 +1431,27 @@ btnJoker.onclick = () => {
   jokerEnAttente=true;
   btnJoker.classList.add("joker-actif");
 };
+
+/* =====================================================
+   REBUILD STATS (for language switch during end screen)
+===================================================== */
+let savedEndStats = null;
+function rebuildStats() {
+  if (!savedEndStats) return;
+  const s = savedEndStats;
+  const statsDiv = document.getElementById("stats-fin");
+  if (!statsDiv) return;
+  statsDiv.innerHTML = `
+    <strong>${t("statsTitle")}</strong><br>
+    ${t("statsMode")} : ${s.modeLabel}<br>
+    ${t("statsDraws")} : ${s.nbPioches}<br>
+    ${t("statsStdDiscards")} : ${s.nbDefaussesNormales}<br>
+    ${t("statsSpeDiscards")} : ${s.nbDefaussesSpeciales}<br>
+    ${t("statsJokers")} : ${s.nbJokers}<br>
+    ${t("statsRemaining")} : ${s.nbCartesPile}<br>
+    ${t("statsDuration")} : ${s.temps}
+  `;
+}
 
 /* =====================================================
    FIN D'UNE PARTIE
@@ -1235,9 +1482,9 @@ function finDePartie(message, type = "VICTOIRE") {
 
     if (type === "DEFAITE") {
       btnReplay.classList.add("defaite");
-      btnReplay.textContent = "☠️  DÉFAITE : REJOUER  ☠️";
+      btnReplay.textContent = t("defeatReplay");
     } else {
-      btnReplay.textContent = "🏆  VICTOIRE : REJOUER  🏆";
+      btnReplay.textContent = t("victoryReplay");
     }
 
     btnReplay.onclick = () => location.reload();
@@ -1262,15 +1509,16 @@ const secondes = Math.floor((dureeMs%60000)/1000);
 const temps = `${minutes}:${secondes.toString().padStart(2,'0')}`;
 // Affichage
 const modeLabel = modeJeu === "timer" ? `Timer | ${difficulteTimer}` : "Standard";
+savedEndStats = { modeLabel, nbPioches: stats.nbPioches, nbDefaussesNormales: stats.nbDefaussesNormales, nbDefaussesSpeciales: stats.nbDefaussesSpeciales, nbJokers: stats.nbJokers, nbCartesPile: stats.nbCartesPile, temps };
 statsDiv.innerHTML = `
-  <strong>--- Statistiques de la partie ---</strong><br>
-  Mode : ${modeLabel}<br>
-  Pioches effectuées : ${stats.nbPioches}<br>
-  Défausses standards : ${stats.nbDefaussesNormales}<br>
-  Défausses spéciales : ${stats.nbDefaussesSpeciales}<br>
-  Jokers utilisés : ${stats.nbJokers}<br>
-  Pile restante : ${stats.nbCartesPile}<br>
-  Durée partie : ${temps}
+  <strong>${t("statsTitle")}</strong><br>
+  ${t("statsMode")} : ${modeLabel}<br>
+  ${t("statsDraws")} : ${stats.nbPioches}<br>
+  ${t("statsStdDiscards")} : ${stats.nbDefaussesNormales}<br>
+  ${t("statsSpeDiscards")} : ${stats.nbDefaussesSpeciales}<br>
+  ${t("statsJokers")} : ${stats.nbJokers}<br>
+  ${t("statsRemaining")} : ${stats.nbCartesPile}<br>
+  ${t("statsDuration")} : ${temps}
 `;
 
   // Scroll automatique en haut de l’écran
@@ -1342,7 +1590,7 @@ function verifierDefaite() {
   ) {
     sessionTerminee = true;
     envoyerLog("DEFAITE", { duree: dureeSession() });
-    finDePartie("❌ Pioche vide et plus aucune action possible —> Défaite !", "DEFAITE");
+    finDePartie(t("defeatEmpty"), "DEFAITE");
 
     requestAnimationFrame(() => {
      requestAnimationFrame(() => {
@@ -1361,7 +1609,7 @@ function verifierDefaite() {
   ) {
     sessionTerminee = true;
     envoyerLog("DEFAITE", { duree: dureeSession() });
-    finDePartie("❌ Plus aucune action possible —> Défaite !", "DEFAITE");
+    finDePartie(t("defeatNoAction"), "DEFAITE");
 
     requestAnimationFrame(() => {
      requestAnimationFrame(() => {
@@ -1421,7 +1669,7 @@ function verifierVictoire(){
       if(archives[c].length===10 && !sessionTerminee){
           sessionTerminee = true;
           envoyerLog("VICTOIRE", { duree: dureeSession() });
-          finDePartie("🏆 VICTOIRE —> Archive complétée !", "VICTOIRE");
+          finDePartie(t("victory"), "VICTOIRE");
 
           // Déclenchement des confettis après rendu réel de la pop-up
           requestAnimationFrame(() => {
@@ -1502,7 +1750,7 @@ function demarrerChrono() {
         // ⏳ Laisser Safari iOS peindre le 0:00 avant l’alert
         setTimeout(() => {
           envoyerLog("DEFAITE", { duree: dureeSession() });
-          finDePartie("❌ Temps écoulé —> Défaite !", "DEFAITE");
+          finDePartie(t("defeatTime"), "DEFAITE");
 
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
