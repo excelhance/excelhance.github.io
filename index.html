@@ -6,11 +6,71 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>L’Archiviste - jeu solo</title>
 <style>
-  
+
+/* ===== THEME VARIABLES ===== */
+:root {
+  /* Dark theme (default) */
+  --bg-main: #0f172a;
+  --bg-deep: #020617;
+  --text-primary: #e5e7eb;
+  --text-muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-dark: #0f172a;
+  --btn-bg: #38bdf8;
+  --btn-text: #0f172a;
+  --btn-regles-bg: #194570;
+  --btn-regles-text: #ffffff;
+  --btn-regles-border: #ffffff;
+  --zone-border: #475569;
+  --zone-title: #94a3b8;
+  --archive-border: #475569;
+  --archive-counter: #06b6d4;
+  --popup-bg: #020617;
+  --popup-border: #38bdf8;
+  --carte-bg: #ffffff;
+  --carte-text: #000000;
+  --carte-shadow: 0 4px 8px rgba(0,0,0,.4);
+  --carte-border: none;
+  --carte-select: #38bdf8;
+  --joker-actif-bg: #fff;
+  --footer-text: #94a3b8;
+  --toggle-bg: transparent;
+  --toggle-text: #e5e7eb;
+}
+
+[data-theme="light"] {
+  --bg-main: #ffffff;
+  --bg-deep: #f1f5f9;
+  --text-primary: #1e3a5f;
+  --text-muted: #1e3a5f;
+  --accent: #1e3a5f;
+  --accent-dark: #ffffff;
+  --btn-bg: #1e3a5f;
+  --btn-text: #ffffff;
+  --btn-regles-bg: #1e3a5f;
+  --btn-regles-text: #ffffff;
+  --btn-regles-border: #1e3a5f;
+  --zone-border: #1e3a5f;
+  --zone-title: #1e3a5f;
+  --archive-border: #1e3a5f;
+  --archive-counter: #1e3a5f;
+  --popup-bg: #f1f5f9;
+  --popup-border: #1e3a5f;
+  --carte-bg: #ffffff;
+  --carte-text: #000000;
+  --carte-shadow: 0 2px 8px rgba(0,0,0,.15);
+  --carte-border: 2px solid #1e3a5f;
+  --carte-select: #1e3a5f;
+  --joker-actif-bg: #f1f5f9;
+  --footer-text: #1e3a5f;
+  --toggle-bg: transparent;
+  --toggle-text: #1e3a5f;
+}
+
 /* ===== BASE ===== */
 body {
-  background:#0f172a;
-  color:#e5e7eb;
+  background: var(--bg-main);
+  color: var(--text-primary);
   padding:16px;
   font-family:system-ui;
   touch-action: manipulation;
@@ -26,10 +86,36 @@ body.partie-active #game-wrapper {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding: 16px;
-  background: #0f172a;
+  background: var(--bg-main);
 }
 
 h1 { text-align:center; margin-bottom:12px; }
+
+/* ===== THEME TOGGLE ===== */
+#theme-toggle {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 200;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--text-muted);
+  background: var(--toggle-bg);
+  color: var(--toggle-text);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+#theme-toggle:hover {
+  opacity: 1;
+}
 
 /* Conteneur flex boutons + pile */
 #zone-actions-container {
@@ -53,10 +139,10 @@ h1 { text-align:center; margin-bottom:12px; }
   justify-content: center;
   margin: 16px 0;
 }
-#timer-difficulty button[data-time="300"] { background-color: #10b981; } /* Facile */
-#timer-difficulty button[data-time="180"] { background-color: #3b82f6; } /* Normal */
-#timer-difficulty button[data-time="120"] { background-color: #f59e0b; } /* Difficile */
-#timer-difficulty button[data-time="60"]  { background-color: #ef4444; } /* Hardcore */
+#timer-difficulty button[data-time="300"] { background-color: #10b981; color: #0f172a; } /* Facile */
+#timer-difficulty button[data-time="180"] { background-color: #3b82f6; color: #0f172a; } /* Normal */
+#timer-difficulty button[data-time="120"] { background-color: #f59e0b; color: #0f172a; } /* Difficile */
+#timer-difficulty button[data-time="60"]  { background-color: #ef4444; color: #0f172a; } /* Hardcore */
 #mode-selection button,
 #timer-difficulty button,
 #rejouer {
@@ -77,16 +163,16 @@ button {
   margin-bottom:8px;
   border:none;
   border-radius:10px;
-  background:#38bdf8;
-  color:#0f172a;
+  background: var(--btn-bg);
+  color: var(--btn-text);
   font-weight:bold;
   font-size: 14px;
   transition: all 0.2s;
 }
 button.regles {
-  background:#194570;
-  color:#ffffff;
-  border:1px solid #ffffff;
+  background: var(--btn-regles-bg);
+  color: var(--btn-regles-text);
+  border: 1px solid var(--btn-regles-border);
 }
 
 /* Carte pile */
@@ -94,7 +180,7 @@ button.regles {
   width: 70px;
   height: 100px;
   border-radius: 10px;
-  background-image: 
+  background-image:
     url("https://i.postimg.cc/YSFq8L3q/Dos-carte-v2.jpg"); /* https://postimages.org/ */
   background-size: cover;
   background-position: center;
@@ -109,8 +195,8 @@ button.regles {
 
 /* ===== POPUP 10 + AS ===== */
 #popup-10as {
-  background:#020617;
-  border:2px solid #38bdf8;
+  background: var(--popup-bg);
+  border: 2px solid var(--popup-border);
   border-radius:12px;
   padding:10px;
   margin-bottom:12px;
@@ -139,12 +225,12 @@ button.regles {
 
 /* Bouton Joker inactif/actif/utilisé */
 button.joker-inactif { color:#FF0000; }
-button.joker-actif { background:#fff; color:#FF0000; }
+button.joker-actif { background: var(--joker-actif-bg); color:#FF0000; }
 button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
 
 /* ===== ZONE CENTRALE – COULEURS DYNAMIQUES ===== */
 .zone {
-  border:2px dashed #475569;
+  border: 2px dashed var(--zone-border);
   border-radius:12px;
   padding:10px;
   margin-bottom:14px;
@@ -153,7 +239,7 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
 .zone-title {
   text-align:center;
   margin-bottom:6px;
-  color:#94a3b8;
+  color: var(--zone-title);
 }
 
 /* Couleurs dynamiques */
@@ -177,7 +263,7 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
 .zone.rouge .zone-title {
   color:#dc2626;
 }
-  
+
 .cartes {
   display:flex;
   gap:8px;
@@ -190,20 +276,21 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
 .carte {
   width:70px;
   height:100px;
-  background:#fff;
+  background: var(--carte-bg);
   border-radius:10px;
-  color:#000;
+  color: var(--carte-text);
   position:relative;
-  box-shadow:0 4px 8px rgba(0,0,0,.4);
+  box-shadow: var(--carte-shadow);
+  border: var(--carte-border);
   cursor:pointer;
   transition: margin-top 0.2s ease, outline 0.2s ease;
 }
-  
+
 .carte.selectionnee {
-  outline:3px solid #38bdf8;
+  outline: 3px solid var(--carte-select);
   margin-top: -6px;
 }
-  
+
 .carte.rouge { color:#b91c1c }
 
 .valeur { position:absolute; top:6px; left:6px; font-weight:bold; }
@@ -217,7 +304,7 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
 }
 
 .archive {
-  border:2px solid #475569;
+  border: 2px solid var(--archive-border);
   border-radius:10px;
   padding:6px;
   position:relative;
@@ -231,13 +318,13 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
   gap:4px;
 }
 
-/* Compteur de cartes dans l'archive */
+/* Compteur de cartes dans l’archive */
 .archive .compteur {
     text-align: center;
     font-weight: bold;
-    color: #06b6d4; /* bleu cyan */
+    color: var(--archive-counter);
     font-size: 0.9rem;
-    margin-bottom: 4px; /* espace entre compteur et icône de l'archive */
+    margin-bottom: 4px; /* espace entre compteur et icône de l’archive */
 }
 
 /* Cartes réduites dans les archives */
@@ -295,7 +382,7 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
   margin-top: 16px;
   text-align: center;
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--footer-text);
 }
 #footer-credit a {
   color: inherit;
@@ -311,8 +398,8 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
   inset: 0;
   max-width: 100%;
   box-sizing: border-box;
-  background: #020617;
-  color: #e5e7eb;
+  background: var(--bg-deep);
+  color: var(--text-primary);
   padding: 20px;
   overflow-y: auto;
   z-index: 100;
@@ -368,6 +455,7 @@ canvas {
 </style>
 </head>
 <body>
+<button id="theme-toggle" title="Changer de thème">🌙</button>
 <div id="game-wrapper">
 
 <h1>🂡&nbsp;&nbsp;L’Archiviste&nbsp;&nbsp;🂡</h1>
@@ -477,6 +565,30 @@ canvas {
 
 <!-- Librairie confettis de victoire -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+<script>
+/* ===== THEME TOGGLE ===== */
+(function() {
+  const toggle = document.getElementById("theme-toggle");
+  const saved = localStorage.getItem("archiviste-theme");
+  if (saved === "light") {
+    document.documentElement.setAttribute("data-theme", "light");
+    toggle.textContent = "☀️";
+  }
+  toggle.addEventListener("click", function() {
+    const isLight = document.documentElement.getAttribute("data-theme") === "light";
+    if (isLight) {
+      document.documentElement.removeAttribute("data-theme");
+      toggle.textContent = "🌙";
+      localStorage.setItem("archiviste-theme", "dark");
+    } else {
+      document.documentElement.setAttribute("data-theme", "light");
+      toggle.textContent = "☀️";
+      localStorage.setItem("archiviste-theme", "light");
+    }
+  });
+})();
+</script>
 
 <script>
 /* Bloquer le pinch-zoom sur mobile (iOS Safari ignore user-scalable=no)
@@ -1132,7 +1244,7 @@ let statsDiv = document.getElementById("stats-fin");
 if(!statsDiv){
   statsDiv = document.createElement("div");
   statsDiv.id = "stats-fin";
-  statsDiv.style.color = "#fff";
+  statsDiv.style.color = "var(--text-primary)";
   statsDiv.style.textAlign = "center";
   statsDiv.style.marginTop = "16px";    // plus d'espace au-dessus
   statsDiv.style.marginBottom = "16px"; // plus d'espace en-dessous
