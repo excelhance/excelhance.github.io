@@ -456,7 +456,7 @@ canvas {
 </style>
 </head>
 <body>
-<button id="theme-toggle" title="Changer de thème">🌙</button>
+<button id="theme-toggle" title="Changer de thème">☀️</button>
 <div id="game-wrapper">
 
 <h1>🂡&nbsp;&nbsp;L’Archiviste&nbsp;&nbsp;🂡</h1>
@@ -572,22 +572,21 @@ canvas {
 (function() {
   const toggle = document.getElementById("theme-toggle");
   const themeMeta = document.querySelector('meta[name="theme-color"]');
-  const saved = localStorage.getItem("archiviste-theme");
-  if (saved === "light") {
-    document.documentElement.setAttribute("data-theme", "light");
-    toggle.textContent = "☀️";
-    themeMeta.setAttribute("content", "#ffffff");
-  }
+  /* Toujours démarrer en mode sombre */
+  document.documentElement.removeAttribute("data-theme");
+  toggle.textContent = "☀️";
+  themeMeta.setAttribute("content", "#0f172a");
+  localStorage.setItem("archiviste-theme", "dark");
   toggle.addEventListener("click", function() {
     const isLight = document.documentElement.getAttribute("data-theme") === "light";
     if (isLight) {
       document.documentElement.removeAttribute("data-theme");
-      toggle.textContent = "🌙";
+      toggle.textContent = "☀️";
       localStorage.setItem("archiviste-theme", "dark");
       themeMeta.setAttribute("content", "#0f172a");
     } else {
       document.documentElement.setAttribute("data-theme", "light");
-      toggle.textContent = "☀️";
+      toggle.textContent = "🌙";
       localStorage.setItem("archiviste-theme", "light");
       themeMeta.setAttribute("content", "#ffffff");
     }
