@@ -360,7 +360,7 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
   opacity: 0.6;
 }
 /* pour bloquer les 3 boutons de jeu une fois la pop-up Victoire affichée */
-.victoire-ui-bloquee *:not(#rejouer) {
+.victoire-ui-bloquee *:not(#rejouer):not(#theme-toggle) {
   pointer-events: none;
   opacity: 1;
 }
