@@ -616,7 +616,7 @@ canvas {
 
 <script>
 /* ===== LANGUAGE / TRANSLATION SYSTEM ===== */
-let currentLang = localStorage.getItem("archiviste-lang") || "fr";
+let currentLang = "fr";
 
 const TRANSLATIONS = {
   fr: {
@@ -708,20 +708,267 @@ const TRANSLATIONS = {
     statsRemaining: "Remaining deck",
     statsDuration: "Game duration",
     changeTheme: "Change theme",
-    switchLang: "Passer en français",
+    switchLang: "Auf Deutsch umschalten",
     backToGame: "Back to game",
     rulesTitle: "Game Rules — The Archivist",
     rulesContent: '<p><strong>🎯 Goal:</strong> place 10 cards in an Archive</p><h3>Game Turn</h3><ul><li>Draw 2 cards (or 3 in case of redraw)</li><li>Perform an action: archive OR discard OR Joker</li><li>Draw =&gt; action =&gt; draw ...</li></ul><h3>Central Zone</h3><p>Can only hold 7 cards maximum!</p><h3>Possible Discards</h3><ul><li><strong>2 cards of same value</strong></li><li><strong>2 + 5</strong> (+ 1 optional card ✅)</li><li><strong>6 + 9</strong> (+ replay WITHOUT drawing ✅)</li><li><strong>10 + Queen</strong> (+ remove an active Joker ⭐️)</li><li><strong>10 + King</strong> =&gt; discards ALL cards 🔥</li><li><strong>10 + Ace</strong> (+ view next 3 cards ✅)</li></ul><p>⚠️ Discarded cards will not appear again!</p><h3>Joker Activation</h3><ul><li>Erases an Archive with at least 1 card</li><li>Cards are reshuffled into the deck</li></ul><p>⚠️ Can only be used once!</p><h3>Defeat</h3><ul><li>Activating a 2nd Joker if already active</li><li>No completed Archive + no possible action</li></ul>'
+  },
+  de: {
+    pageTitle: "Der Archivar - Solospiel",
+    gameTitle: "🂡\u00a0\u00a0Der Archivar\u00a0\u00a0🂡",
+    modeStandard: "Standardspiel",
+    modeTimer: "⏱️ Auf Zeit",
+    easy: "Leicht (5min)",
+    normal: "Normal (3min)",
+    hard: "Schwer (2min)",
+    hardcore: "Hardcore (1min)",
+    rules: "REGELN",
+    draw: "ZIEHEN",
+    discard: "Ablegen",
+    activateJoker: "Joker aktivieren",
+    replay: "NOCHMAL SPIELEN",
+    centralZone: "Zentrale Zone",
+    archives: "Archive",
+    deckTitle: "Nachziehstapel",
+    yes: "Ja",
+    no: "Nein",
+    confirmRedraw: "Nachziehen bestätigen? (⚠️ 3 Karten werden statt 2 gezogen)",
+    confirmJoker: "⚠️ Der Joker wurde bereits benutzt. Diese Aktion bestätigen?",
+    keepForNext: "Für den nächsten Zug behalten",
+    shuffleUnder: "Unter den Stapel mischen",
+    defeatReplay: "☠️  NIEDERLAGE: NOCHMAL SPIELEN  ☠️",
+    victoryReplay: "🏆  SIEG: NOCHMAL SPIELEN  🏆",
+    zoneFull: "⛔️ Zentrale Zone voll, Ziehen nicht möglich",
+    zoneFullExcl: "⛔️ Zentrale Zone voll, Ziehen nicht möglich!",
+    tooManyCards: "⚠️ Zu viele Karten ausgewählt (max. 2 gleiche)",
+    defeatEmpty: "❌ Stapel leer und keine Aktion möglich —> Niederlage!",
+    defeatNoAction: "❌ Keine Aktion möglich —> Niederlage!",
+    defeatJoker: "❌ 2. Joker-Einsatz —> Niederlage!",
+    defeatTime: "❌ Zeit abgelaufen —> Niederlage!",
+    victory: "🏆 SIEG —> Archiv vollständig!",
+    statsTitle: "--- Spielstatistiken ---",
+    statsMode: "Modus",
+    statsDraws: "Züge durchgeführt",
+    statsStdDiscards: "Standard-Ablagen",
+    statsSpeDiscards: "Spezial-Ablagen",
+    statsJokers: "Joker eingesetzt",
+    statsRemaining: "Reststapel",
+    statsDuration: "Spieldauer",
+    changeTheme: "Design ändern",
+    switchLang: "Cambiar a español",
+    backToGame: "Zurück zum Spiel",
+    rulesTitle: "Spielregeln — Der Archivar",
+    rulesContent: '<p><strong>🎯 Ziel:</strong> 10 Karten in ein Archiv legen</p><h3>Spielzug</h3><ul><li>2 Karten ziehen (oder 3 bei erneutem Ziehen)</li><li>Eine Aktion ausführen: archivieren ODER ablegen ODER Joker</li><li>Ziehen =&gt; Aktion =&gt; Ziehen ...</li></ul><h3>Zentrale Zone</h3><p>Kann maximal 7 Karten enthalten!</p><h3>Mögliche Ablagen</h3><ul><li><strong>2 Karten gleichen Werts</strong></li><li><strong>2 + 5</strong> (+ 1 optionale Karte ✅)</li><li><strong>6 + 9</strong> (+ nochmal spielen OHNE Ziehen ✅)</li><li><strong>10 + Dame</strong> (+ aktiven Joker entfernen ⭐️)</li><li><strong>10 + König</strong> =&gt; ALLE Karten ablegen 🔥</li><li><strong>10 + Ass</strong> (+ die nächsten 3 Karten ansehen ✅)</li></ul><p>⚠️ Abgelegte Karten erscheinen nicht mehr!</p><h3>Joker-Aktivierung</h3><ul><li>Löscht ein Archiv mit mindestens 1 Karte</li><li>Die Karten werden in den Stapel zurückgemischt</li></ul><p>⚠️ Kann nur einmal benutzt werden!</p><h3>Niederlage</h3><ul><li>Aktivierung eines 2. Jokers, wenn bereits aktiv</li><li>Kein vollständiges Archiv + keine mögliche Aktion</li></ul>'
+  },
+  es: {
+    pageTitle: "El Archivista - juego en solitario",
+    gameTitle: "🂡\u00a0\u00a0El Archivista\u00a0\u00a0🂡",
+    modeStandard: "Partida estándar",
+    modeTimer: "⏱️ Contrarreloj",
+    easy: "Fácil (5min)",
+    normal: "Normal (3min)",
+    hard: "Difícil (2min)",
+    hardcore: "Hardcore (1min)",
+    rules: "REGLAS",
+    draw: "ROBAR",
+    discard: "Descartar",
+    activateJoker: "Activar Comodín",
+    replay: "JUGAR DE NUEVO",
+    centralZone: "Zona Central",
+    archives: "Archivos",
+    deckTitle: "Mazo",
+    yes: "Sí",
+    no: "No",
+    confirmRedraw: "¿Confirmar nuevo robo? (⚠️ Se robarán 3 cartas en vez de 2)",
+    confirmJoker: "⚠️ El Comodín ya ha sido usado. ¿Confirmar esta acción?",
+    keepForNext: "Conservar para el próximo robo",
+    shuffleUnder: "Mezclar bajo el mazo",
+    defeatReplay: "☠️  DERROTA: JUGAR DE NUEVO  ☠️",
+    victoryReplay: "🏆  VICTORIA: JUGAR DE NUEVO  🏆",
+    zoneFull: "⛔️ Zona Central llena, no se puede robar",
+    zoneFullExcl: "⛔️ Zona Central llena, no se puede robar!",
+    tooManyCards: "⚠️ Demasiadas cartas seleccionadas (máx. 2 iguales)",
+    defeatEmpty: "❌ Mazo vacío y sin acción posible —> ¡Derrota!",
+    defeatNoAction: "❌ Sin acción posible —> ¡Derrota!",
+    defeatJoker: "❌ 2.º uso del Comodín —> ¡Derrota!",
+    defeatTime: "❌ Tiempo agotado —> ¡Derrota!",
+    victory: "🏆 ¡VICTORIA —> Archivo completado!",
+    statsTitle: "--- Estadísticas de la partida ---",
+    statsMode: "Modo",
+    statsDraws: "Robos realizados",
+    statsStdDiscards: "Descartes estándar",
+    statsSpeDiscards: "Descartes especiales",
+    statsJokers: "Comodines usados",
+    statsRemaining: "Mazo restante",
+    statsDuration: "Duración de la partida",
+    changeTheme: "Cambiar tema",
+    switchLang: "التبديل إلى العربية",
+    backToGame: "Volver al juego",
+    rulesTitle: "Reglas del juego — El Archivista",
+    rulesContent: '<p><strong>🎯 Objetivo:</strong> colocar 10 cartas en un Archivo</p><h3>Turno de juego</h3><ul><li>Robar 2 cartas (o 3 en caso de nuevo robo)</li><li>Realizar una acción: archivar O descartar O Comodín</li><li>Robar =&gt; acción =&gt; robar ...</li></ul><h3>Zona Central</h3><p>¡Solo puede contener 7 cartas como máximo!</p><h3>Descartes posibles</h3><ul><li><strong>2 cartas del mismo valor</strong></li><li><strong>2 + 5</strong> (+ 1 carta opcional ✅)</li><li><strong>6 + 9</strong> (+ volver a jugar SIN robar ✅)</li><li><strong>10 + Reina</strong> (+ eliminar un Comodín activo ⭐️)</li><li><strong>10 + Rey</strong> =&gt; descarta TODAS las cartas 🔥</li><li><strong>10 + As</strong> (+ ver las 3 próximas cartas ✅)</li></ul><p>⚠️ ¡Las cartas descartadas no volverán a aparecer!</p><h3>Activación del Comodín</h3><ul><li>Borra un Archivo que tenga al menos 1 carta</li><li>Las cartas se mezclan de nuevo en el mazo</li></ul><p>⚠️ ¡Solo se puede usar una vez!</p><h3>Derrota</h3><ul><li>Activar un 2.º Comodín si ya está activo</li><li>Ningún Archivo completado + ninguna acción posible</li></ul>'
+  },
+  ar: {
+    pageTitle: "الأرشيفي - لعبة فردية",
+    gameTitle: "🂡\u00a0\u00a0الأرشيفي\u00a0\u00a0🂡",
+    modeStandard: "لعبة عادية",
+    modeTimer: "⏱️ ضد الوقت",
+    easy: "سهل (5 دقائق)",
+    normal: "عادي (3 دقائق)",
+    hard: "صعب (دقيقتان)",
+    hardcore: "متشدد (دقيقة)",
+    rules: "القواعد",
+    draw: "سحب",
+    discard: "تجاهل",
+    activateJoker: "تفعيل الجوكر",
+    replay: "إعادة اللعب",
+    centralZone: "المنطقة المركزية",
+    archives: "الأرشيف",
+    deckTitle: "مجموعة الأوراق",
+    yes: "نعم",
+    no: "لا",
+    confirmRedraw: "تأكيد إعادة السحب؟ (⚠️ سيتم سحب 3 أوراق بدلاً من 2)",
+    confirmJoker: "⚠️ تم استخدام الجوكر بالفعل. هل تؤكد هذا الإجراء؟",
+    keepForNext: "الاحتفاظ للسحب التالي",
+    shuffleUnder: "خلط تحت المجموعة",
+    defeatReplay: "☠️  هزيمة: إعادة اللعب  ☠️",
+    victoryReplay: "🏆  فوز: إعادة اللعب  🏆",
+    zoneFull: "⛔️ المنطقة المركزية ممتلئة، لا يمكن السحب",
+    zoneFullExcl: "⛔️ المنطقة المركزية ممتلئة، لا يمكن السحب!",
+    tooManyCards: "⚠️ تم اختيار أوراق كثيرة جداً (الحد الأقصى 2 متطابقتان)",
+    defeatEmpty: "❌ المجموعة فارغة ولا يوجد إجراء ممكن —> هزيمة!",
+    defeatNoAction: "❌ لا يوجد إجراء ممكن —> هزيمة!",
+    defeatJoker: "❌ استخدام الجوكر للمرة الثانية —> هزيمة!",
+    defeatTime: "❌ انتهى الوقت —> هزيمة!",
+    victory: "🏆 فوز —> الأرشيف مكتمل!",
+    statsTitle: "--- إحصائيات اللعبة ---",
+    statsMode: "الوضع",
+    statsDraws: "عمليات السحب",
+    statsStdDiscards: "تجاهلات عادية",
+    statsSpeDiscards: "تجاهلات خاصة",
+    statsJokers: "جوكرات مستخدمة",
+    statsRemaining: "المجموعة المتبقية",
+    statsDuration: "مدة اللعبة",
+    changeTheme: "تغيير المظهر",
+    switchLang: "切换到中文",
+    backToGame: "العودة للعبة",
+    rulesTitle: "قواعد اللعبة — الأرشيفي",
+    rulesContent: '<p><strong>🎯 الهدف:</strong> وضع 10 أوراق في الأرشيف</p><h3>دور اللعب</h3><ul><li>سحب ورقتين (أو 3 في حالة إعادة السحب)</li><li>تنفيذ إجراء: أرشفة أو تجاهل أو جوكر</li><li>سحب =&gt; إجراء =&gt; سحب ...</li></ul><h3>المنطقة المركزية</h3><p>لا يمكن أن تحتوي على أكثر من 7 أوراق!</p><h3>التجاهلات الممكنة</h3><ul><li><strong>ورقتان بنفس القيمة</strong></li><li><strong>2 + 5</strong> (+ ورقة اختيارية ✅)</li><li><strong>6 + 9</strong> (+ إعادة اللعب بدون سحب ✅)</li><li><strong>10 + ملكة</strong> (+ إزالة جوكر نشط ⭐️)</li><li><strong>10 + ملك</strong> =&gt; تجاهل جميع الأوراق 🔥</li><li><strong>10 + آس</strong> (+ رؤية الأوراق الثلاث التالية ✅)</li></ul><p>⚠️ الأوراق المُتجاهَلة لن تظهر مرة أخرى!</p><h3>تفعيل الجوكر</h3><ul><li>يمحو أرشيفاً يحتوي على ورقة واحدة على الأقل</li><li>يتم خلط الأوراق مرة أخرى في المجموعة</li></ul><p>⚠️ لا يمكن استخدامه إلا مرة واحدة!</p><h3>الهزيمة</h3><ul><li>تفعيل جوكر ثانٍ إذا كان نشطاً بالفعل</li><li>عدم إكمال أي أرشيف + عدم وجود إجراء ممكن</li></ul>'
+  },
+  zh: {
+    pageTitle: "档案管理员 - 单人纸牌游戏",
+    gameTitle: "🂡\u00a0\u00a0档案管理员\u00a0\u00a0🂡",
+    modeStandard: "标准模式",
+    modeTimer: "⏱️ 限时模式",
+    easy: "简单 (5分钟)",
+    normal: "普通 (3分钟)",
+    hard: "困难 (2分钟)",
+    hardcore: "极难 (1分钟)",
+    rules: "规则",
+    draw: "抽牌",
+    discard: "弃牌",
+    activateJoker: "激活小丑牌",
+    replay: "再来一局",
+    centralZone: "中央区域",
+    archives: "档案区",
+    deckTitle: "牌堆",
+    yes: "是",
+    no: "否",
+    confirmRedraw: "确认重新抽牌？(⚠️ 将抽3张而非2张)",
+    confirmJoker: "⚠️ 小丑牌已被使用过。确认此操作？",
+    keepForNext: "保留到下次抽牌",
+    shuffleUnder: "洗入牌堆底部",
+    defeatReplay: "☠️  失败：再来一局  ☠️",
+    victoryReplay: "🏆  胜利：再来一局  🏆",
+    zoneFull: "⛔️ 中央区域已满，无法抽牌",
+    zoneFullExcl: "⛔️ 中央区域已满，无法抽牌！",
+    tooManyCards: "⚠️ 选择的牌太多（最多2张相同的）",
+    defeatEmpty: "❌ 牌堆已空且无可用操作 —> 失败！",
+    defeatNoAction: "❌ 无可用操作 —> 失败！",
+    defeatJoker: "❌ 第二次使用小丑牌 —> 失败！",
+    defeatTime: "❌ 时间到 —> 失败！",
+    victory: "🏆 胜利 —> 档案已完成！",
+    statsTitle: "--- 游戏统计 ---",
+    statsMode: "模式",
+    statsDraws: "抽牌次数",
+    statsStdDiscards: "标准弃牌",
+    statsSpeDiscards: "特殊弃牌",
+    statsJokers: "小丑牌使用次数",
+    statsRemaining: "剩余牌堆",
+    statsDuration: "游戏时长",
+    changeTheme: "切换主题",
+    switchLang: "Переключить на русский",
+    backToGame: "返回游戏",
+    rulesTitle: "游戏规则 — 档案管理员",
+    rulesContent: '<p><strong>🎯 目标：</strong>将10张牌放入档案</p><h3>游戏回合</h3><ul><li>抽2张牌（重新抽牌时为3张）</li><li>执行一个操作：归档 或 弃牌 或 小丑牌</li><li>抽牌 =&gt; 操作 =&gt; 抽牌 ...</li></ul><h3>中央区域</h3><p>最多只能放7张牌！</p><h3>可用弃牌组合</h3><ul><li><strong>2张相同点数的牌</strong></li><li><strong>2 + 5</strong>（+ 可选1张牌 ✅）</li><li><strong>6 + 9</strong>（+ 不抽牌再玩一次 ✅）</li><li><strong>10 + Q</strong>（+ 移除一个激活的小丑牌 ⭐️）</li><li><strong>10 + K</strong> =&gt; 弃掉所有牌 🔥</li><li><strong>10 + A</strong>（+ 查看接下来3张牌 ✅）</li></ul><p>⚠️ 被弃掉的牌将不会再出现！</p><h3>小丑牌激活</h3><ul><li>清除一个至少有1张牌的档案</li><li>牌被重新洗入牌堆</li></ul><p>⚠️ 只能使用一次！</p><h3>失败条件</h3><ul><li>在小丑牌已激活时再次激活</li><li>没有完成任何档案 + 没有可用操作</li></ul>'
+  },
+  ru: {
+    pageTitle: "Архивариус - одиночная игра",
+    gameTitle: "🂡\u00a0\u00a0Архивариус\u00a0\u00a0🂡",
+    modeStandard: "Стандартная игра",
+    modeTimer: "⏱️ На время",
+    easy: "Легко (5мин)",
+    normal: "Нормально (3мин)",
+    hard: "Сложно (2мин)",
+    hardcore: "Хардкор (1мин)",
+    rules: "ПРАВИЛА",
+    draw: "ТЯНУТЬ",
+    discard: "Сбросить",
+    activateJoker: "Активировать Джокер",
+    replay: "ИГРАТЬ СНОВА",
+    centralZone: "Центральная зона",
+    archives: "Архивы",
+    deckTitle: "Колода",
+    yes: "Да",
+    no: "Нет",
+    confirmRedraw: "Подтвердить повторную раздачу? (⚠️ Будет взято 3 карты вместо 2)",
+    confirmJoker: "⚠️ Джокер уже был использован. Подтвердить это действие?",
+    keepForNext: "Сохранить для следующей раздачи",
+    shuffleUnder: "Замешать под колоду",
+    defeatReplay: "☠️  ПОРАЖЕНИЕ: ИГРАТЬ СНОВА  ☠️",
+    victoryReplay: "🏆  ПОБЕДА: ИГРАТЬ СНОВА  🏆",
+    zoneFull: "⛔️ Центральная зона заполнена, нельзя тянуть",
+    zoneFullExcl: "⛔️ Центральная зона заполнена, нельзя тянуть!",
+    tooManyCards: "⚠️ Выбрано слишком много карт (макс. 2 одинаковых)",
+    defeatEmpty: "❌ Колода пуста и нет доступных действий —> Поражение!",
+    defeatNoAction: "❌ Нет доступных действий —> Поражение!",
+    defeatJoker: "❌ 2-е использование Джокера —> Поражение!",
+    defeatTime: "❌ Время вышло —> Поражение!",
+    victory: "🏆 ПОБЕДА —> Архив завершён!",
+    statsTitle: "--- Статистика игры ---",
+    statsMode: "Режим",
+    statsDraws: "Раздач выполнено",
+    statsStdDiscards: "Стандартных сбросов",
+    statsSpeDiscards: "Специальных сбросов",
+    statsJokers: "Джокеров использовано",
+    statsRemaining: "Осталось в колоде",
+    statsDuration: "Длительность игры",
+    changeTheme: "Сменить тему",
+    switchLang: "Passer en français",
+    backToGame: "Вернуться к игре",
+    rulesTitle: "Правила игры — Архивариус",
+    rulesContent: '<p><strong>🎯 Цель:</strong> поместить 10 карт в Архив</p><h3>Игровой ход</h3><ul><li>Взять 2 карты (или 3 при повторной раздаче)</li><li>Выполнить действие: архивировать ИЛИ сбросить ИЛИ Джокер</li><li>Тянуть =&gt; действие =&gt; тянуть ...</li></ul><h3>Центральная зона</h3><p>Может содержать максимум 7 карт!</p><h3>Возможные сбросы</h3><ul><li><strong>2 карты одного достоинства</strong></li><li><strong>2 + 5</strong> (+ 1 дополнительная карта ✅)</li><li><strong>6 + 9</strong> (+ играть снова БЕЗ раздачи ✅)</li><li><strong>10 + Дама</strong> (+ убрать активного Джокера ⭐️)</li><li><strong>10 + Король</strong> =&gt; сбросить ВСЕ карты 🔥</li><li><strong>10 + Туз</strong> (+ посмотреть 3 следующие карты ✅)</li></ul><p>⚠️ Сброшенные карты больше не появятся!</p><h3>Активация Джокера</h3><ul><li>Удаляет Архив, в котором есть хотя бы 1 карта</li><li>Карты перемешиваются обратно в колоду</li></ul><p>⚠️ Можно использовать только один раз!</p><h3>Поражение</h3><ul><li>Активация 2-го Джокера, если уже активен</li><li>Ни один Архив не завершён + нет доступных действий</li></ul>'
   }
+};
+
+const LANG_ORDER = ["fr", "en", "de", "es", "ar", "zh", "ru"];
+
+const LANG_FLAGS = {
+  en: '<svg viewBox="0 0 60 30" width="22" height="11"><clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath><clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><g clip-path="url(#s)"><path d="M0,0 v30 h60 v-30 z" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></g></svg>',
+  fr: '<svg viewBox="0 0 60 40" width="22" height="15"><rect width="20" height="40" fill="#002395"/><rect x="20" width="20" height="40" fill="#fff"/><rect x="40" width="20" height="40" fill="#ED2939"/></svg>',
+  de: '<svg viewBox="0 0 60 36" width="22" height="13"><rect width="60" height="12" fill="#000"/><rect y="12" width="60" height="12" fill="#DD0000"/><rect y="24" width="60" height="12" fill="#FFCC00"/></svg>',
+  es: '<svg viewBox="0 0 60 40" width="22" height="15"><rect width="60" height="10" fill="#AA151B"/><rect y="10" width="60" height="20" fill="#F1BF00"/><rect y="30" width="60" height="10" fill="#AA151B"/></svg>',
+  ar: '<svg viewBox="0 0 60 40" width="22" height="15"><rect width="60" height="40" fill="#006C35"/><rect x="12" y="24" width="36" height="3" rx="1" fill="#fff"/><rect x="29" y="10" width="2" height="17" fill="#fff"/></svg>',
+  zh: '<svg viewBox="0 0 60 40" width="22" height="15"><rect width="60" height="40" fill="#DE2910"/><polygon points="12,8 14,14 20,14 15,18 17,24 12,20 7,24 9,18 4,14 10,14" fill="#FFDE00"/></svg>',
+  ru: '<svg viewBox="0 0 60 39" width="22" height="14"><rect width="60" height="13" fill="#fff"/><rect y="13" width="60" height="13" fill="#0039A6"/><rect y="26" width="60" height="13" fill="#D52B1E"/></svg>'
 };
 
 function t(key) {
   return TRANSLATIONS[currentLang][key] || TRANSLATIONS.fr[key] || key;
 }
 
-/* Translate card face labels: V→J, D→Q, R→K in English */
+/* Translate card face labels: V→J, D→Q, R→K for non-French languages */
 function displayLabel(label) {
-  if (currentLang === "en") {
+  if (currentLang !== "fr") {
     if (label === "V") return "J";
     if (label === "D") return "Q";
     if (label === "R") return "K";
@@ -776,11 +1023,11 @@ function applyLang() {
   /* Theme toggle title */
   document.getElementById("theme-toggle").title = t("changeTheme");
 
-  /* Lang toggle */
+  /* Lang toggle — show the NEXT language's flag */
   const langBtn = document.getElementById("lang-toggle");
-  langBtn.innerHTML = currentLang === "fr"
-    ? '<svg viewBox="0 0 60 30" width="22" height="11"><clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath><clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><g clip-path="url(#s)"><path d="M0,0 v30 h60 v-30 z" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></g></svg>'
-    : '<svg viewBox="0 0 60 40" width="22" height="15"><rect width="20" height="40" fill="#002395"/><rect x="20" width="20" height="40" fill="#fff"/><rect x="40" width="20" height="40" fill="#ED2939"/></svg>';
+  const nextIdx = (LANG_ORDER.indexOf(currentLang) + 1) % LANG_ORDER.length;
+  const nextLang = LANG_ORDER[nextIdx];
+  langBtn.innerHTML = LANG_FLAGS[nextLang];
   langBtn.title = t("switchLang");
 
   /* Update all visible card labels */
@@ -798,18 +1045,15 @@ function applyLang() {
   if (btnRemelanger) btnRemelanger.textContent = t("shuffleUnder");
 }
 
-/* Language toggle handler */
+/* Language toggle handler — cycles: FR → EN → DE → ES → AR → ZH → RU → FR */
 (function() {
   const langBtn = document.getElementById("lang-toggle");
 
-  /* Apply saved language on load */
-  if (currentLang === "en") {
-    applyLang();
-  }
+  /* Always start in French on load/reload (currentLang already set to "fr") */
 
   langBtn.addEventListener("click", function() {
-    currentLang = currentLang === "fr" ? "en" : "fr";
-    localStorage.setItem("archiviste-lang", currentLang);
+    const idx = LANG_ORDER.indexOf(currentLang);
+    currentLang = LANG_ORDER[(idx + 1) % LANG_ORDER.length];
     applyLang();
   });
 })();
