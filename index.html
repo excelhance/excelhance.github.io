@@ -828,7 +828,8 @@ document.addEventListener("touchmove", e => {
   if (e.touches.length > 1) { e.preventDefault(); return; }
   /* Bloquer le pull-to-refresh : quand le wrapper est tout en haut et
      l'utilisateur tire vers le bas, empêcher le comportement natif */
-  if (partieEnCours && gameWrapper.scrollTop <= 0) {
+  const reglesOuvertes = document.getElementById("page-regles").style.display === "block";
+  if (partieEnCours && !reglesOuvertes && gameWrapper.scrollTop <= 0) {
     const y = e.touches[0].clientY;
     if (y > lastTouchY) e.preventDefault();
   }
