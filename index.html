@@ -616,7 +616,7 @@ canvas {
 
 <script>
 /* ===== LANGUAGE / TRANSLATION SYSTEM ===== */
-let currentLang = localStorage.getItem("archiviste-lang") || "fr";
+let currentLang = "fr";
 
 const TRANSLATIONS = {
   fr: {
@@ -802,14 +802,8 @@ function applyLang() {
 (function() {
   const langBtn = document.getElementById("lang-toggle");
 
-  /* Apply saved language on load */
-  if (currentLang === "en") {
-    applyLang();
-  }
-
   langBtn.addEventListener("click", function() {
     currentLang = currentLang === "fr" ? "en" : "fr";
-    localStorage.setItem("archiviste-lang", currentLang);
     applyLang();
   });
 })();
