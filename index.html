@@ -660,6 +660,7 @@ const TRANSLATIONS = {
     statsJokers: "Jokers utilisés",
     statsRemaining: "Pile restante",
     statsDuration: "Durée partie",
+    footerCredit: "Propulsé par N.Fauconnier × ChatGPT",
     changeTheme: "Changer de thème",
     switchLang: "Switch to English",
     backToGame: "Retour au jeu",
@@ -707,6 +708,7 @@ const TRANSLATIONS = {
     statsJokers: "Jokers used",
     statsRemaining: "Remaining deck",
     statsDuration: "Game duration",
+    footerCredit: "Powered by N.Fauconnier × ChatGPT",
     changeTheme: "Change theme",
     switchLang: "Auf Deutsch umschalten",
     backToGame: "Back to game",
@@ -754,6 +756,7 @@ const TRANSLATIONS = {
     statsJokers: "Joker eingesetzt",
     statsRemaining: "Reststapel",
     statsDuration: "Spieldauer",
+    footerCredit: "Erstellt von N.Fauconnier × ChatGPT",
     changeTheme: "Design ändern",
     switchLang: "Cambiar a español",
     backToGame: "Zurück zum Spiel",
@@ -801,6 +804,7 @@ const TRANSLATIONS = {
     statsJokers: "Comodines usados",
     statsRemaining: "Mazo restante",
     statsDuration: "Duración de la partida",
+    footerCredit: "Desarrollado por N.Fauconnier × ChatGPT",
     changeTheme: "Cambiar tema",
     switchLang: "التبديل إلى العربية",
     backToGame: "Volver al juego",
@@ -848,6 +852,7 @@ const TRANSLATIONS = {
     statsJokers: "جوكرات مستخدمة",
     statsRemaining: "المجموعة المتبقية",
     statsDuration: "مدة اللعبة",
+    footerCredit: "من تطوير N.Fauconnier × ChatGPT",
     changeTheme: "تغيير المظهر",
     switchLang: "切换到中文",
     backToGame: "العودة للعبة",
@@ -895,6 +900,7 @@ const TRANSLATIONS = {
     statsJokers: "小丑牌使用次数",
     statsRemaining: "剩余牌堆",
     statsDuration: "游戏时长",
+    footerCredit: "由 N.Fauconnier × ChatGPT 开发",
     changeTheme: "切换主题",
     switchLang: "Переключить на русский",
     backToGame: "返回游戏",
@@ -942,6 +948,7 @@ const TRANSLATIONS = {
     statsJokers: "Джокеров использовано",
     statsRemaining: "Осталось в колоде",
     statsDuration: "Длительность игры",
+    footerCredit: "Разработано N.Fauconnier × ChatGPT",
     changeTheme: "Сменить тему",
     switchLang: "Passer en français",
     backToGame: "Вернуться к игре",
@@ -1019,6 +1026,10 @@ function applyLang() {
 
   /* Stats div (if visible) */
   if (typeof rebuildStats === "function") rebuildStats();
+
+  /* Footer credit */
+  const footerLink = document.querySelector("#footer-credit a");
+  if (footerLink) footerLink.textContent = t("footerCredit");
 
   /* Theme toggle title */
   document.getElementById("theme-toggle").title = t("changeTheme");
