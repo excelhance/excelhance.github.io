@@ -534,7 +534,7 @@ canvas {
   
 <div id="footer-credit">
   <a href="https://www.linkedin.com/in/nathan-fauconnier-developpeur-excel-vba-freelance" target="_blank" rel="noopener">
-    Powered by N.Fauconnier × ChatGPT
+    Propulsé par N.Fauconnier × ChatGPT
   </a>
 </div>
 
@@ -1061,6 +1061,7 @@ function applyLang() {
   const langBtn = document.getElementById("lang-toggle");
 
   /* Always start in French on load/reload (currentLang already set to "fr") */
+  applyLang();
 
   langBtn.addEventListener("click", function() {
     const idx = LANG_ORDER.indexOf(currentLang);
