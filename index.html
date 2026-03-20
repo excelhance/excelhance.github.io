@@ -660,6 +660,9 @@ const TRANSLATIONS = {
     statsJokers: "Jokers utilisés",
     statsRemaining: "Pile restante",
     statsDuration: "Durée partie",
+    statsScore: "Score",
+    statsBestScore: "Meilleur score",
+    statsNewRecord: "Nouveau record !",
     footerCredit: "Propulsé par N.Fauconnier × ChatGPT",
     changeTheme: "Changer de thème",
     switchLang: "Switch to English",
@@ -708,6 +711,9 @@ const TRANSLATIONS = {
     statsJokers: "Jokers used",
     statsRemaining: "Remaining deck",
     statsDuration: "Game duration",
+    statsScore: "Score",
+    statsBestScore: "Best score",
+    statsNewRecord: "New record!",
     footerCredit: "Powered by N.Fauconnier × ChatGPT",
     changeTheme: "Change theme",
     switchLang: "Auf Deutsch umschalten",
@@ -756,6 +762,9 @@ const TRANSLATIONS = {
     statsJokers: "Joker eingesetzt",
     statsRemaining: "Reststapel",
     statsDuration: "Spieldauer",
+    statsScore: "Punktzahl",
+    statsBestScore: "Bestpunktzahl",
+    statsNewRecord: "Neuer Rekord!",
     footerCredit: "Erstellt von N.Fauconnier × ChatGPT",
     changeTheme: "Design ändern",
     switchLang: "Cambiar a español",
@@ -804,6 +813,9 @@ const TRANSLATIONS = {
     statsJokers: "Comodines usados",
     statsRemaining: "Mazo restante",
     statsDuration: "Duración de la partida",
+    statsScore: "Puntuación",
+    statsBestScore: "Mejor puntuación",
+    statsNewRecord: "¡Nuevo récord!",
     footerCredit: "Desarrollado por N.Fauconnier × ChatGPT",
     changeTheme: "Cambiar tema",
     switchLang: "التبديل إلى العربية",
@@ -852,6 +864,9 @@ const TRANSLATIONS = {
     statsJokers: "جوكرات مستخدمة",
     statsRemaining: "المجموعة المتبقية",
     statsDuration: "مدة اللعبة",
+    statsScore: "النتيجة",
+    statsBestScore: "أفضل نتيجة",
+    statsNewRecord: "رقم قياسي جديد!",
     footerCredit: "من تطوير N.Fauconnier × ChatGPT",
     changeTheme: "تغيير المظهر",
     switchLang: "切换到中文",
@@ -900,6 +915,9 @@ const TRANSLATIONS = {
     statsJokers: "小丑牌使用次数",
     statsRemaining: "剩余牌堆",
     statsDuration: "游戏时长",
+    statsScore: "得分",
+    statsBestScore: "最高分",
+    statsNewRecord: "新纪录！",
     footerCredit: "由 N.Fauconnier × ChatGPT 开发",
     changeTheme: "切换主题",
     switchLang: "Переключить на русский",
@@ -948,6 +966,9 @@ const TRANSLATIONS = {
     statsJokers: "Джокеров использовано",
     statsRemaining: "Осталось в колоде",
     statsDuration: "Длительность игры",
+    statsScore: "Счёт",
+    statsBestScore: "Лучший счёт",
+    statsNewRecord: "Новый рекорд!",
     footerCredit: "Разработано N.Fauconnier × ChatGPT",
     changeTheme: "Сменить тему",
     switchLang: "Passer en français",
@@ -1102,6 +1123,8 @@ let pioche = [];
 let etat = "pioche";
 let jokerUtilise = false;
 let jokerEnAttente = false;
+let jokerAEteUtilise = false;
+let jokerRecupere = false;
 let premierePioche = true;
 let attenteAction = false;
 let vision10AsActive = false;
@@ -1213,6 +1236,8 @@ function creerPaquet(){
   partieEnCours = false;
   document.body.classList.remove("partie-active");
   stats = { nbPioches: 0, nbDefaussesNormales: 0, nbDefaussesSpeciales: 0, nbJokers: 0, nbCartesPile: 0, startTime: null };
+  jokerAEteUtilise = false;
+  jokerRecupere = false;
   pioche=[];
   couleurs.forEach(c=>{
     valeurs.forEach(v=>{
@@ -1517,6 +1542,7 @@ document.getElementById("defausser").onclick = () => {
     if(v[0] === 10 && v[1] === 12 && sel.length === 2){
         if(jokerUtilise){
             // Réinitialisation Joker
+            jokerRecupere = true;
             jokerUtilise = false;
             jokerEnAttente = false;
     
@@ -1680,6 +1706,7 @@ btnJoker.onclick = () => {
 
   // ✅ Activation du Joker (en attente de sélection d'une colonne Archive)
   jokerUtilise=true;
+  jokerAEteUtilise=true;
   jokerEnAttente=true;
   btnJoker.classList.add("joker-actif");
 };
@@ -1691,6 +1718,20 @@ let savedEndStats = null;
 function rebuildStats() {
   if (!savedEndStats) return;
   const s = savedEndStats;
+  // Rebuild score zone
+  const scoreDiv = document.getElementById("score-fin");
+  if (scoreDiv) {
+    if (s.score !== null && s.score !== undefined) {
+      scoreDiv.innerHTML = `
+        <strong style="font-size:1.4rem">${t("statsScore")} : ${s.score}/100</strong>
+        ${s.isNewRecord ? `<br><span style="color:#22c55e;font-weight:bold">${t("statsNewRecord")}</span>` : ""}
+        <br><span style="font-size:0.85rem">${t("statsBestScore")} : ${s.bestScore}/100</span>
+      `;
+    } else {
+      scoreDiv.innerHTML = "";
+    }
+  }
+  // Rebuild stats zone
   const statsDiv = document.getElementById("stats-fin");
   if (!statsDiv) return;
   statsDiv.innerHTML = `
@@ -1703,6 +1744,67 @@ function rebuildStats() {
     ${t("statsRemaining")} : ${s.nbCartesPile}<br>
     ${t("statsDuration")} : ${s.temps}
   `;
+}
+
+/* =====================================================
+   CALCUL DU SCORE (sur 100)
+===================================================== */
+function calculerScore(dureeSecondes) {
+  // 1. Base — cartes restantes dans la pioche (0-40)
+  const baseScore = (pioche.length / 42) * 40;
+
+  // 2. Efficacité — nombre de pioches (0-30)
+  const effScore = Math.max(0, 30 - stats.nbPioches * 1.5);
+
+  // 3. Tempo (0 / 10 / 20)
+  let tempoScore = 0;
+  if (dureeSecondes <= 120) tempoScore = 20;
+  else if (dureeSecondes <= 300) tempoScore = 10;
+
+  // 4. Style — défausses spéciales (0-10)
+  const styleScore = Math.min(10, stats.nbDefaussesSpeciales * 2);
+
+  // 5. Pénalité Joker
+  let penaliteJoker = 0;
+  if (jokerAEteUtilise) {
+    penaliteJoker = jokerRecupere ? 0 : -5;
+  }
+
+  // 6. Multiplicateur mode Timer
+  let multiplicateur = 1.0;
+  if (modeJeu === "timer") {
+    const tempsInitial = chronoDureeInitiale ?? 0;
+    if (tempsInitial <= 60) multiplicateur = 2.0;
+    else if (tempsInitial <= 120) multiplicateur = 1.8;
+    else if (tempsInitial <= 180) multiplicateur = 1.5;
+    else multiplicateur = 1.2;
+  }
+
+  const brut = baseScore + effScore + tempoScore + styleScore + penaliteJoker;
+  return Math.min(100, Math.max(0, Math.round(brut * multiplicateur)));
+}
+
+function sauvegarderMeilleurScore(score) {
+  try {
+    const key = modeJeu === "timer"
+      ? `bestScore_timer_${chronoDureeInitiale}`
+      : "bestScore_standard";
+    const ancien = Number(localStorage.getItem(key)) || 0;
+    if (score > ancien) {
+      localStorage.setItem(key, score);
+      return true; // nouveau record
+    }
+    return false;
+  } catch(e) { return false; }
+}
+
+function getMeilleurScore() {
+  try {
+    const key = modeJeu === "timer"
+      ? `bestScore_timer_${chronoDureeInitiale}`
+      : "bestScore_standard";
+    return Number(localStorage.getItem(key)) || 0;
+  } catch(e) { return 0; }
 }
 
 /* =====================================================
@@ -1742,26 +1844,53 @@ function finDePartie(message, type = "VICTOIRE") {
     btnReplay.onclick = () => location.reload();
   }
 
-// Création ou récupération du div stats
+// Création ou récupération du div score (au-dessus des stats)
+let scoreDiv = document.getElementById("score-fin");
+if(!scoreDiv){
+  scoreDiv = document.createElement("div");
+  scoreDiv.id = "score-fin";
+  scoreDiv.style.color = "var(--text-primary)";
+  scoreDiv.style.textAlign = "center";
+  scoreDiv.style.marginTop = "16px";
+  scoreDiv.style.marginBottom = "8px";
+  document.getElementById("rejouer").after(scoreDiv);
+}
+// Création ou récupération du div stats (après le score)
 let statsDiv = document.getElementById("stats-fin");
 if(!statsDiv){
   statsDiv = document.createElement("div");
   statsDiv.id = "stats-fin";
   statsDiv.style.color = "var(--text-primary)";
   statsDiv.style.textAlign = "center";
-  statsDiv.style.marginTop = "16px";    // plus d'espace au-dessus
-  statsDiv.style.marginBottom = "16px"; // plus d'espace en-dessous
-  statsDiv.style.fontSize = "0.8rem";   // réduire la taille de la police
-  document.getElementById("rejouer").after(statsDiv);
+  statsDiv.style.marginTop = "8px";
+  statsDiv.style.marginBottom = "16px";
+  statsDiv.style.fontSize = "0.8rem";
+  scoreDiv.after(statsDiv);
 }
 // Calcul du temps
 const dureeMs = finPartieMs - stats.startTime;
+const dureeSecondes = Math.floor(dureeMs / 1000);
 const minutes = Math.floor(dureeMs/60000);
 const secondes = Math.floor((dureeMs%60000)/1000);
 const temps = `${minutes}:${secondes.toString().padStart(2,'0')}`;
+// Calcul du score (victoire uniquement)
+const score = type === "VICTOIRE" ? calculerScore(dureeSecondes) : null;
+const isNewRecord = score !== null ? sauvegarderMeilleurScore(score) : false;
+const bestScore = getMeilleurScore();
 // Affichage
 const modeLabel = modeJeu === "timer" ? `Timer | ${difficulteTimer}` : "Standard";
-savedEndStats = { modeLabel, nbPioches: stats.nbPioches, nbDefaussesNormales: stats.nbDefaussesNormales, nbDefaussesSpeciales: stats.nbDefaussesSpeciales, nbJokers: stats.nbJokers, nbCartesPile: stats.nbCartesPile, temps };
+savedEndStats = { modeLabel, nbPioches: stats.nbPioches, nbDefaussesNormales: stats.nbDefaussesNormales, nbDefaussesSpeciales: stats.nbDefaussesSpeciales, nbJokers: stats.nbJokers, nbCartesPile: stats.nbCartesPile, temps, score, isNewRecord, bestScore, type };
+// Zone Score
+if (score !== null) {
+  scoreDiv.innerHTML = `
+    <strong style="font-size:1.4rem">${t("statsScore")} : ${score}/100</strong>
+    ${isNewRecord ? `<br><span style="color:#22c55e;font-weight:bold">${t("statsNewRecord")}</span>` : ""}
+    <br><span style="font-size:0.85rem">${t("statsBestScore")} : ${bestScore}/100</span>
+  `;
+} else {
+  scoreDiv.innerHTML = "";
+}
+// Zone Stats
 statsDiv.innerHTML = `
   <strong>${t("statsTitle")}</strong><br>
   ${t("statsMode")} : ${modeLabel}<br>
@@ -2046,6 +2175,8 @@ function getStatsResume() {
   const s = Math.floor((dureeMs % 60000) / 1000);
   const temps = `${m}:${s.toString().padStart(2, "0")}`;
   const mode = modeJeu === "timer" ? `Timer | ${difficulteTimer}` : "Standard";
+  const dureeSecondes = Math.floor(dureeMs / 1000);
+  const score = calculerScore(dureeSecondes);
   return [
     `Mode:${mode}`,
     `Pioches:${stats.nbPioches}`,
@@ -2053,13 +2184,17 @@ function getStatsResume() {
     `Déf.spé:${stats.nbDefaussesSpeciales}`,
     `Jokers:${stats.nbJokers}`,
     `Pile:${stats.nbCartesPile}`,
-    `Durée:${temps}`
+    `Durée:${temps}`,
+    `Score:${score}/100`
   ].join(" // ");
 }
 
 function envoyerLog(action, options = {}) {
   const isFinPartie = (action === "VICTOIRE" || action === "DEFAITE");
   const modeLabel = modeJeu === "timer" ? `Timer | ${difficulteTimer}` : modeJeu === "standard" ? "Standard" : "";
+  const dureeMs = stats.startTime ? Date.now() - stats.startTime : 0;
+  const dureeSecondes = Math.floor(dureeMs / 1000);
+  const scoreLog = (action === "VICTOIRE") ? calculerScore(dureeSecondes) : null;
   const payload = JSON.stringify({
     playerId: getPlayerId(),
     action: action,
@@ -2067,6 +2202,7 @@ function envoyerLog(action, options = {}) {
     mode: modeLabel,
     duree: options.duree ?? null,
     maxArchive: isFinPartie ? getMaxArchive() : null,
+    score: scoreLog,
     statistiques: isFinPartie ? getStatsResume() : "",
     plateforme: detecterPlateforme(),
     userAgent: navigator.userAgent
