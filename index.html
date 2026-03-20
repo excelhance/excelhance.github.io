@@ -655,6 +655,8 @@ const TRANSLATIONS = {
     victory: "🏆 VICTOIRE —> Archive complétée !",
     statsTitle: "--- Statistiques de la partie ---",
     statsMode: "Mode",
+    statsModeStandard: "Standard",
+    statsModeTimer: "Timer",
     statsDraws: "Pioches effectuées",
     statsStdDiscards: "Défausses standards",
     statsSpeDiscards: "Défausses spéciales",
@@ -706,6 +708,8 @@ const TRANSLATIONS = {
     victory: "🏆 VICTORY —> Archive completed!",
     statsTitle: "--- Game Statistics ---",
     statsMode: "Mode",
+    statsModeStandard: "Standard",
+    statsModeTimer: "Timer",
     statsDraws: "Draws performed",
     statsStdDiscards: "Standard discards",
     statsSpeDiscards: "Special discards",
@@ -757,6 +761,8 @@ const TRANSLATIONS = {
     victory: "🏆 SIEG —> Archiv vollständig!",
     statsTitle: "--- Spielstatistiken ---",
     statsMode: "Modus",
+    statsModeStandard: "Standard",
+    statsModeTimer: "Timer",
     statsDraws: "Züge durchgeführt",
     statsStdDiscards: "Standard-Ablagen",
     statsSpeDiscards: "Spezial-Ablagen",
@@ -808,6 +814,8 @@ const TRANSLATIONS = {
     victory: "🏆 ¡VICTORIA —> Archivo completado!",
     statsTitle: "--- Estadísticas de la partida ---",
     statsMode: "Modo",
+    statsModeStandard: "Estándar",
+    statsModeTimer: "Timer",
     statsDraws: "Robos realizados",
     statsStdDiscards: "Descartes estándar",
     statsSpeDiscards: "Descartes especiales",
@@ -859,6 +867,8 @@ const TRANSLATIONS = {
     victory: "🏆 فوز —> الأرشيف مكتمل!",
     statsTitle: "--- إحصائيات اللعبة ---",
     statsMode: "الوضع",
+    statsModeStandard: "قياسي",
+    statsModeTimer: "مؤقت",
     statsDraws: "عمليات السحب",
     statsStdDiscards: "تجاهلات عادية",
     statsSpeDiscards: "تجاهلات خاصة",
@@ -910,6 +920,8 @@ const TRANSLATIONS = {
     victory: "🏆 胜利 —> 档案已完成！",
     statsTitle: "--- 游戏统计 ---",
     statsMode: "模式",
+    statsModeStandard: "标准",
+    statsModeTimer: "计时",
     statsDraws: "抽牌次数",
     statsStdDiscards: "标准弃牌",
     statsSpeDiscards: "特殊弃牌",
@@ -961,6 +973,8 @@ const TRANSLATIONS = {
     victory: "🏆 ПОБЕДА —> Архив завершён!",
     statsTitle: "--- Статистика игры ---",
     statsMode: "Режим",
+    statsModeStandard: "Стандарт",
+    statsModeTimer: "Таймер",
     statsDraws: "Раздач выполнено",
     statsStdDiscards: "Стандартных сбросов",
     statsSpeDiscards: "Специальных сбросов",
@@ -1737,7 +1751,7 @@ function rebuildStats() {
   if (!statsDiv) return;
   statsDiv.innerHTML = `
     <strong>${t("statsTitle")}</strong><br>
-    ${t("statsMode")} : ${s.modeJeu === "timer" ? `${t("modeTimer")} | ${t(s.difficulteTimerKey).split("(")[0].trim()}` : t("modeStandard")}<br>
+    ${t("statsMode")} : ${s.modeJeu === "timer" ? `${t("statsModeTimer")} | ${t(s.difficulteTimerKey).split("(")[0].trim()}` : t("statsModeStandard")}<br>
     ${t("statsDraws")} : ${s.nbPioches}<br>
     ${t("statsStdDiscards")} : ${s.nbDefaussesNormales}<br>
     ${t("statsSpeDiscards")} : ${s.nbDefaussesSpeciales}<br>
@@ -1879,7 +1893,7 @@ const score = type === "VICTOIRE" ? calculerScore(dureeSecondes) : null;
 const isNewRecord = score !== null ? sauvegarderMeilleurScore(score) : false;
 const bestScore = getMeilleurScore();
 // Affichage
-const modeLabel = modeJeu === "timer" ? `${t("modeTimer")} | ${t(difficulteTimer).split("(")[0].trim()}` : t("modeStandard");
+const modeLabel = modeJeu === "timer" ? `${t("statsModeTimer")} | ${t(difficulteTimer).split("(")[0].trim()}` : t("statsModeStandard");
 savedEndStats = { modeJeu, difficulteTimerKey: difficulteTimer, nbPioches: stats.nbPioches, nbDefaussesNormales: stats.nbDefaussesNormales, nbDefaussesSpeciales: stats.nbDefaussesSpeciales, nbJokers: stats.nbJokers, nbCartesPile: stats.nbCartesPile, temps, score, isNewRecord, bestScore, type };
 // Zone Score
 if (score !== null) {
