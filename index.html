@@ -486,10 +486,10 @@ canvas {
   <button id="mode-timer">⏱️ Contre la montre</button>
 </div>
 <div id="timer-difficulty" style="display:none">
-  <button data-time="300">Facile (5min)</button>
-  <button data-time="180">Normal (3min)</button>
-  <button data-time="120">Difficile (2min)</button>
-  <button data-time="60">Hardcore (1min)</button>
+  <button data-time="300" data-key="easy">Facile (5min)</button>
+  <button data-time="180" data-key="normal">Normal (3min)</button>
+  <button data-time="120" data-key="hard">Difficile (2min)</button>
+  <button data-time="60" data-key="hardcore">Hardcore (1min)</button>
 </div>
 <div id="chrono" style="display:none">03:00</div>
 
@@ -1736,7 +1736,7 @@ function rebuildStats() {
   if (!statsDiv) return;
   statsDiv.innerHTML = `
     <strong>${t("statsTitle")}</strong><br>
-    ${t("statsMode")} : ${s.modeLabel}<br>
+    ${t("statsMode")} : ${s.modeJeu === "timer" ? `${t("modeTimer")} | ${t(s.difficulteTimerKey).split("(")[0].trim()}` : t("modeStandard")}<br>
     ${t("statsDraws")} : ${s.nbPioches}<br>
     ${t("statsStdDiscards")} : ${s.nbDefaussesNormales}<br>
     ${t("statsSpeDiscards")} : ${s.nbDefaussesSpeciales}<br>
@@ -1878,8 +1878,8 @@ const score = type === "VICTOIRE" ? calculerScore(dureeSecondes) : null;
 const isNewRecord = score !== null ? sauvegarderMeilleurScore(score) : false;
 const bestScore = getMeilleurScore();
 // Affichage
-const modeLabel = modeJeu === "timer" ? `Timer | ${difficulteTimer}` : "Standard";
-savedEndStats = { modeLabel, nbPioches: stats.nbPioches, nbDefaussesNormales: stats.nbDefaussesNormales, nbDefaussesSpeciales: stats.nbDefaussesSpeciales, nbJokers: stats.nbJokers, nbCartesPile: stats.nbCartesPile, temps, score, isNewRecord, bestScore, type };
+const modeLabel = modeJeu === "timer" ? `${t("modeTimer")} | ${t(difficulteTimer).split("(")[0].trim()}` : t("modeStandard");
+savedEndStats = { modeJeu, difficulteTimerKey: difficulteTimer, nbPioches: stats.nbPioches, nbDefaussesNormales: stats.nbDefaussesNormales, nbDefaussesSpeciales: stats.nbDefaussesSpeciales, nbJokers: stats.nbJokers, nbCartesPile: stats.nbCartesPile, temps, score, isNewRecord, bestScore, type };
 // Zone Score
 if (score !== null) {
   scoreDiv.innerHTML = `
@@ -2098,7 +2098,7 @@ document.getElementById("mode-timer").onclick = () => {
 document.querySelectorAll("#timer-difficulty button").forEach(btn => {
   btn.onclick = () => {
     chronoRestant = Number(btn.dataset.time);
-    difficulteTimer = btn.textContent.split("(")[0].trim();
+    difficulteTimer = btn.dataset.key;
     document.getElementById("timer-difficulty").style.display = "none";
     afficherChrono();
     document.getElementById("zone-actions-container").style.display = "";
@@ -2191,7 +2191,7 @@ function getStatsResume() {
 
 function envoyerLog(action, options = {}) {
   const isFinPartie = (action === "VICTOIRE" || action === "DEFAITE");
-  const modeLabel = modeJeu === "timer" ? `Timer | ${difficulteTimer}` : modeJeu === "standard" ? "Standard" : "";
+  const modeLabel = modeJeu === "timer" ? `Timer | ${difficulteTimer}` : modeJeu === "standard" ? "standard" : "";
   const dureeMs = stats.startTime ? Date.now() - stats.startTime : 0;
   const dureeSecondes = Math.floor(dureeMs / 1000);
   const scoreLog = (action === "VICTOIRE") ? calculerScore(dureeSecondes) : null;
