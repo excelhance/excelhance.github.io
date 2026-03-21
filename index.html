@@ -407,9 +407,12 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
   opacity: 0.6;
 }
 /* pour bloquer les 3 boutons de jeu une fois la pop-up Victoire affichée */
-.victoire-ui-bloquee *:not(#rejouer):not(#theme-toggle):not(#lang-toggle) {
+.victoire-ui-bloquee *:not(#rejouer):not(#theme-toggle):not(#lang-toggle):not(#leaderboard-toggle) {
   pointer-events: none;
   opacity: 1;
+}
+#leaderboard-overlay, #leaderboard-overlay * {
+  pointer-events: auto !important;
 }
 #rejouer {
   pointer-events: auto ;
@@ -2146,8 +2149,12 @@ const modeLabel = modeJeu === "timer" ? `${t("statsModeTimer")} | ${t(difficulte
 let lbRang = 0;
 if (score !== null) {
   const now = new Date();
-  const dateStr = now.toLocaleDateString(undefined, { day:"2-digit", month:"2-digit", year:"numeric" })
-    + " " + now.toLocaleTimeString(undefined, { hour:"2-digit", minute:"2-digit", hour12: false });
+  const dd = String(now.getDate()).padStart(2,"0");
+  const mm = String(now.getMonth()+1).padStart(2,"0");
+  const yyyy = now.getFullYear();
+  const hh = String(now.getHours()).padStart(2,"0");
+  const mi = String(now.getMinutes()).padStart(2,"0");
+  const dateStr = `${dd}-${mm}-${yyyy} ${hh}:${mi}`;
   const lbEntry = {
     id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
     score: score,
