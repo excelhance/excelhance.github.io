@@ -538,6 +538,7 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
   padding: 6px 5px;
   text-align: center;
   border-bottom: 1px solid var(--zone-border);
+  white-space: nowrap;
 }
 #leaderboard-table th {
   font-size: 0.7rem;
@@ -549,6 +550,13 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
 #leaderboard-table tr.silver td:first-child { color: #94a3b8; font-weight: bold; }
 #leaderboard-table tr.bronze td:first-child { color: #d97706; font-weight: bold; }
 #leaderboard-table .score-cell { font-weight: bold; font-size: 0.85rem; }
+@media (max-width: 480px) {
+  #leaderboard-table { font-size: 0.62rem; }
+  #leaderboard-table th { font-size: 0.58rem; }
+  #leaderboard-table .score-cell { font-size: 0.68rem; }
+  #leaderboard-table th,
+  #leaderboard-table td { padding: 5px 3px; }
+}
 
 #leaderboard-empty {
   text-align: center;
@@ -730,7 +738,7 @@ canvas {
 <!-- Leaderboard modal overlay -->
 <div id="leaderboard-overlay">
   <div id="leaderboard-modal">
-    <h2 id="lb-title">Top 10 — Meilleurs scores</h2>
+    <h2 id="lb-title">Top 5 — Meilleurs scores</h2>
     <div id="leaderboard-content"></div>
     <div id="leaderboard-actions">
       <button id="btn-leaderboard-close">Fermer</button>
@@ -828,7 +836,7 @@ const TRANSLATIONS = {
     rulesTitle: "Règles du jeu — L'Archiviste",
     rulesContent: '<p><strong>🎯 But du jeu :</strong> placer 10 cartes dans une Archive</p><h3>Fonctionnement du jeu</h3><ul><li>PIOCHER : 2 cartes, ou 3 en cas de repioche</li><li>ACTION : archiver OU défausser OU Joker</li><li>Piocher =&gt; action =&gt; piocher ...</li></ul><h3>Zone Centrale</h3><p>Ne peut contenir que 7 cartes au maximum !</p><h3>Défausses possibles</h3><ul><li><strong>2 cartes de même valeur</strong></li><li><strong>2 + 5</strong> (+ 1 carte optionnelle ✅)</li><li><strong>6 + 9</strong> (+ rejouer SANS piocher ✅)</li><li><strong>10 + Dame</strong> (+ supprimer un Joker actif ⭐️)</li><li><strong>10 + Roi</strong> =&gt; défausse TOUTES les cartes 🔥</li><li><strong>10 + As</strong> (+ voir les 3 prochaines cartes ✅)</li></ul><p>⚠️ Les cartes défaussées n\'apparaitront plus !</p><h3>Activation du Joker</h3><ul><li>Efface une Archive qui a au moins 1 carte</li><li>Les cartes sont remélangées dans la pioche</li></ul><p>⚠️ Ne peut être utilisé qu\'une seule fois !</p><h3>Défaite</h3><ul><li>Activation d\'un 2ème Joker s\'il est déjà actif</li><li>Aucune Archive complétée + aucune action possible</li></ul>',
     lbToggle: "Classement",
-    lbTitle: "Top 10 — Meilleurs scores",
+    lbTitle: "Top 5 — Meilleurs scores",
     lbRank: "#",
     lbScore: "Score",
     lbMode: "Mode",
@@ -894,7 +902,7 @@ const TRANSLATIONS = {
     rulesTitle: "Game Rules — The Archivist",
     rulesContent: '<p><strong>🎯 Goal:</strong> place 10 cards in an Archive</p><h3>How the Game Works</h3><ul><li>DRAW: 2 cards, or 3 in case of redraw</li><li>ACTION: archive OR discard OR Joker</li><li>Draw =&gt; action =&gt; draw ...</li></ul><h3>Central Zone</h3><p>Can only hold 7 cards maximum!</p><h3>Possible Discards</h3><ul><li><strong>2 cards of same value</strong></li><li><strong>2 + 5</strong> (+ 1 optional card ✅)</li><li><strong>6 + 9</strong> (+ replay WITHOUT drawing ✅)</li><li><strong>10 + Queen</strong> (+ remove an active Joker ⭐️)</li><li><strong>10 + King</strong> =&gt; discards ALL cards 🔥</li><li><strong>10 + Ace</strong> (+ view next 3 cards ✅)</li></ul><p>⚠️ Discarded cards will not appear again!</p><h3>Joker Activation</h3><ul><li>Erases an Archive with at least 1 card</li><li>Cards are reshuffled into the deck</li></ul><p>⚠️ Can only be used once!</p><h3>Defeat</h3><ul><li>Activating a 2nd Joker if already active</li><li>No completed Archive + no possible action</li></ul>',
     lbToggle: "Leaderboard",
-    lbTitle: "Top 10 — Best Scores",
+    lbTitle: "Top 5 — Best Scores",
     lbRank: "#",
     lbScore: "Score",
     lbMode: "Mode",
@@ -960,7 +968,7 @@ const TRANSLATIONS = {
     rulesTitle: "Spielregeln — Der Archivar",
     rulesContent: '<p><strong>🎯 Ziel:</strong> 10 Karten in ein Archiv legen</p><h3>Spielablauf</h3><ul><li>ZIEHEN: 2 Karten, oder 3 bei erneutem Ziehen</li><li>AKTION: archivieren ODER ablegen ODER Joker</li><li>Ziehen =&gt; Aktion =&gt; Ziehen ...</li></ul><h3>Zentrale Zone</h3><p>Kann maximal 7 Karten enthalten!</p><h3>Mögliche Ablagen</h3><ul><li><strong>2 Karten gleichen Werts</strong></li><li><strong>2 + 5</strong> (+ 1 optionale Karte ✅)</li><li><strong>6 + 9</strong> (+ nochmal spielen OHNE Ziehen ✅)</li><li><strong>10 + Dame</strong> (+ aktiven Joker entfernen ⭐️)</li><li><strong>10 + König</strong> =&gt; ALLE Karten ablegen 🔥</li><li><strong>10 + Ass</strong> (+ die nächsten 3 Karten ansehen ✅)</li></ul><p>⚠️ Abgelegte Karten erscheinen nicht mehr!</p><h3>Joker-Aktivierung</h3><ul><li>Löscht ein Archiv mit mindestens 1 Karte</li><li>Die Karten werden in den Stapel zurückgemischt</li></ul><p>⚠️ Kann nur einmal benutzt werden!</p><h3>Niederlage</h3><ul><li>Aktivierung eines 2. Jokers, wenn bereits aktiv</li><li>Kein vollständiges Archiv + keine mögliche Aktion</li></ul>',
     lbToggle: "Bestenliste",
-    lbTitle: "Top 10 — Bestpunktzahlen",
+    lbTitle: "Top 5 — Bestpunktzahlen",
     lbRank: "#",
     lbScore: "Punkte",
     lbMode: "Modus",
@@ -1026,7 +1034,7 @@ const TRANSLATIONS = {
     rulesTitle: "Reglas del juego — El Archivista",
     rulesContent: '<p><strong>🎯 Objetivo:</strong> colocar 10 cartas en un Archivo</p><h3>Funcionamiento del juego</h3><ul><li>ROBAR: 2 cartas, o 3 en caso de nuevo robo</li><li>ACCIÓN: archivar O descartar O Comodín</li><li>Robar =&gt; acción =&gt; robar ...</li></ul><h3>Zona Central</h3><p>¡Solo puede contener 7 cartas como máximo!</p><h3>Descartes posibles</h3><ul><li><strong>2 cartas del mismo valor</strong></li><li><strong>2 + 5</strong> (+ 1 carta opcional ✅)</li><li><strong>6 + 9</strong> (+ volver a jugar SIN robar ✅)</li><li><strong>10 + Reina</strong> (+ eliminar un Comodín activo ⭐️)</li><li><strong>10 + Rey</strong> =&gt; descarta TODAS las cartas 🔥</li><li><strong>10 + As</strong> (+ ver las 3 próximas cartas ✅)</li></ul><p>⚠️ ¡Las cartas descartadas no volverán a aparecer!</p><h3>Activación del Comodín</h3><ul><li>Borra un Archivo que tenga al menos 1 carta</li><li>Las cartas se mezclan de nuevo en el mazo</li></ul><p>⚠️ ¡Solo se puede usar una vez!</p><h3>Derrota</h3><ul><li>Activar un 2.º Comodín si ya está activo</li><li>Ningún Archivo completado + ninguna acción posible</li></ul>',
     lbToggle: "Clasificación",
-    lbTitle: "Top 10 — Mejores puntuaciones",
+    lbTitle: "Top 5 — Mejores puntuaciones",
     lbRank: "#",
     lbScore: "Puntos",
     lbMode: "Modo",
@@ -1092,7 +1100,7 @@ const TRANSLATIONS = {
     rulesTitle: "قواعد اللعبة — الأرشيفي",
     rulesContent: '<p><strong>🎯 الهدف:</strong> وضع 10 أوراق في الأرشيف</p><h3>آلية اللعب</h3><ul><li>السحب: ورقتان، أو 3 في حالة إعادة السحب</li><li>الإجراء: أرشفة أو تجاهل أو جوكر</li><li>سحب =&gt; إجراء =&gt; سحب ...</li></ul><h3>المنطقة المركزية</h3><p>لا يمكن أن تحتوي على أكثر من 7 أوراق!</p><h3>التجاهلات الممكنة</h3><ul><li><strong>ورقتان بنفس القيمة</strong></li><li><strong>2 + 5</strong> (+ ورقة اختيارية ✅)</li><li><strong>6 + 9</strong> (+ إعادة اللعب بدون سحب ✅)</li><li><strong>10 + ملكة</strong> (+ إزالة جوكر نشط ⭐️)</li><li><strong>10 + ملك</strong> =&gt; تجاهل جميع الأوراق 🔥</li><li><strong>10 + آس</strong> (+ رؤية الأوراق الثلاث التالية ✅)</li></ul><p>⚠️ الأوراق المُتجاهَلة لن تظهر مرة أخرى!</p><h3>تفعيل الجوكر</h3><ul><li>يمحو أرشيفاً يحتوي على ورقة واحدة على الأقل</li><li>يتم خلط الأوراق مرة أخرى في المجموعة</li></ul><p>⚠️ لا يمكن استخدامه إلا مرة واحدة!</p><h3>الهزيمة</h3><ul><li>تفعيل جوكر ثانٍ إذا كان نشطاً بالفعل</li><li>عدم إكمال أي أرشيف + عدم وجود إجراء ممكن</li></ul>',
     lbToggle: "الترتيب",
-    lbTitle: "أفضل 10 — أعلى النتائج",
+    lbTitle: "أفضل 5 — أعلى النتائج",
     lbRank: "#",
     lbScore: "النتيجة",
     lbMode: "الوضع",
@@ -1158,7 +1166,7 @@ const TRANSLATIONS = {
     rulesTitle: "游戏规则 — 档案管理员",
     rulesContent: '<p><strong>🎯 目标：</strong>将10张牌放入档案</p><h3>游戏玩法</h3><ul><li>抽牌：2张牌，重新抽牌时为3张</li><li>操作：归档 或 弃牌 或 小丑牌</li><li>抽牌 =&gt; 操作 =&gt; 抽牌 ...</li></ul><h3>中央区域</h3><p>最多只能放7张牌！</p><h3>可用弃牌组合</h3><ul><li><strong>2张相同点数的牌</strong></li><li><strong>2 + 5</strong>（+ 可选1张牌 ✅）</li><li><strong>6 + 9</strong>（+ 不抽牌再玩一次 ✅）</li><li><strong>10 + Q</strong>（+ 移除一个激活的小丑牌 ⭐️）</li><li><strong>10 + K</strong> =&gt; 弃掉所有牌 🔥</li><li><strong>10 + A</strong>（+ 查看接下来3张牌 ✅）</li></ul><p>⚠️ 被弃掉的牌将不会再出现！</p><h3>小丑牌激活</h3><ul><li>清除一个至少有1张牌的档案</li><li>牌被重新洗入牌堆</li></ul><p>⚠️ 只能使用一次！</p><h3>失败条件</h3><ul><li>在小丑牌已激活时再次激活</li><li>没有完成任何档案 + 没有可用操作</li></ul>',
     lbToggle: "排行榜",
-    lbTitle: "前10名 — 最高分",
+    lbTitle: "前5名 — 最高分",
     lbRank: "#",
     lbScore: "得分",
     lbMode: "模式",
@@ -1224,7 +1232,7 @@ const TRANSLATIONS = {
     rulesTitle: "Правила игры — Архивариус",
     rulesContent: '<p><strong>🎯 Цель:</strong> поместить 10 карт в Архив</p><h3>Механика игры</h3><ul><li>ВЗЯТЬ: 2 карты, или 3 при повторной раздаче</li><li>ДЕЙСТВИЕ: архивировать ИЛИ сбросить ИЛИ Джокер</li><li>Тянуть =&gt; действие =&gt; тянуть ...</li></ul><h3>Центральная зона</h3><p>Может содержать максимум 7 карт!</p><h3>Возможные сбросы</h3><ul><li><strong>2 карты одного достоинства</strong></li><li><strong>2 + 5</strong> (+ 1 дополнительная карта ✅)</li><li><strong>6 + 9</strong> (+ играть снова БЕЗ раздачи ✅)</li><li><strong>10 + Дама</strong> (+ убрать активного Джокера ⭐️)</li><li><strong>10 + Король</strong> =&gt; сбросить ВСЕ карты 🔥</li><li><strong>10 + Туз</strong> (+ посмотреть 3 следующие карты ✅)</li></ul><p>⚠️ Сброшенные карты больше не появятся!</p><h3>Активация Джокера</h3><ul><li>Удаляет Архив, в котором есть хотя бы 1 карта</li><li>Карты перемешиваются обратно в колоду</li></ul><p>⚠️ Можно использовать только один раз!</p><h3>Поражение</h3><ul><li>Активация 2-го Джокера, если уже активен</li><li>Ни один Архив не завершён + нет доступных действий</li></ul>',
     lbToggle: "Рейтинг",
-    lbTitle: "Топ-10 — Лучшие результаты",
+    lbTitle: "Топ-5 — Лучшие результаты",
     lbRank: "#",
     lbScore: "Очки",
     lbMode: "Режим",
@@ -2541,10 +2549,10 @@ window.addEventListener("load", () => {
 });
 
 /* =====================================================
-   LEADERBOARD LOCAL (Top 10)
+   LEADERBOARD LOCAL (Top 5)
 ===================================================== */
 const LB_KEY = "archiviste-leaderboard";
-const LB_MAX = 10;
+const LB_MAX = 5;
 
 function getLeaderboard() {
   try {
@@ -2624,6 +2632,19 @@ function renderLeaderboard() {
 
   html += `</tbody></table>`;
   container.innerHTML = html;
+
+  // Auto-fit: reduce font size until the table fits without overflow
+  requestAnimationFrame(() => {
+    const table = document.getElementById("leaderboard-table");
+    if (!table) return;
+    const modal = document.getElementById("leaderboard-modal");
+    let fontSize = parseFloat(getComputedStyle(table).fontSize);
+    const minFontSize = 8;
+    while (table.scrollWidth > modal.clientWidth - 32 && fontSize > minFontSize) {
+      fontSize -= 0.5;
+      table.style.fontSize = fontSize + "px";
+    }
+  });
 }
 
 function ouvrirLeaderboard() {
