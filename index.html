@@ -156,6 +156,21 @@ h1 { text-align:center; margin-bottom:12px; }
   justify-content: center;
   margin: 16px 0;
 }
+#timer-back {
+  min-height: 50px;
+  width: 40px;
+  padding: 4px 8px;
+  font-size: 20px;
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#timer-back:hover { color: #e2e8f0; border-color: #64748b; }
 #timer-difficulty button[data-time="300"] { background-color: #10b981; color: #0f172a; } /* Facile */
 #timer-difficulty button[data-time="180"] { background-color: #3b82f6; color: #0f172a; } /* Normal */
 #timer-difficulty button[data-time="120"] { background-color: #f59e0b; color: #0f172a; } /* Difficile */
@@ -487,6 +502,7 @@ canvas {
   <button id="mode-timer">⏱️ Contre la montre</button>
 </div>
 <div id="timer-difficulty" style="display:none">
+  <button id="timer-back" aria-label="Retour">&#8592;</button>
   <button data-time="300" data-key="easy">Facile (5min)</button>
   <button data-time="180" data-key="normal">Normal (3min)</button>
   <button data-time="120" data-key="hard">Difficile (2min)</button>
@@ -2110,6 +2126,10 @@ document.getElementById("mode-timer").onclick = () => {
   modeJeu = "timer";
   document.getElementById("mode-selection").style.display = "none";
   document.getElementById("timer-difficulty").style.display = "flex";
+};
+document.getElementById("timer-back").onclick = () => {
+  document.getElementById("timer-difficulty").style.display = "none";
+  document.getElementById("mode-selection").style.display = "flex";
 };
 document.querySelectorAll("#timer-difficulty button").forEach(btn => {
   btn.onclick = () => {
