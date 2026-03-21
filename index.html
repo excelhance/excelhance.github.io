@@ -1765,8 +1765,8 @@ function rebuildStats() {
    CALCUL DU SCORE (sur 100)
 ===================================================== */
 function calculerScore(dureeSecondes) {
-  // 1. Bonus de victoire (+15)
-  const victoireScore = 15;
+  // 1. Bonus de victoire (+10)
+  const victoireScore = 10;
 
   // 2. Base — cartes restantes dans la pioche (0-40)
   const baseScore = (pioche.length / 42) * 40;
