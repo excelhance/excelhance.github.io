@@ -156,6 +156,32 @@ h1 { text-align:center; margin-bottom:12px; }
   justify-content: center;
   margin: 16px 0;
 }
+#timer-difficulty-wrapper {
+  position: relative;
+}
+#btn-back-mode {
+  position: fixed;
+  top: 52px;
+  left: 10px;
+  z-index: 200;
+  background: transparent;
+  border: 1px solid var(--text-muted);
+  color: var(--text-primary);
+  font-size: 20px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+#btn-back-mode:hover {
+  opacity: 1;
+}
 #timer-difficulty button[data-time="300"] { background-color: #10b981; color: #0f172a; } /* Facile */
 #timer-difficulty button[data-time="180"] { background-color: #3b82f6; color: #0f172a; } /* Normal */
 #timer-difficulty button[data-time="120"] { background-color: #f59e0b; color: #0f172a; } /* Difficile */
@@ -486,11 +512,14 @@ canvas {
   <button id="mode-standard">Partie standard</button>
   <button id="mode-timer">⏱️ Contre la montre</button>
 </div>
-<div id="timer-difficulty" style="display:none">
-  <button data-time="300" data-key="easy">Facile (5min)</button>
-  <button data-time="180" data-key="normal">Normal (3min)</button>
-  <button data-time="120" data-key="hard">Difficile (2min)</button>
-  <button data-time="60" data-key="hardcore">Hardcore (1min)</button>
+<div id="timer-difficulty-wrapper" style="display:none">
+  <button id="btn-back-mode" title="Retour">&#8592;</button>
+  <div id="timer-difficulty">
+    <button data-time="300" data-key="easy">Facile (5min)</button>
+    <button data-time="180" data-key="normal">Normal (3min)</button>
+    <button data-time="120" data-key="hard">Difficile (2min)</button>
+    <button data-time="60" data-key="hardcore">Hardcore (1min)</button>
+  </div>
 </div>
 <div id="chrono" style="display:none">03:00</div>
 
@@ -629,6 +658,7 @@ const TRANSLATIONS = {
     normal: "Normal (3min)",
     hard: "Difficile (2min)",
     hardcore: "Hardcore (1min)",
+    backToModes: "Retour",
     rules: "RÈGLES",
     draw: "PIOCHER",
     discard: "Défausser",
@@ -682,6 +712,7 @@ const TRANSLATIONS = {
     normal: "Normal (3min)",
     hard: "Hard (2min)",
     hardcore: "Hardcore (1min)",
+    backToModes: "Back",
     rules: "RULES",
     draw: "DRAW",
     discard: "Discard",
@@ -735,6 +766,7 @@ const TRANSLATIONS = {
     normal: "Normal (3min)",
     hard: "Schwer (2min)",
     hardcore: "Hardcore (1min)",
+    backToModes: "Zurück",
     rules: "REGELN",
     draw: "ZIEHEN",
     discard: "Ablegen",
@@ -788,6 +820,7 @@ const TRANSLATIONS = {
     normal: "Normal (3min)",
     hard: "Difícil (2min)",
     hardcore: "Hardcore (1min)",
+    backToModes: "Volver",
     rules: "REGLAS",
     draw: "ROBAR",
     discard: "Descartar",
@@ -841,6 +874,7 @@ const TRANSLATIONS = {
     normal: "عادي (3 دقائق)",
     hard: "صعب (دقيقتان)",
     hardcore: "متشدد (دقيقة)",
+    backToModes: "رجوع",
     rules: "القواعد",
     draw: "سحب",
     discard: "تجاهل",
@@ -894,6 +928,7 @@ const TRANSLATIONS = {
     normal: "普通 (3分钟)",
     hard: "困难 (2分钟)",
     hardcore: "极难 (1分钟)",
+    backToModes: "返回",
     rules: "规则",
     draw: "抽牌",
     discard: "弃牌",
@@ -947,6 +982,7 @@ const TRANSLATIONS = {
     normal: "Нормально (3мин)",
     hard: "Сложно (2мин)",
     hardcore: "Хардкор (1мин)",
+    backToModes: "Назад",
     rules: "ПРАВИЛА",
     draw: "ТЯНУТЬ",
     discard: "Сбросить",
@@ -1026,6 +1062,7 @@ function applyLang() {
   document.querySelector("h1").innerHTML = t("gameTitle");
   document.getElementById("mode-standard").textContent = t("modeStandard");
   document.getElementById("mode-timer").textContent = t("modeTimer");
+  document.getElementById("btn-back-mode").title = t("backToModes");
 
   const timerBtns = document.querySelectorAll("#timer-difficulty button");
   const timerKeys = ["easy", "normal", "hard", "hardcore"];
@@ -2109,13 +2146,18 @@ document.getElementById("mode-standard").onclick = () => {
 document.getElementById("mode-timer").onclick = () => {
   modeJeu = "timer";
   document.getElementById("mode-selection").style.display = "none";
-  document.getElementById("timer-difficulty").style.display = "flex";
+  document.getElementById("timer-difficulty-wrapper").style.display = "";
+};
+document.getElementById("btn-back-mode").onclick = () => {
+  document.getElementById("timer-difficulty-wrapper").style.display = "none";
+  document.getElementById("mode-selection").style.display = "flex";
+  modeJeu = null;
 };
 document.querySelectorAll("#timer-difficulty button").forEach(btn => {
   btn.onclick = () => {
     chronoRestant = Number(btn.dataset.time);
     difficulteTimer = btn.dataset.key;
-    document.getElementById("timer-difficulty").style.display = "none";
+    document.getElementById("timer-difficulty-wrapper").style.display = "none";
     afficherChrono();
     document.getElementById("zone-actions-container").style.display = "";
   };
