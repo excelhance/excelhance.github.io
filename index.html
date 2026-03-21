@@ -1765,27 +1765,28 @@ function rebuildStats() {
    CALCUL DU SCORE (sur 100)
 ===================================================== */
 function calculerScore(dureeSecondes) {
-  // 1. Base — cartes restantes dans la pioche (0-40)
+  // 1. Bonus de victoire (+15)
+  const victoireScore = 15;
+
+  // 2. Base — cartes restantes dans la pioche (0-40)
   const baseScore = (pioche.length / 42) * 40;
 
-  // 2. Efficacité — nombre de pioches (0-30)
-  const effScore = Math.max(0, 30 - stats.nbPioches * 1.5);
+  // 3. Efficacité — nombre de pioches (0-30), pente adoucie (1.0 au lieu de 1.5)
+  const effScore = Math.max(0, 30 - stats.nbPioches * 1.0);
 
-  // 3. Tempo (0 / 10 / 20)
-  let tempoScore = 0;
-  if (dureeSecondes <= 120) tempoScore = 20;
-  else if (dureeSecondes <= 300) tempoScore = 10;
+  // 4. Tempo — progressif (0-20), chaque seconde compte
+  const tempoScore = Math.min(20, Math.max(0, (300 - dureeSecondes) / 14));
 
-  // 4. Style — défausses spéciales (0-10)
+  // 5. Style — défausses spéciales (0-10)
   const styleScore = Math.min(10, stats.nbDefaussesSpeciales * 2);
 
-  // 5. Pénalité Joker
+  // 6. Pénalité Joker
   let penaliteJoker = 0;
   if (jokerAEteUtilise) {
     penaliteJoker = jokerRecupere ? 0 : -5;
   }
 
-  // 6. Multiplicateur mode Timer
+  // 7. Multiplicateur mode Timer
   let multiplicateur = 1.0;
   if (modeJeu === "timer") {
     const tempsInitial = chronoDureeInitiale ?? 0;
@@ -1795,7 +1796,7 @@ function calculerScore(dureeSecondes) {
     else multiplicateur = 1.2;
   }
 
-  const brut = baseScore + effScore + tempoScore + styleScore + penaliteJoker;
+  const brut = victoireScore + baseScore + effScore + tempoScore + styleScore + penaliteJoker;
   return Math.min(100, Math.max(0, Math.round(brut * multiplicateur)));
 }
 
