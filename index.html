@@ -2158,7 +2158,8 @@ if (score !== null) {
   const lbEntry = {
     id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
     score: score,
-    modeLabel: modeLabel,
+    modeType: modeJeu,
+    diffKey: difficulteTimer || null,
     temps: temps,
     dureeSec: dureeSecondes,
     date: dateStr,
@@ -2605,10 +2606,17 @@ function renderLeaderboard() {
     const medalClass = rank === 1 ? "gold" : rank === 2 ? "silver" : rank === 3 ? "bronze" : "";
     const isNew = e.id === dernierLbEntryId ? " lb-new-entry" : "";
     const rankLabel = rank <= 3 ? `${rankIcons[rank]} ${rank}` : rank;
+    // Traduction dynamique du mode (rétrocompat avec ancien modeLabel)
+    let modeTxt;
+    if (e.modeType) {
+      modeTxt = e.modeType === "timer" ? `${t("statsModeTimer")} | ${t(e.diffKey).split("(")[0].trim()}` : t("statsModeStandard");
+    } else {
+      modeTxt = e.modeLabel || "";
+    }
     html += `<tr class="${medalClass}${isNew}">
       <td>${rankLabel}</td>
       <td class="score-cell">${e.score}/100</td>
-      <td>${e.modeLabel}</td>
+      <td>${modeTxt}</td>
       <td>${e.temps}</td>
       <td>${e.date}</td>
     </tr>`;
