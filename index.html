@@ -2249,7 +2249,8 @@ function getStatsResume() {
 
 function envoyerLog(action, options = {}) {
   const isFinPartie = (action === "VICTOIRE" || action === "DEFAITE");
-  const modeLabel = modeJeu === "timer" ? `Timer | ${difficulteTimer}` : modeJeu === "standard" ? "standard" : "";
+  const difficulteFR = { easy: "Facile", normal: "Normal", hard: "Difficile", hardcore: "Hardcore" };
+  const modeLabel = modeJeu === "timer" ? `Timer | ${difficulteFR[difficulteTimer] || difficulteTimer}` : modeJeu === "standard" ? "Standard" : "";
   const dureeMs = stats.startTime ? Date.now() - stats.startTime : 0;
   const dureeSecondes = Math.floor(dureeMs / 1000);
   const scoreLog = (action === "VICTOIRE") ? calculerScore(dureeSecondes) : null;
