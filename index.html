@@ -2643,7 +2643,17 @@ function saveLeaderboardDuree(lb) {
 }
 
 function clearLeaderboard() {
-  try { localStorage.removeItem(LB_KEY); localStorage.removeItem(LB_KEY_DUREE); } catch(e) {}
+  try {
+    localStorage.removeItem(LB_KEY);
+    localStorage.removeItem(LB_KEY_DUREE);
+    // Supprimer aussi tous les meilleurs scores par mode de jeu
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith("bestScore_")) keysToRemove.push(k);
+    }
+    keysToRemove.forEach(k => localStorage.removeItem(k));
+  } catch(e) {}
 }
 
 /**
