@@ -77,6 +77,9 @@ body {
   touch-action: manipulation;
 }
 
+body.no-scroll {
+  overflow: hidden;
+}
 body.partie-active {
   overflow: hidden;
   padding: 0;
@@ -223,8 +226,12 @@ h1 { text-align:center; margin-top:36px; margin-bottom:12px; }
   opacity: 1;
 }
 #mode-2archives {
-  background-color: #8b5cf6;
-  color: #0f172a;
+  background-color: #6d28d9;
+  color: #ffffff;
+}
+[data-theme="light"] #mode-2archives {
+  background-color: #7c3aed;
+  color: #ffffff;
 }
 #chrono {
   text-align: center;
