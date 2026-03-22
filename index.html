@@ -150,13 +150,15 @@ h1 { text-align:center; margin-top:36px; margin-bottom:12px; }
 
 /* Styles liés au Chrono */
 #mode-selection,
-#timer-difficulty {
+#timer-difficulty,
+#standard-choices {
   display: flex;
   gap: 12px;
   justify-content: center;
   margin: 16px 0;
 }
-#timer-difficulty-wrapper {
+#timer-difficulty-wrapper,
+#standard-submenu {
   position: relative;
 }
 #btn-back-mode {
@@ -188,12 +190,41 @@ h1 { text-align:center; margin-top:36px; margin-bottom:12px; }
 #timer-difficulty button[data-time="60"]  { background-color: #ef4444; color: #0f172a; } /* Hardcore */
 #mode-selection button,
 #timer-difficulty button,
+#standard-choices button,
 #rejouer {
   padding: 8px 12px; /* hauteur +30% par rapport aux boutons de jeu */
 }
 #mode-selection button,
-#timer-difficulty button {
+#timer-difficulty button,
+#standard-choices button {
   min-height: 50px;
+}
+#btn-back-standard {
+  position: fixed;
+  top: 52px;
+  left: 10px;
+  z-index: 200;
+  background: transparent;
+  border: 1px solid var(--text-muted);
+  color: var(--text-primary);
+  font-size: 20px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+#btn-back-standard:hover {
+  opacity: 1;
+}
+#mode-2archives {
+  background-color: #8b5cf6;
+  color: #0f172a;
 }
 #chrono {
   text-align: center;
@@ -799,8 +830,15 @@ canvas {
 <h1>🂡&nbsp;&nbsp;L’Archiviste&nbsp;&nbsp;🂡</h1>
 
 <div id="mode-selection">
-  <button id="mode-standard">Partie standard</button>
+  <button id="mode-standard">Modes standards</button>
   <button id="mode-timer">⏱️ Contre la montre</button>
+</div>
+<div id="standard-submenu" style="display:none">
+  <button id="btn-back-standard" title="Retour">&#8592;</button>
+  <div id="standard-choices">
+    <button id="mode-simple">Partie simple</button>
+    <button id="mode-2archives">2 Archives</button>
+  </div>
 </div>
 <div id="timer-difficulty-wrapper" style="display:none">
   <button id="btn-back-mode" title="Retour">&#8592;</button>
@@ -972,8 +1010,11 @@ const TRANSLATIONS = {
   fr: {
     pageTitle: "L'Archiviste - jeu solo",
     gameTitle: "🂡\u00a0\u00a0L'Archiviste\u00a0\u00a0🂡",
-    modeStandard: "Partie standard",
+    modeStandard: "Modes standards",
     modeTimer: "⏱️ Contre la montre",
+    modeSimple: "Partie simple",
+    mode2Archives: "2 Archives",
+    statsMode2Archives: "2 Archives",
     easy: "Facile (5min)",
     normal: "Normal (3min)",
     hard: "Difficile (2min)",
@@ -1003,8 +1044,11 @@ const TRANSLATIONS = {
     defeatJoker: "❌ 2ème utilisation du Joker —> Défaite !",
     defeatTime: "❌ Temps écoulé —> Défaite !",
     victory: "🏆 VICTOIRE —> Archive complétée !",
+    victory2Archives: "🏆 VICTOIRE —> 2 Archives complétées !",
     statsTitle: "--- Statistiques de la partie ---",
     statsMode: "Mode",
+    rulesGoalStandard: "placer 10 cartes dans une Archive",
+    rulesGoal2Archives: "compléter 2 Archives (10 cartes chacune)",
     statsModeStandard: "partie Standard",
     statsModeTimer: "Timer",
     statsDraws: "Pioches effectuées",
@@ -1056,8 +1100,11 @@ const TRANSLATIONS = {
   en: {
     pageTitle: "The Archivist - solo game",
     gameTitle: "🂡\u00a0\u00a0The Archivist\u00a0\u00a0🂡",
-    modeStandard: "Standard Game",
+    modeStandard: "Standard Modes",
     modeTimer: "⏱️ Time Attack",
+    modeSimple: "Simple Game",
+    mode2Archives: "2 Archives",
+    statsMode2Archives: "2 Archives",
     easy: "Easy (5min)",
     normal: "Normal (3min)",
     hard: "Hard (2min)",
@@ -1087,8 +1134,11 @@ const TRANSLATIONS = {
     defeatJoker: "❌ 2nd Joker use —> Defeat!",
     defeatTime: "❌ Time's up —> Defeat!",
     victory: "🏆 VICTORY —> Archive completed!",
+    victory2Archives: "🏆 VICTORY —> 2 Archives completed!",
     statsTitle: "--- Game Statistics ---",
     statsMode: "Mode",
+    rulesGoalStandard: "place 10 cards in an Archive",
+    rulesGoal2Archives: "complete 2 Archives (10 cards each)",
     statsModeStandard: "Standard game",
     statsModeTimer: "Timer",
     statsDraws: "Draws performed",
@@ -1140,8 +1190,11 @@ const TRANSLATIONS = {
   de: {
     pageTitle: "Der Archivar - Solospiel",
     gameTitle: "🂡\u00a0\u00a0Der Archivar\u00a0\u00a0🂡",
-    modeStandard: "Standardspiel",
+    modeStandard: "Standardmodi",
     modeTimer: "⏱️ Auf Zeit",
+    modeSimple: "Einfaches Spiel",
+    mode2Archives: "2 Archive",
+    statsMode2Archives: "2 Archive",
     easy: "Leicht (5min)",
     normal: "Normal (3min)",
     hard: "Schwer (2min)",
@@ -1171,8 +1224,11 @@ const TRANSLATIONS = {
     defeatJoker: "❌ 2. Joker-Einsatz —> Niederlage!",
     defeatTime: "❌ Zeit abgelaufen —> Niederlage!",
     victory: "🏆 SIEG —> Archiv vollständig!",
+    victory2Archives: "🏆 SIEG —> 2 Archive vollständig!",
     statsTitle: "--- Spielstatistiken ---",
     statsMode: "Modus",
+    rulesGoalStandard: "10 Karten in ein Archiv legen",
+    rulesGoal2Archives: "2 Archive vervollständigen (je 10 Karten)",
     statsModeStandard: "Standardspiel",
     statsModeTimer: "Timer",
     statsDraws: "Züge durchgeführt",
@@ -1224,8 +1280,11 @@ const TRANSLATIONS = {
   es: {
     pageTitle: "El Archivista - juego en solitario",
     gameTitle: "🂡\u00a0\u00a0El Archivista\u00a0\u00a0🂡",
-    modeStandard: "Partida estándar",
+    modeStandard: "Modos estándar",
     modeTimer: "⏱️ Contrarreloj",
+    modeSimple: "Partida simple",
+    mode2Archives: "2 Archivos",
+    statsMode2Archives: "2 Archivos",
     easy: "Fácil (5min)",
     normal: "Normal (3min)",
     hard: "Difícil (2min)",
@@ -1255,8 +1314,11 @@ const TRANSLATIONS = {
     defeatJoker: "❌ 2.º uso del Comodín —> ¡Derrota!",
     defeatTime: "❌ Tiempo agotado —> ¡Derrota!",
     victory: "🏆 ¡VICTORIA —> Archivo completado!",
+    victory2Archives: "🏆 ¡VICTORIA —> 2 Archivos completados!",
     statsTitle: "--- Estadísticas de la partida ---",
     statsMode: "Modo",
+    rulesGoalStandard: "colocar 10 cartas en un Archivo",
+    rulesGoal2Archives: "completar 2 Archivos (10 cartas cada uno)",
     statsModeStandard: "partida Estándar",
     statsModeTimer: "Timer",
     statsDraws: "Robos realizados",
@@ -1308,8 +1370,11 @@ const TRANSLATIONS = {
   ar: {
     pageTitle: "الأرشيفي - لعبة فردية",
     gameTitle: "🂡\u00a0\u00a0الأرشيفي\u00a0\u00a0🂡",
-    modeStandard: "لعبة عادية",
+    modeStandard: "الأوضاع القياسية",
     modeTimer: "⏱️ ضد الوقت",
+    modeSimple: "لعبة بسيطة",
+    mode2Archives: "أرشيفان",
+    statsMode2Archives: "أرشيفان",
     easy: "سهل (5 دقائق)",
     normal: "عادي (3 دقائق)",
     hard: "صعب (دقيقتان)",
@@ -1339,8 +1404,11 @@ const TRANSLATIONS = {
     defeatJoker: "❌ استخدام الجوكر للمرة الثانية —> هزيمة!",
     defeatTime: "❌ انتهى الوقت —> هزيمة!",
     victory: "🏆 فوز —> الأرشيف مكتمل!",
+    victory2Archives: "🏆 فوز —> أرشيفان مكتملان!",
     statsTitle: "--- إحصائيات اللعبة ---",
     statsMode: "الوضع",
+    rulesGoalStandard: "وضع 10 أوراق في الأرشيف",
+    rulesGoal2Archives: "إكمال أرشيفين (10 أوراق لكل منهما)",
     statsModeStandard: "لعبة قياسية",
     statsModeTimer: "مؤقت",
     statsDraws: "عمليات السحب",
@@ -1394,6 +1462,9 @@ const TRANSLATIONS = {
     gameTitle: "🂡\u00a0\u00a0档案管理员\u00a0\u00a0🂡",
     modeStandard: "标准模式",
     modeTimer: "⏱️ 限时模式",
+    modeSimple: "简单模式",
+    mode2Archives: "双档案",
+    statsMode2Archives: "双档案",
     easy: "简单 (5分钟)",
     normal: "普通 (3分钟)",
     hard: "困难 (2分钟)",
@@ -1423,8 +1494,11 @@ const TRANSLATIONS = {
     defeatJoker: "❌ 第二次使用小丑牌 —> 失败！",
     defeatTime: "❌ 时间到 —> 失败！",
     victory: "🏆 胜利 —> 档案已完成！",
+    victory2Archives: "🏆 胜利 —> 双档案已完成！",
     statsTitle: "--- 游戏统计 ---",
     statsMode: "模式",
+    rulesGoalStandard: "将10张牌放入档案",
+    rulesGoal2Archives: "完成2个档案（每个10张牌）",
     statsModeStandard: "标准模式",
     statsModeTimer: "计时",
     statsDraws: "抽牌次数",
@@ -1476,8 +1550,11 @@ const TRANSLATIONS = {
   ru: {
     pageTitle: "Архивариус - одиночная игра",
     gameTitle: "🂡\u00a0\u00a0Архивариус\u00a0\u00a0🂡",
-    modeStandard: "Стандартная игра",
+    modeStandard: "Стандартные режимы",
     modeTimer: "⏱️ На время",
+    modeSimple: "Простая игра",
+    mode2Archives: "2 Архива",
+    statsMode2Archives: "2 Архива",
     easy: "Легко (5мин)",
     normal: "Нормально (3мин)",
     hard: "Сложно (2мин)",
@@ -1507,8 +1584,11 @@ const TRANSLATIONS = {
     defeatJoker: "❌ 2-е использование Джокера —> Поражение!",
     defeatTime: "❌ Время вышло —> Поражение!",
     victory: "🏆 ПОБЕДА —> Архив завершён!",
+    victory2Archives: "🏆 ПОБЕДА —> 2 Архива завершены!",
     statsTitle: "--- Статистика игры ---",
     statsMode: "Режим",
+    rulesGoalStandard: "поместить 10 карт в Архив",
+    rulesGoal2Archives: "завершить 2 Архива (по 10 карт каждый)",
     statsModeStandard: "стандартная игра",
     statsModeTimer: "Таймер",
     statsDraws: "Раздач выполнено",
@@ -1592,6 +1672,9 @@ function applyLang() {
   document.querySelector("h1").innerHTML = t("gameTitle");
   document.getElementById("mode-standard").textContent = t("modeStandard");
   document.getElementById("mode-timer").textContent = t("modeTimer");
+  document.getElementById("mode-simple").textContent = t("modeSimple");
+  document.getElementById("mode-2archives").textContent = t("mode2Archives");
+  document.getElementById("btn-back-standard").title = t("backToModes");
   document.getElementById("btn-back-mode").title = t("backToModes");
 
   const timerBtns = document.querySelectorAll("#timer-difficulty button");
@@ -1615,6 +1698,8 @@ function applyLang() {
   /* Rules page */
   document.querySelector("#page-regles h2").textContent = t("rulesTitle");
   document.querySelector("#page-regles .regles-contenu").innerHTML = t("rulesContent");
+  /* Dynamic goal based on mode */
+  updateRulesGoal();
   document.getElementById("btn-retour-jeu").textContent = t("backToGame");
 
   /* Replay button (if visible and not yet set by finDePartie) */
@@ -1663,6 +1748,18 @@ function applyLang() {
   if (btnConserver) btnConserver.textContent = t("keepForNext");
   const btnRemelanger = document.getElementById("btn-remelanger");
   if (btnRemelanger) btnRemelanger.textContent = t("shuffleUnder");
+}
+
+/* Update rules goal line based on current game mode */
+function updateRulesGoal() {
+  const goalEl = document.querySelector("#page-regles .regles-contenu p:first-child");
+  if (!goalEl) return;
+  // Replace the goal text after the colon, keeping the label
+  const goalKey = modeJeu === "2archives" ? "rulesGoal2Archives" : "rulesGoalStandard";
+  const strong = goalEl.querySelector("strong");
+  if (!strong) return;
+  const label = strong.textContent.split(":")[0] + ":";
+  goalEl.innerHTML = `<strong>${label}</strong> ${t(goalKey)}`;
 }
 
 /* Language toggle handler — cycles: FR → EN → DE → ES → AR → ZH → RU → FR */
@@ -2330,7 +2427,7 @@ function rebuildStats() {
   if (!statsDiv) return;
   statsDiv.innerHTML = `
     <strong>${t("statsTitle")}</strong><br>
-    ${t("statsMode")} : ${s.modeJeu === "timer" ? `${t("statsModeTimer")} | ${t(s.difficulteTimerKey).split("(")[0].trim()}` : t("statsModeStandard")}<br>
+    ${t("statsMode")} : ${s.modeJeu === "timer" ? `${t("statsModeTimer")} | ${t(s.difficulteTimerKey).split("(")[0].trim()}` : s.modeJeu === "2archives" ? t("statsMode2Archives") : t("statsModeStandard")}<br>
     ${t("statsDraws")} : ${s.nbPioches}<br>
     ${t("statsStdDiscards")} : ${s.nbDefaussesNormales}<br>
     ${t("statsSpeDiscards")} : ${s.nbDefaussesSpeciales}<br>
@@ -2344,8 +2441,8 @@ function rebuildStats() {
    CALCUL DU SCORE (sur 100)
 ===================================================== */
 function calculerScore(dureeSecondes) {
-  // 1. Bonus de victoire (+20 Standard, +10 Timer)
-  const victoireScore = modeJeu === "timer" ? 10 : 20;
+  // 1. Bonus de victoire (+30 2Archives, +20 Standard, +10 Timer)
+  const victoireScore = modeJeu === "timer" ? 10 : (modeJeu === "2archives" ? 30 : 20);
 
   // 2. Base — cartes restantes dans la pioche (0-40)
   const baseScore = (pioche.length / 42) * 40;
@@ -2383,7 +2480,7 @@ function sauvegarderMeilleurScore(score) {
   try {
     const key = modeJeu === "timer"
       ? `bestScore_timer_${chronoDureeInitiale}`
-      : "bestScore_standard";
+      : modeJeu === "2archives" ? "bestScore_2archives" : "bestScore_standard";
     const ancien = Number(localStorage.getItem(key)) || 0;
     if (score > ancien) {
       localStorage.setItem(key, score);
@@ -2397,7 +2494,7 @@ function getMeilleurScore() {
   try {
     const key = modeJeu === "timer"
       ? `bestScore_timer_${chronoDureeInitiale}`
-      : "bestScore_standard";
+      : modeJeu === "2archives" ? "bestScore_2archives" : "bestScore_standard";
     return Number(localStorage.getItem(key)) || 0;
   } catch(e) { return 0; }
 }
@@ -2476,7 +2573,7 @@ const bestScore = getMeilleurScore();
 const winningSuit = type === "VICTOIRE" ? couleurs.find(c => archives[c].length === 10) || null : null;
 updateCumulStatsOnEnd(type, score, dureeSecondes, winningSuit);
 // Affichage
-const modeLabel = modeJeu === "timer" ? `${t("statsModeTimer")} | ${t(difficulteTimer).split("(")[0].trim()}` : t("statsModeStandard");
+const modeLabel = modeJeu === "timer" ? `${t("statsModeTimer")} | ${t(difficulteTimer).split("(")[0].trim()}` : modeJeu === "2archives" ? t("statsMode2Archives") : t("statsModeStandard");
 // Leaderboard — enregistrer la victoire dans le top 10
 let lbRang = 0;
 if (score !== null) {
@@ -2555,7 +2652,8 @@ function verifierDefaite() {
 
   // ✅ Vérification état actuel
   const piocheVide = pioche.length === 0;
-  const aucuneArchiveComplete = !couleurs.some(c => archives[c].length === 10);
+  const nbArchivesCompletes = couleurs.filter(c => archives[c].length === 10).length;
+  const aucuneArchiveComplete = modeJeu === "2archives" ? nbArchivesCompletes < 2 : nbArchivesCompletes === 0;
 
   // 🔹 Défausse théorique possible dans la zone centrale
   const defaussePossible = (() => {
@@ -2579,10 +2677,12 @@ function verifierDefaite() {
   const actionReellePossible = (() => {
     const piochePossible = pioche.length > 0 && centre.children.length < 6;
     const defausseReelle = (etat === "action" && defaussePossible);
-    const archivePossible = couleurs.some(c => archives[c].length === 10);
+    const archiveComplete = modeJeu === "2archives"
+      ? couleurs.filter(c => archives[c].length === 10).length >= 2
+      : couleurs.some(c => archives[c].length === 10);
     const jokerPossible = !jokerUtilise && !jokerEnAttente;
 
-    return piochePossible || defausseReelle || archivePossible || jokerPossible;
+    return piochePossible || defausseReelle || archiveComplete || jokerPossible;
   })();
 
   // 🔒 CAS HISTORIQUE — pioche vide + plus aucune action
@@ -2670,20 +2770,35 @@ function lancerShakeGameOver() {
    CONDITION DE VICTOIRE
 ===================================================== */
 function verifierVictoire(){
-  couleurs.forEach(c=>{
-      if(archives[c].length===10 && !sessionTerminee){
-          sessionTerminee = true;
-          envoyerLog("VICTOIRE", { duree: dureeSession() });
-          finDePartie(t("victory"), "VICTOIRE");
+  if (sessionTerminee) return;
 
-          // Déclenchement des confettis après rendu réel de la pop-up
+  if (modeJeu === "2archives") {
+    // Victoire si 2 archives complètes (10 cartes chacune)
+    const nbCompletes = couleurs.filter(c => archives[c].length === 10).length;
+    if (nbCompletes >= 2) {
+      sessionTerminee = true;
+      envoyerLog("VICTOIRE", { duree: dureeSession() });
+      finDePartie(t("victory2Archives"), "VICTOIRE");
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          lancerConfettisVictoire();
+        });
+      });
+    }
+  } else {
+    couleurs.forEach(c => {
+      if (archives[c].length === 10 && !sessionTerminee) {
+        sessionTerminee = true;
+        envoyerLog("VICTOIRE", { duree: dureeSession() });
+        finDePartie(t("victory"), "VICTOIRE");
+        requestAnimationFrame(() => {
           requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                  lancerConfettisVictoire();
-              });
+            lancerConfettisVictoire();
           });
+        });
       }
-  });
+    });
+  }
 }
 
 // AFFICHAGE DES CONFETTIS LORS D'UNE VICTOIRE
@@ -2710,9 +2825,24 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("zone-actions-container").style.display = "none";
 });
 document.getElementById("mode-standard").onclick = () => {
-  modeJeu = "standard";
   document.getElementById("mode-selection").style.display = "none";
+  document.getElementById("standard-submenu").style.display = "";
+};
+document.getElementById("btn-back-standard").onclick = () => {
+  document.getElementById("standard-submenu").style.display = "none";
+  document.getElementById("mode-selection").style.display = "flex";
+};
+document.getElementById("mode-simple").onclick = () => {
+  modeJeu = "standard";
+  document.getElementById("standard-submenu").style.display = "none";
   document.getElementById("zone-actions-container").style.display = "";
+  updateRulesGoal();
+};
+document.getElementById("mode-2archives").onclick = () => {
+  modeJeu = "2archives";
+  document.getElementById("standard-submenu").style.display = "none";
+  document.getElementById("zone-actions-container").style.display = "";
+  updateRulesGoal();
 };
 document.getElementById("mode-timer").onclick = () => {
   modeJeu = "timer";
@@ -2803,7 +2933,7 @@ function getStatsResume() {
   const m = Math.floor(dureeMs / 60000);
   const s = Math.floor((dureeMs % 60000) / 1000);
   const temps = `${m}:${s.toString().padStart(2, "0")}`;
-  const mode = modeJeu === "timer" ? `Timer | ${difficulteTimer}` : "Standard";
+  const mode = modeJeu === "timer" ? `Timer | ${difficulteTimer}` : modeJeu === "2archives" ? "2 Archives" : "Standard";
   const dureeSecondes = Math.floor(dureeMs / 1000);
   const score = calculerScore(dureeSecondes);
   return [
@@ -2821,7 +2951,7 @@ function getStatsResume() {
 function envoyerLog(action, options = {}) {
   const isFinPartie = (action === "VICTOIRE" || action === "DEFAITE");
   const difficulteFR = { easy: "Facile", normal: "Normal", hard: "Difficile", hardcore: "Hardcore" };
-  const modeLabel = modeJeu === "timer" ? `Timer | ${difficulteFR[difficulteTimer] || difficulteTimer}` : modeJeu === "standard" ? "Standard" : "";
+  const modeLabel = modeJeu === "timer" ? `Timer | ${difficulteFR[difficulteTimer] || difficulteTimer}` : modeJeu === "2archives" ? "2 Archives" : modeJeu === "standard" ? "Standard" : "";
   const dureeMs = stats.startTime ? Date.now() - stats.startTime : 0;
   const dureeSecondes = Math.floor(dureeMs / 1000);
   const scoreLog = (action === "VICTOIRE") ? calculerScore(dureeSecondes) : null;
@@ -2981,7 +3111,7 @@ function renderLeaderboard() {
     const rankLabel = rank <= 3 ? `${rankIcons[rank]} ${rank}` : rank;
     let modeTxt;
     if (e.modeType) {
-      modeTxt = e.modeType === "timer" ? `${t("statsModeTimer")} | ${t(e.diffKey).split("(")[0].trim()}` : t("statsModeStandard");
+      modeTxt = e.modeType === "timer" ? `${t("statsModeTimer")} | ${t(e.diffKey).split("(")[0].trim()}` : e.modeType === "2archives" ? t("statsMode2Archives") : t("statsModeStandard");
     } else {
       modeTxt = e.modeLabel || "";
     }
