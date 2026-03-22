@@ -407,11 +407,14 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
   opacity: 0.6;
 }
 /* pour bloquer les 3 boutons de jeu une fois la pop-up Victoire affichée */
-.victoire-ui-bloquee *:not(#rejouer):not(#theme-toggle):not(#lang-toggle):not(#leaderboard-toggle) {
+.victoire-ui-bloquee *:not(#rejouer):not(#theme-toggle):not(#lang-toggle):not(#leaderboard-toggle):not(#stats-toggle) {
   pointer-events: none;
   opacity: 1;
 }
 #leaderboard-overlay, #leaderboard-overlay * {
+  pointer-events: auto !important;
+}
+#stats-overlay, #stats-overlay * {
   pointer-events: auto !important;
 }
 #rejouer {
@@ -495,6 +498,132 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
   justify-content: center;
   padding: 0;
   margin: 0;
+}
+
+/* ===== STATS TOGGLE BUTTON ===== */
+#stats-toggle {
+  position: fixed;
+  top: 10px;
+  left: 94px;
+  z-index: 200;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--text-muted);
+  background: var(--toggle-bg);
+  color: var(--toggle-text);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+}
+
+/* ===== STATS MODAL ===== */
+#stats-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: rgba(0,0,0,.6);
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+}
+#stats-overlay.visible {
+  display: flex;
+}
+#stats-modal {
+  background: var(--popup-bg);
+  border: 2px solid var(--popup-border);
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 400px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  color: var(--text-primary);
+  position: relative;
+}
+#stats-modal h2 {
+  text-align: center;
+  margin: 0 0 16px;
+  font-size: 1.15rem;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.stat-card {
+  background: var(--bg-main);
+  border: 1px solid var(--zone-border);
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+}
+.stat-card .stat-value {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--accent);
+}
+.stat-card .stat-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.stat-card.stat-wide {
+  grid-column: 1 / -1;
+}
+.stat-suits {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+.stat-suit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.85rem;
+}
+.stat-suit .suit-icon {
+  font-size: 1.2rem;
+}
+.stat-suit .suit-count {
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: var(--accent);
+}
+.stat-suit.stat-suit-best .suit-icon {
+  font-size: 1.4rem;
+}
+.stat-suit.stat-suit-best .suit-count {
+  color: #fbbf24;
+}
+#stats-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+#stats-actions button {
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--zone-border);
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+#btn-stats-clear {
+  background: transparent !important;
+  color: var(--text-muted) !important;
+  border-color: var(--text-muted) !important;
+  font-size: 0.72rem !important;
 }
 
 /* ===== LEADERBOARD TAB SWITCH ===== */
@@ -663,6 +792,7 @@ canvas {
 <body>
 <button id="theme-toggle" title="Changer de thème">🌙</button>
 <button id="leaderboard-toggle" title="Classement">🏆</button>
+<button id="stats-toggle" title="Statistiques">📊</button>
 <button id="lang-toggle" title="Switch to English"><svg viewBox="0 0 60 30" width="22" height="11"><clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath><clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><g clip-path="url(#s)"><path d="M0,0 v30 h60 v-30 z" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></g></svg></button>
 <div id="game-wrapper">
 
@@ -792,6 +922,18 @@ canvas {
   </div>
 </div>
 
+<!-- Stats modal overlay -->
+<div id="stats-overlay">
+  <div id="stats-modal">
+    <h2 id="stats-title">Statistiques cumulées</h2>
+    <div id="stats-content"></div>
+    <div id="stats-actions">
+      <button id="btn-stats-close">Fermer</button>
+      <button id="btn-stats-clear">Réinitialiser</button>
+    </div>
+  </div>
+</div>
+
 <!-- Librairie confettis de victoire -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
@@ -894,7 +1036,22 @@ const TRANSLATIONS = {
     lbClose: "Fermer",
     lbClear: "Effacer l'historique",
     lbClearConfirm: "Effacer les classements et scores ?",
-    lbNewTop5: "Top 5 !"
+    lbNewTop5: "Top 5 !",
+    csTitle: "Statistiques cumulées",
+    csGamesPlayed: "Parties jouées",
+    csWins: "Victoires",
+    csLosses: "Défaites",
+    csWinRate: "Taux victoire",
+    csCurrentStreak: "Série en cours",
+    csBestStreak: "Meilleure série",
+    csBestTime: "Meilleur temps",
+    csAvgScore: "Score moyen",
+    csFavArchive: "Archive favorite",
+    csClose: "Fermer",
+    csClear: "Réinitialiser",
+    csClearConfirm: "Réinitialiser toutes les statistiques cumulées ?",
+    csNoData: "Aucune partie jouée pour le moment.",
+    csToggle: "Statistiques"
   },
   en: {
     pageTitle: "The Archivist - solo game",
@@ -963,7 +1120,22 @@ const TRANSLATIONS = {
     lbClose: "Close",
     lbClear: "Clear history",
     lbClearConfirm: "Clear leaderboards and scores?",
-    lbNewTop5: "Top 5!"
+    lbNewTop5: "Top 5!",
+    csTitle: "Cumulative Statistics",
+    csGamesPlayed: "Games played",
+    csWins: "Wins",
+    csLosses: "Losses",
+    csWinRate: "Win rate",
+    csCurrentStreak: "Current streak",
+    csBestStreak: "Best streak",
+    csBestTime: "Best time",
+    csAvgScore: "Avg. score",
+    csFavArchive: "Favorite archive",
+    csClose: "Close",
+    csClear: "Reset",
+    csClearConfirm: "Reset all cumulative statistics?",
+    csNoData: "No games played yet.",
+    csToggle: "Statistics"
   },
   de: {
     pageTitle: "Der Archivar - Solospiel",
@@ -1032,7 +1204,22 @@ const TRANSLATIONS = {
     lbClose: "Schließen",
     lbClear: "Verlauf löschen",
     lbClearConfirm: "Bestenlisten und Punktestände löschen?",
-    lbNewTop5: "Top 5!"
+    lbNewTop5: "Top 5!",
+    csTitle: "Gesamtstatistiken",
+    csGamesPlayed: "Gespielte Partien",
+    csWins: "Siege",
+    csLosses: "Niederlagen",
+    csWinRate: "Siegquote",
+    csCurrentStreak: "Aktuelle Serie",
+    csBestStreak: "Beste Serie",
+    csBestTime: "Bestzeit",
+    csAvgScore: "Durchschn. Punkte",
+    csFavArchive: "Lieblingsarchiv",
+    csClose: "Schließen",
+    csClear: "Zurücksetzen",
+    csClearConfirm: "Alle Gesamtstatistiken zurücksetzen?",
+    csNoData: "Noch keine Partien gespielt.",
+    csToggle: "Statistiken"
   },
   es: {
     pageTitle: "El Archivista - juego en solitario",
@@ -1101,7 +1288,22 @@ const TRANSLATIONS = {
     lbClose: "Cerrar",
     lbClear: "Borrar historial",
     lbClearConfirm: "¿Borrar clasificaciones y puntuaciones?",
-    lbNewTop5: "Top 5!"
+    lbNewTop5: "Top 5!",
+    csTitle: "Estadísticas acumuladas",
+    csGamesPlayed: "Partidas jugadas",
+    csWins: "Victorias",
+    csLosses: "Derrotas",
+    csWinRate: "Tasa de victoria",
+    csCurrentStreak: "Racha actual",
+    csBestStreak: "Mejor racha",
+    csBestTime: "Mejor tiempo",
+    csAvgScore: "Puntuación media",
+    csFavArchive: "Archivo favorito",
+    csClose: "Cerrar",
+    csClear: "Reiniciar",
+    csClearConfirm: "¿Reiniciar todas las estadísticas acumuladas?",
+    csNoData: "Ninguna partida jugada todavía.",
+    csToggle: "Estadísticas"
   },
   ar: {
     pageTitle: "الأرشيفي - لعبة فردية",
@@ -1170,7 +1372,22 @@ const TRANSLATIONS = {
     lbClose: "إغلاق",
     lbClear: "مسح السجل",
     lbClearConfirm: "مسح الترتيبات والنتائج؟",
-    lbNewTop5: "!أفضل 5"
+    lbNewTop5: "!أفضل 5",
+    csTitle: "إحصائيات تراكمية",
+    csGamesPlayed: "الألعاب الملعوبة",
+    csWins: "انتصارات",
+    csLosses: "هزائم",
+    csWinRate: "معدل الفوز",
+    csCurrentStreak: "السلسلة الحالية",
+    csBestStreak: "أفضل سلسلة",
+    csBestTime: "أفضل وقت",
+    csAvgScore: "متوسط النتيجة",
+    csFavArchive: "الأرشيف المفضل",
+    csClose: "إغلاق",
+    csClear: "إعادة تعيين",
+    csClearConfirm: "إعادة تعيين جميع الإحصائيات التراكمية؟",
+    csNoData: "لم يتم لعب أي لعبة بعد.",
+    csToggle: "إحصائيات"
   },
   zh: {
     pageTitle: "档案管理员 - 单人纸牌游戏",
@@ -1239,7 +1456,22 @@ const TRANSLATIONS = {
     lbClose: "关闭",
     lbClear: "清除记录",
     lbClearConfirm: "清除排行榜和分数记录？",
-    lbNewTop5: "前5名！"
+    lbNewTop5: "前5名！",
+    csTitle: "累计统计",
+    csGamesPlayed: "已玩局数",
+    csWins: "胜利",
+    csLosses: "失败",
+    csWinRate: "胜率",
+    csCurrentStreak: "当前连胜",
+    csBestStreak: "最佳连胜",
+    csBestTime: "最快时间",
+    csAvgScore: "平均得分",
+    csFavArchive: "最常完成档案",
+    csClose: "关闭",
+    csClear: "重置",
+    csClearConfirm: "重置所有累计统计数据？",
+    csNoData: "暂无游戏记录。",
+    csToggle: "统计"
   },
   ru: {
     pageTitle: "Архивариус - одиночная игра",
@@ -1308,7 +1540,22 @@ const TRANSLATIONS = {
     lbClose: "Закрыть",
     lbClear: "Очистить историю",
     lbClearConfirm: "Очистить рейтинги и результаты?",
-    lbNewTop5: "Топ-5!"
+    lbNewTop5: "Топ-5!",
+    csTitle: "Общая статистика",
+    csGamesPlayed: "Сыграно партий",
+    csWins: "Победы",
+    csLosses: "Поражения",
+    csWinRate: "Процент побед",
+    csCurrentStreak: "Текущая серия",
+    csBestStreak: "Лучшая серия",
+    csBestTime: "Лучшее время",
+    csAvgScore: "Средний счёт",
+    csFavArchive: "Любимый архив",
+    csClose: "Закрыть",
+    csClear: "Сбросить",
+    csClearConfirm: "Сбросить всю общую статистику?",
+    csNoData: "Пока нет сыгранных партий.",
+    csToggle: "Статистика"
   }
 };
 
@@ -1392,6 +1639,9 @@ function applyLang() {
 
   /* Leaderboard toggle title */
   document.getElementById("leaderboard-toggle").title = t("lbToggle");
+
+  /* Stats toggle title */
+  document.getElementById("stats-toggle").title = t("csToggle");
 
   /* Lang toggle — show the NEXT language's flag */
   const langBtn = document.getElementById("lang-toggle");
@@ -1631,7 +1881,9 @@ btnPioche.onclick = () => {
     stats.startTime = Date.now();
     partieEnCours = true;
     document.body.classList.add("partie-active");
+    marquerPartieActive();
   }
+  updateLastActivity();
 
   const sel = [...document.querySelectorAll(".carte.selectionnee")];
 
@@ -1722,6 +1974,7 @@ function confirmJeu(message, callback){
 ===================================================== */
 document.querySelectorAll(".archive").forEach(archive => {
   archive.onclick = () => {
+    updateLastActivity();
 
     // Gestion du Chaos (Joker en attente)
     if(jokerEnAttente){
@@ -1829,6 +2082,7 @@ function renderArchive(c){
 ===================================================== */
 document.getElementById("defausser").onclick = () => {
     if(etat !== "action") return;
+    updateLastActivity();
 
     const sel = [...document.querySelectorAll(".carte.selectionnee")];
     if(sel.length < 2) return;
@@ -2003,6 +2257,7 @@ function fermerPopup10As(){
    JOKER / CHAOS
 ===================================================== */
 btnJoker.onclick = () => {
+  updateLastActivity();
 
   // 🔁 Toggle OFF si le Joker est simplement en attente
   if (jokerEnAttente) {
@@ -2217,6 +2472,9 @@ const temps = `${minutes}:${secondes.toString().padStart(2,'0')}`;
 const score = type === "VICTOIRE" ? calculerScore(dureeSecondes) : null;
 const isNewRecord = score !== null ? sauvegarderMeilleurScore(score) : false;
 const bestScore = getMeilleurScore();
+// Mise à jour des statistiques cumulées
+const winningSuit = type === "VICTOIRE" ? couleurs.find(c => archives[c].length === 10) || null : null;
+updateCumulStatsOnEnd(type, score, dureeSecondes, winningSuit);
 // Affichage
 const modeLabel = modeJeu === "timer" ? `${t("statsModeTimer")} | ${t(difficulteTimer).split("(")[0].trim()}` : t("statsModeStandard");
 // Leaderboard — enregistrer la victoire dans le top 10
@@ -2791,6 +3049,224 @@ document.getElementById("btn-leaderboard-clear").addEventListener("click", funct
     clearLeaderboard();
     dernierLbEntryId = null;
     renderLeaderboard();
+  }
+});
+
+/* =====================================================
+   STATISTIQUES CUMULÉES
+===================================================== */
+const CS_KEY = "archiviste-cumul-stats";
+const CS_GAME_ACTIVE_KEY = "archiviste-game-active";
+const CS_LAST_ACTIVITY_KEY = "archiviste-last-activity";
+const CS_AFK_THRESHOLD = 5 * 60 * 1000; // 5 minutes
+
+function getCumulStats() {
+  try {
+    const raw = localStorage.getItem(CS_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch(e) { return null; }
+}
+
+function getDefaultCumulStats() {
+  return {
+    totalGames: 0,
+    totalWins: 0,
+    totalLosses: 0,
+    currentStreak: 0,
+    bestStreak: 0,
+    bestTime: null,
+    totalScore: 0,
+    archiveWins: {"♠":0, "♥":0, "♦":0, "♣":0}
+  };
+}
+
+function saveCumulStats(cs) {
+  try { localStorage.setItem(CS_KEY, JSON.stringify(cs)); } catch(e) {}
+}
+
+function clearCumulStats() {
+  try { localStorage.removeItem(CS_KEY); } catch(e) {}
+}
+
+// Marquer une partie comme en cours
+function marquerPartieActive() {
+  try {
+    localStorage.setItem(CS_GAME_ACTIVE_KEY, "1");
+    localStorage.setItem(CS_LAST_ACTIVITY_KEY, Date.now().toString());
+  } catch(e) {}
+}
+
+// Mettre à jour le timestamp d'activité
+function updateLastActivity() {
+  try {
+    localStorage.setItem(CS_LAST_ACTIVITY_KEY, Date.now().toString());
+  } catch(e) {}
+}
+
+// Marquer la partie comme terminée (proprement)
+function marquerPartieTerminee() {
+  try {
+    localStorage.removeItem(CS_GAME_ACTIVE_KEY);
+    localStorage.removeItem(CS_LAST_ACTIVITY_KEY);
+  } catch(e) {}
+}
+
+// Détecter un abandon au chargement de la page
+(function detecterAbandon() {
+  const wasActive = localStorage.getItem(CS_GAME_ACTIVE_KEY) === "1";
+  if (!wasActive) return;
+
+  // Il y avait une partie en cours lors du dernier chargement
+  const lastActivity = parseInt(localStorage.getItem(CS_LAST_ACTIVITY_KEY) || "0", 10);
+  const elapsed = Date.now() - lastActivity;
+  const isRageQuit = elapsed < CS_AFK_THRESHOLD;
+
+  const cs = getCumulStats() || getDefaultCumulStats();
+
+  // Toujours incrémenter les parties jouées (rage quit OU afk)
+  cs.totalGames++;
+
+  if (isRageQuit) {
+    // Rage quit : compter comme défaite + reset streak
+    cs.totalLosses++;
+    cs.currentStreak = 0;
+  }
+  // AFK : pas de défaite, pas de reset streak
+
+  saveCumulStats(cs);
+
+  // Nettoyer les flags
+  marquerPartieTerminee();
+})();
+
+// Mettre à jour les stats cumulées lors d'une fin de partie
+function updateCumulStatsOnEnd(type, score, dureeSecondes, winningSuit) {
+  const cs = getCumulStats() || getDefaultCumulStats();
+
+  cs.totalGames++;
+
+  if (type === "VICTOIRE") {
+    cs.totalWins++;
+    cs.currentStreak++;
+    if (cs.currentStreak > cs.bestStreak) {
+      cs.bestStreak = cs.currentStreak;
+    }
+    if (cs.bestTime === null || dureeSecondes < cs.bestTime) {
+      cs.bestTime = dureeSecondes;
+    }
+    cs.totalScore += (score || 0);
+    if (winningSuit && cs.archiveWins[winningSuit] !== undefined) {
+      cs.archiveWins[winningSuit]++;
+    }
+  } else {
+    cs.totalLosses++;
+    cs.currentStreak = 0;
+  }
+
+  saveCumulStats(cs);
+  marquerPartieTerminee();
+}
+
+// Rendu de la modal stats
+function renderCumulStats() {
+  const cs = getCumulStats() || getDefaultCumulStats();
+  const container = document.getElementById("stats-content");
+
+  document.getElementById("stats-title").textContent = t("csTitle");
+  document.getElementById("btn-stats-close").textContent = t("csClose");
+  document.getElementById("btn-stats-clear").textContent = t("csClear");
+
+  if (cs.totalGames === 0) {
+    container.innerHTML = `<div style="text-align:center;padding:24px 0;font-style:italic;color:var(--text-muted)">${t("csNoData")}</div>`;
+    return;
+  }
+
+  const winRate = cs.totalGames > 0 ? Math.round((cs.totalWins / cs.totalGames) * 100) : 0;
+  const avgScore = cs.totalWins > 0 ? Math.round(cs.totalScore / cs.totalWins) : 0;
+  const bestTimeStr = cs.bestTime !== null ? `${Math.floor(cs.bestTime / 60)}:${(cs.bestTime % 60).toString().padStart(2, "0")}` : "—";
+
+  // Trouver l'archive favorite (max wins)
+  const archEntries = Object.entries(cs.archiveWins);
+  const maxArchWins = Math.max(...archEntries.map(e => e[1]));
+
+  let html = `<div class="stats-grid">`;
+
+  // Parties jouées
+  html += `<div class="stat-card stat-wide">
+    <div class="stat-value">${cs.totalGames}</div>
+    <div class="stat-label">${t("csGamesPlayed")}</div>
+    <div style="font-size:0.78rem;margin-top:4px;color:var(--text-muted)">${cs.totalWins} ${t("csWins")} / ${cs.totalLosses} ${t("csLosses")}</div>
+  </div>`;
+
+  // Taux de victoire
+  html += `<div class="stat-card">
+    <div class="stat-value">${winRate}%</div>
+    <div class="stat-label">${t("csWinRate")}</div>
+  </div>`;
+
+  // Score moyen
+  html += `<div class="stat-card">
+    <div class="stat-value">${cs.totalWins > 0 ? avgScore + "/100" : "—"}</div>
+    <div class="stat-label">${t("csAvgScore")}</div>
+  </div>`;
+
+  // Streak actuelle
+  html += `<div class="stat-card">
+    <div class="stat-value">${cs.currentStreak}</div>
+    <div class="stat-label">${t("csCurrentStreak")}</div>
+  </div>`;
+
+  // Meilleure streak
+  html += `<div class="stat-card">
+    <div class="stat-value">${cs.bestStreak}</div>
+    <div class="stat-label">${t("csBestStreak")}</div>
+  </div>`;
+
+  // Meilleur temps
+  html += `<div class="stat-card">
+    <div class="stat-value">${bestTimeStr}</div>
+    <div class="stat-label">${t("csBestTime")}</div>
+  </div>`;
+
+  // Archive favorite
+  html += `<div class="stat-card">
+    <div class="stat-suits">`;
+  archEntries.forEach(([suit, count]) => {
+    const isBest = count > 0 && count === maxArchWins;
+    const colorClass = (suit === "♥" || suit === "♦") ? ' style="color:#b91c1c"' : "";
+    html += `<div class="stat-suit${isBest ? " stat-suit-best" : ""}">
+      <span class="suit-icon"${colorClass}>${suit}</span>
+      <span class="suit-count">${count}</span>
+    </div>`;
+  });
+  html += `</div>
+    <div class="stat-label">${t("csFavArchive")}</div>
+  </div>`;
+
+  html += `</div>`; // close stats-grid
+  container.innerHTML = html;
+}
+
+function ouvrirStats() {
+  renderCumulStats();
+  document.getElementById("stats-overlay").classList.add("visible");
+}
+
+function fermerStats() {
+  document.getElementById("stats-overlay").classList.remove("visible");
+}
+
+// Event listeners stats
+document.getElementById("stats-toggle").addEventListener("click", ouvrirStats);
+document.getElementById("btn-stats-close").addEventListener("click", fermerStats);
+document.getElementById("stats-overlay").addEventListener("click", function(e) {
+  if (e.target === this) fermerStats();
+});
+document.getElementById("btn-stats-clear").addEventListener("click", function() {
+  if (confirm(t("csClearConfirm"))) {
+    clearCumulStats();
+    renderCumulStats();
   }
 });
 
