@@ -506,9 +506,8 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
 #lb-tab-switch .lb-tab-group {
   display: flex;
   border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid var(--zone-border);
   background: var(--btn-bg);
+  border: 1px solid var(--zone-border);
 }
 #lb-tab-switch .lb-tab {
   padding: 6px 18px;
@@ -520,10 +519,18 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
   color: var(--text-muted);
   transition: background .2s, color .2s;
   user-select: none;
+  margin: -1px;
+}
+#lb-tab-switch .lb-tab:first-child {
+  border-radius: 8px 0 0 8px;
+}
+#lb-tab-switch .lb-tab:last-child {
+  border-radius: 0 8px 8px 0;
 }
 #lb-tab-switch .lb-tab.active {
   background: #3b82f6;
   color: #fff;
+  border: 1px solid #3b82f6;
 }
 #lb-tab-switch .lb-tab:not(.active):hover {
   background: rgba(59, 130, 246, 0.15);
