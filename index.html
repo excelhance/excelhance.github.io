@@ -894,7 +894,7 @@ const TRANSLATIONS = {
     lbClose: "Fermer",
     lbClear: "Effacer l'historique",
     lbClearConfirm: "Effacer tout le classement ?",
-    lbNewTop10: "Top 10 !"
+    lbNewTop5: "Top 5 !"
   },
   en: {
     pageTitle: "The Archivist - solo game",
@@ -963,7 +963,7 @@ const TRANSLATIONS = {
     lbClose: "Close",
     lbClear: "Clear history",
     lbClearConfirm: "Clear the entire leaderboard?",
-    lbNewTop10: "Top 10!"
+    lbNewTop5: "Top 5!"
   },
   de: {
     pageTitle: "Der Archivar - Solospiel",
@@ -1032,7 +1032,7 @@ const TRANSLATIONS = {
     lbClose: "Schließen",
     lbClear: "Verlauf löschen",
     lbClearConfirm: "Gesamte Bestenliste löschen?",
-    lbNewTop10: "Top 10!"
+    lbNewTop5: "Top 5!"
   },
   es: {
     pageTitle: "El Archivista - juego en solitario",
@@ -1101,7 +1101,7 @@ const TRANSLATIONS = {
     lbClose: "Cerrar",
     lbClear: "Borrar historial",
     lbClearConfirm: "¿Borrar toda la clasificación?",
-    lbNewTop10: "Top 10!"
+    lbNewTop5: "Top 5!"
   },
   ar: {
     pageTitle: "الأرشيفي - لعبة فردية",
@@ -1170,7 +1170,7 @@ const TRANSLATIONS = {
     lbClose: "إغلاق",
     lbClear: "مسح السجل",
     lbClearConfirm: "مسح الترتيب بالكامل؟",
-    lbNewTop10: "!أفضل 10"
+    lbNewTop5: "!أفضل 5"
   },
   zh: {
     pageTitle: "档案管理员 - 单人纸牌游戏",
@@ -1239,7 +1239,7 @@ const TRANSLATIONS = {
     lbClose: "关闭",
     lbClear: "清除记录",
     lbClearConfirm: "清除所有排行榜记录？",
-    lbNewTop10: "前10名！"
+    lbNewTop5: "前5名！"
   },
   ru: {
     pageTitle: "Архивариус - одиночная игра",
@@ -1308,7 +1308,7 @@ const TRANSLATIONS = {
     lbClose: "Закрыть",
     lbClear: "Очистить историю",
     lbClearConfirm: "Очистить весь рейтинг?",
-    lbNewTop10: "Топ-10!"
+    lbNewTop5: "Топ-5!"
   }
 };
 
@@ -2060,7 +2060,7 @@ function rebuildStats() {
   const scoreDiv = document.getElementById("score-fin");
   if (scoreDiv) {
     if (s.score !== null && s.score !== undefined) {
-      const lbBadge = (s.lbRang > 0 && !s.isNewRecord) ? `<br><span style="color:#fbbf24;font-weight:bold">${t("lbNewTop10")}</span>` : "";
+      const lbBadge = (s.lbRang > 0 && !s.isNewRecord) ? `<br><span style="color:#fbbf24;font-weight:bold">${t("lbNewTop5")}</span>` : "";
       scoreDiv.innerHTML = `
         <strong style="font-size:1.4rem">${t("statsScore")} : ${s.score}/100</strong>
         ${s.isNewRecord ? `<br><span style="color:#22c55e;font-weight:bold">${t("statsNewRecord")}</span>` : ""}${lbBadge}
@@ -2247,7 +2247,7 @@ if (score !== null) {
 savedEndStats = { modeJeu, difficulteTimerKey: difficulteTimer, nbPioches: stats.nbPioches, nbDefaussesNormales: stats.nbDefaussesNormales, nbDefaussesSpeciales: stats.nbDefaussesSpeciales, nbJokers: stats.nbJokers, nbCartesPile: stats.nbCartesPile, temps, score, isNewRecord, bestScore, type, lbRang };
 // Zone Score
 if (score !== null) {
-  const lbBadge = (lbRang > 0 && !isNewRecord) ? `<br><span style="color:#fbbf24;font-weight:bold">${t("lbNewTop10")}</span>` : "";
+  const lbBadge = (lbRang > 0 && !isNewRecord) ? `<br><span style="color:#fbbf24;font-weight:bold">${t("lbNewTop5")}</span>` : "";
   scoreDiv.innerHTML = `
     <strong style="font-size:1.4rem">${t("statsScore")} : ${score}/100</strong>
     ${isNewRecord ? `<br><span style="color:#22c55e;font-weight:bold">${t("statsNewRecord")}</span>` : ""}${lbBadge}
