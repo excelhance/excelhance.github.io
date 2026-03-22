@@ -1755,7 +1755,7 @@ function updateRulesGoal() {
   const goalEl = document.querySelector("#page-regles .regles-contenu p:first-child");
   if (!goalEl) return;
   // Replace the goal text after the colon, keeping the label
-  const goalKey = modeJeu === "2archives" ? "rulesGoal2Archives" : "rulesGoalStandard";
+  const goalKey = (typeof modeJeu !== "undefined" && modeJeu === "2archives") ? "rulesGoal2Archives" : "rulesGoalStandard";
   const strong = goalEl.querySelector("strong");
   if (!strong) return;
   const label = strong.textContent.split(":")[0] + ":";
