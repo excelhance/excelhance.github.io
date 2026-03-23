@@ -3355,20 +3355,23 @@ function updateCumulStatsOnEnd(type, score, dureeSecondes, winningSuit, mode, di
 // Migration : initialiser modeGames à partir des leaderboards existants
 (function migrateModeGames() {
   const cs = getCumulStats();
-  if (!cs || cs.modeGames) return; // déjà migré ou pas de données
+  if (!cs) return;
+  // Vérifier si déjà migré au format granulaire (version 2)
+  if (cs._modeGamesV2) return;
+  // Reconstruire modeGames depuis les leaderboards (score + durée)
   cs.modeGames = {};
-  // Parcourir les deux leaderboards (score + durée) pour reconstruire les victoires par mode
-  const allEntries = [].concat(getLeaderboard(), getLeaderboardDuree());
-  // Dédupliquer par id
-  const seen = new Set();
-  allEntries.forEach(function(e) {
-    if (!e.id || seen.has(e.id)) return;
-    seen.add(e.id);
-    const modeKey = e.modeType === "timer" && e.diffKey ? "timer_" + e.diffKey : (e.modeType || null);
+  var allEntries = [].concat(getLeaderboard(), getLeaderboardDuree());
+  var seen = {};
+  for (var i = 0; i < allEntries.length; i++) {
+    var e = allEntries[i];
+    if (!e || !e.id || seen[e.id]) continue;
+    seen[e.id] = true;
+    var modeKey = e.modeType === "timer" && e.diffKey ? "timer_" + e.diffKey : (e.modeType || null);
     if (modeKey) {
       cs.modeGames[modeKey] = (cs.modeGames[modeKey] || 0) + 1;
     }
-  });
+  }
+  cs._modeGamesV2 = true;
   saveCumulStats(cs);
 })();
 
