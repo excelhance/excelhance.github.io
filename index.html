@@ -3471,6 +3471,7 @@ function renderCumulStats() {
 
   if (hasAnyMode) {
     html += `<div class="stat-card stat-wide">
+      <div class="stat-label" style="margin-bottom:6px">${t("csFavModes")}</div>
       <div class="stat-mode-ranking">`;
     sortedModes.forEach(([mode, count], i) => {
       html += `<div class="stat-mode-row">
@@ -3480,7 +3481,6 @@ function renderCumulStats() {
       </div>`;
     });
     html += `</div>
-      <div class="stat-label" style="margin-top:6px">${t("csFavModes")}</div>
     </div>`;
   }
 
