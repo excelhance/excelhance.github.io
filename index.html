@@ -642,6 +642,32 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
 .stat-suit.stat-suit-best .suit-count {
   color: #fbbf24;
 }
+.stat-mode-ranking {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+.stat-mode-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.82rem;
+}
+.stat-mode-row .mode-medal {
+  font-size: 1rem;
+  width: 20px;
+  text-align: center;
+}
+.stat-mode-row .mode-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.stat-mode-row .mode-count {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
 #stats-actions {
   display: flex;
   justify-content: center;
@@ -1098,6 +1124,8 @@ const TRANSLATIONS = {
     csBestTime: "Meilleur temps",
     csAvgScore: "Score moyen",
     csFavArchive: "Archive favorite",
+    csFavModes: "Modes préférés",
+    csGamesCount: "victoires",
     csClose: "Fermer",
     csClear: "Réinitialiser",
     csClearConfirm: "Réinitialiser toutes les statistiques cumulées ?",
@@ -1188,6 +1216,8 @@ const TRANSLATIONS = {
     csBestTime: "Best time",
     csAvgScore: "Avg. score",
     csFavArchive: "Favorite archive",
+    csFavModes: "Favorite modes",
+    csGamesCount: "wins",
     csClose: "Close",
     csClear: "Reset",
     csClearConfirm: "Reset all cumulative statistics?",
@@ -1278,6 +1308,8 @@ const TRANSLATIONS = {
     csBestTime: "Bestzeit",
     csAvgScore: "Durchschn. Punkte",
     csFavArchive: "Lieblingsarchiv",
+    csFavModes: "Lieblingsmodi",
+    csGamesCount: "Siege",
     csClose: "Schließen",
     csClear: "Zurücksetzen",
     csClearConfirm: "Alle Gesamtstatistiken zurücksetzen?",
@@ -1368,6 +1400,8 @@ const TRANSLATIONS = {
     csBestTime: "Mejor tiempo",
     csAvgScore: "Puntuación media",
     csFavArchive: "Archivo favorito",
+    csFavModes: "Modos favoritos",
+    csGamesCount: "victorias",
     csClose: "Cerrar",
     csClear: "Reiniciar",
     csClearConfirm: "¿Reiniciar todas las estadísticas acumuladas?",
@@ -1458,6 +1492,8 @@ const TRANSLATIONS = {
     csBestTime: "أفضل وقت",
     csAvgScore: "متوسط النتيجة",
     csFavArchive: "الأرشيف المفضل",
+    csFavModes: "الأوضاع المفضلة",
+    csGamesCount: "انتصارات",
     csClose: "إغلاق",
     csClear: "إعادة تعيين",
     csClearConfirm: "إعادة تعيين جميع الإحصائيات التراكمية؟",
@@ -1548,6 +1584,8 @@ const TRANSLATIONS = {
     csBestTime: "最快时间",
     csAvgScore: "平均得分",
     csFavArchive: "最常完成档案",
+    csFavModes: "常玩模式",
+    csGamesCount: "胜利",
     csClose: "关闭",
     csClear: "重置",
     csClearConfirm: "重置所有累计统计数据？",
@@ -1638,6 +1676,8 @@ const TRANSLATIONS = {
     csBestTime: "Лучшее время",
     csAvgScore: "Средний счёт",
     csFavArchive: "Любимый архив",
+    csFavModes: "Любимые режимы",
+    csGamesCount: "побед",
     csClose: "Закрыть",
     csClear: "Сбросить",
     csClearConfirm: "Сбросить всю общую статистику?",
@@ -2578,7 +2618,7 @@ const isNewRecord = score !== null ? sauvegarderMeilleurScore(score) : false;
 const bestScore = getMeilleurScore();
 // Mise à jour des statistiques cumulées
 const winningSuit = type === "VICTOIRE" ? couleurs.find(c => archives[c].length === 10) || null : null;
-updateCumulStatsOnEnd(type, score, dureeSecondes, winningSuit);
+updateCumulStatsOnEnd(type, score, dureeSecondes, winningSuit, modeJeu, difficulteTimer);
 // Affichage
 const modeLabel = modeJeu === "timer" ? `${t("statsModeTimer")} | ${t(difficulteTimer).split("(")[0].trim()}` : modeJeu === "2archives" ? t("statsMode2Archives") : t("statsModeStandard");
 // Leaderboard — enregistrer la victoire dans le top 10
@@ -3214,7 +3254,8 @@ function getDefaultCumulStats() {
     bestStreak: 0,
     bestTime: null,
     totalScore: 0,
-    archiveWins: {"♠":0, "♥":0, "♦":0, "♣":0}
+    archiveWins: {"♠":0, "♥":0, "♦":0, "♣":0},
+    modeGames: {}
   };
 }
 
@@ -3278,12 +3319,18 @@ function marquerPartieTerminee() {
 })();
 
 // Mettre à jour les stats cumulées lors d'une fin de partie
-function updateCumulStatsOnEnd(type, score, dureeSecondes, winningSuit) {
+function updateCumulStatsOnEnd(type, score, dureeSecondes, winningSuit, mode, diffKey) {
   const cs = getCumulStats() || getDefaultCumulStats();
 
   cs.totalGames++;
 
   if (type === "VICTOIRE") {
+    // Track wins per granular mode (e.g. "standard", "timer_easy", "2archives")
+    if (!cs.modeGames) cs.modeGames = {};
+    const modeKey = mode === "timer" && diffKey ? "timer_" + diffKey : (mode || null);
+    if (modeKey) {
+      cs.modeGames[modeKey] = (cs.modeGames[modeKey] || 0) + 1;
+    }
     cs.totalWins++;
     cs.currentStreak++;
     if (cs.currentStreak > cs.bestStreak) {
@@ -3304,6 +3351,29 @@ function updateCumulStatsOnEnd(type, score, dureeSecondes, winningSuit) {
   saveCumulStats(cs);
   marquerPartieTerminee();
 }
+
+// Migration : initialiser modeGames à partir des leaderboards existants
+(function migrateModeGames() {
+  const cs = getCumulStats();
+  if (!cs) return;
+  // Vérifier si déjà migré au format granulaire (version 2)
+  if (cs._modeGamesV2) return;
+  // Reconstruire modeGames depuis les leaderboards (score + durée)
+  cs.modeGames = {};
+  var allEntries = [].concat(getLeaderboard(), getLeaderboardDuree());
+  var seen = {};
+  for (var i = 0; i < allEntries.length; i++) {
+    var e = allEntries[i];
+    if (!e || !e.id || seen[e.id]) continue;
+    seen[e.id] = true;
+    var modeKey = e.modeType === "timer" && e.diffKey ? "timer_" + e.diffKey : (e.modeType || null);
+    if (modeKey) {
+      cs.modeGames[modeKey] = (cs.modeGames[modeKey] || 0) + 1;
+    }
+  }
+  cs._modeGamesV2 = true;
+  saveCumulStats(cs);
+})();
 
 // Rendu de la modal stats
 function renderCumulStats() {
@@ -3380,6 +3450,39 @@ function renderCumulStats() {
   html += `</div>
     <div class="stat-label">${t("csFavArchive")}</div>
   </div>`;
+
+  // Top 3 modes préférés (granular: standard, timer_easy, timer_normal, timer_hard, timer_hardcore, 2archives)
+  const modeGames = cs.modeGames || {};
+  function getModeLabel(key) {
+    if (key === "standard") return t("modeSimple");
+    if (key === "2archives") return t("statsMode2Archives");
+    if (key.startsWith("timer_")) {
+      const diff = key.replace("timer_", "");
+      return t("statsModeTimer") + " - " + t(diff).split("(")[0].trim();
+    }
+    return key;
+  }
+  const medals = ["🥇", "🥈", "🥉"];
+  const sortedModes = Object.entries(modeGames)
+    .filter(([, count]) => count > 0)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+  const hasAnyMode = sortedModes.length > 0;
+
+  if (hasAnyMode) {
+    html += `<div class="stat-card stat-wide">
+      <div class="stat-mode-ranking">`;
+    sortedModes.forEach(([mode, count], i) => {
+      html += `<div class="stat-mode-row">
+        <span class="mode-medal">${medals[i]}</span>
+        <span class="mode-name">${getModeLabel(mode)}</span>
+        <span class="mode-count">— ${count} ${t("csGamesCount")}</span>
+      </div>`;
+    });
+    html += `</div>
+      <div class="stat-label" style="margin-top:6px">${t("csFavModes")}</div>
+    </div>`;
+  }
 
   html += `</div>`; // close stats-grid
   container.innerHTML = html;
