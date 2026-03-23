@@ -1125,7 +1125,7 @@ const TRANSLATIONS = {
     csAvgScore: "Score moyen",
     csFavArchive: "Archive favorite",
     csFavModes: "Modes préférés",
-    csGamesCount: "parties",
+    csGamesCount: "victoires",
     csClose: "Fermer",
     csClear: "Réinitialiser",
     csClearConfirm: "Réinitialiser toutes les statistiques cumulées ?",
@@ -1217,7 +1217,7 @@ const TRANSLATIONS = {
     csAvgScore: "Avg. score",
     csFavArchive: "Favorite archive",
     csFavModes: "Favorite modes",
-    csGamesCount: "games",
+    csGamesCount: "wins",
     csClose: "Close",
     csClear: "Reset",
     csClearConfirm: "Reset all cumulative statistics?",
@@ -1309,7 +1309,7 @@ const TRANSLATIONS = {
     csAvgScore: "Durchschn. Punkte",
     csFavArchive: "Lieblingsarchiv",
     csFavModes: "Lieblingsmodi",
-    csGamesCount: "Partien",
+    csGamesCount: "Siege",
     csClose: "Schließen",
     csClear: "Zurücksetzen",
     csClearConfirm: "Alle Gesamtstatistiken zurücksetzen?",
@@ -1401,7 +1401,7 @@ const TRANSLATIONS = {
     csAvgScore: "Puntuación media",
     csFavArchive: "Archivo favorito",
     csFavModes: "Modos favoritos",
-    csGamesCount: "partidas",
+    csGamesCount: "victorias",
     csClose: "Cerrar",
     csClear: "Reiniciar",
     csClearConfirm: "¿Reiniciar todas las estadísticas acumuladas?",
@@ -1493,7 +1493,7 @@ const TRANSLATIONS = {
     csAvgScore: "متوسط النتيجة",
     csFavArchive: "الأرشيف المفضل",
     csFavModes: "الأوضاع المفضلة",
-    csGamesCount: "ألعاب",
+    csGamesCount: "انتصارات",
     csClose: "إغلاق",
     csClear: "إعادة تعيين",
     csClearConfirm: "إعادة تعيين جميع الإحصائيات التراكمية؟",
@@ -1585,7 +1585,7 @@ const TRANSLATIONS = {
     csAvgScore: "平均得分",
     csFavArchive: "最常完成档案",
     csFavModes: "常玩模式",
-    csGamesCount: "局",
+    csGamesCount: "胜利",
     csClose: "关闭",
     csClear: "重置",
     csClearConfirm: "重置所有累计统计数据？",
@@ -1677,7 +1677,7 @@ const TRANSLATIONS = {
     csAvgScore: "Средний счёт",
     csFavArchive: "Любимый архив",
     csFavModes: "Любимые режимы",
-    csGamesCount: "партий",
+    csGamesCount: "побед",
     csClose: "Закрыть",
     csClear: "Сбросить",
     csClearConfirm: "Сбросить всю общую статистику?",
@@ -3324,14 +3324,13 @@ function updateCumulStatsOnEnd(type, score, dureeSecondes, winningSuit, mode, di
 
   cs.totalGames++;
 
-  // Track games per granular mode (e.g. "standard", "timer_easy", "2archives")
-  if (!cs.modeGames) cs.modeGames = {};
-  const modeKey = mode === "timer" && diffKey ? "timer_" + diffKey : (mode || null);
-  if (modeKey) {
-    cs.modeGames[modeKey] = (cs.modeGames[modeKey] || 0) + 1;
-  }
-
   if (type === "VICTOIRE") {
+    // Track wins per granular mode (e.g. "standard", "timer_easy", "2archives")
+    if (!cs.modeGames) cs.modeGames = {};
+    const modeKey = mode === "timer" && diffKey ? "timer_" + diffKey : (mode || null);
+    if (modeKey) {
+      cs.modeGames[modeKey] = (cs.modeGames[modeKey] || 0) + 1;
+    }
     cs.totalWins++;
     cs.currentStreak++;
     if (cs.currentStreak > cs.bestStreak) {
@@ -3352,6 +3351,26 @@ function updateCumulStatsOnEnd(type, score, dureeSecondes, winningSuit, mode, di
   saveCumulStats(cs);
   marquerPartieTerminee();
 }
+
+// Migration : initialiser modeGames à partir des leaderboards existants
+(function migrateModeGames() {
+  const cs = getCumulStats();
+  if (!cs || cs.modeGames) return; // déjà migré ou pas de données
+  cs.modeGames = {};
+  // Parcourir les deux leaderboards (score + durée) pour reconstruire les victoires par mode
+  const allEntries = [].concat(getLeaderboard(), getLeaderboardDuree());
+  // Dédupliquer par id
+  const seen = new Set();
+  allEntries.forEach(function(e) {
+    if (!e.id || seen.has(e.id)) return;
+    seen.add(e.id);
+    const modeKey = e.modeType === "timer" && e.diffKey ? "timer_" + e.diffKey : (e.modeType || null);
+    if (modeKey) {
+      cs.modeGames[modeKey] = (cs.modeGames[modeKey] || 0) + 1;
+    }
+  });
+  saveCumulStats(cs);
+})();
 
 // Rendu de la modal stats
 function renderCumulStats() {
