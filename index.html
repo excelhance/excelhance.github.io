@@ -2618,7 +2618,7 @@ const isNewRecord = score !== null ? sauvegarderMeilleurScore(score) : false;
 const bestScore = getMeilleurScore();
 // Mise à jour des statistiques cumulées
 const winningSuit = type === "VICTOIRE" ? couleurs.find(c => archives[c].length === 10) || null : null;
-updateCumulStatsOnEnd(type, score, dureeSecondes, winningSuit, modeJeu);
+updateCumulStatsOnEnd(type, score, dureeSecondes, winningSuit, modeJeu, difficulteTimer);
 // Affichage
 const modeLabel = modeJeu === "timer" ? `${t("statsModeTimer")} | ${t(difficulteTimer).split("(")[0].trim()}` : modeJeu === "2archives" ? t("statsMode2Archives") : t("statsModeStandard");
 // Leaderboard — enregistrer la victoire dans le top 10
@@ -3255,7 +3255,7 @@ function getDefaultCumulStats() {
     bestTime: null,
     totalScore: 0,
     archiveWins: {"♠":0, "♥":0, "♦":0, "♣":0},
-    modeGames: {"standard":0, "2archives":0, "timer":0}
+    modeGames: {}
   };
 }
 
@@ -3319,15 +3319,16 @@ function marquerPartieTerminee() {
 })();
 
 // Mettre à jour les stats cumulées lors d'une fin de partie
-function updateCumulStatsOnEnd(type, score, dureeSecondes, winningSuit, mode) {
+function updateCumulStatsOnEnd(type, score, dureeSecondes, winningSuit, mode, diffKey) {
   const cs = getCumulStats() || getDefaultCumulStats();
 
   cs.totalGames++;
 
-  // Track games per mode
-  if (!cs.modeGames) cs.modeGames = {"standard":0, "2archives":0, "timer":0};
-  if (mode && cs.modeGames[mode] !== undefined) {
-    cs.modeGames[mode]++;
+  // Track games per granular mode (e.g. "standard", "timer_easy", "2archives")
+  if (!cs.modeGames) cs.modeGames = {};
+  const modeKey = mode === "timer" && diffKey ? "timer_" + diffKey : (mode || null);
+  if (modeKey) {
+    cs.modeGames[modeKey] = (cs.modeGames[modeKey] || 0) + 1;
   }
 
   if (type === "VICTOIRE") {
@@ -3428,26 +3429,33 @@ function renderCumulStats() {
     <div class="stat-label">${t("csFavArchive")}</div>
   </div>`;
 
-  // Top 3 modes préférés
-  const modeGames = cs.modeGames || {"standard":0, "2archives":0, "timer":0};
-  const modeLabels = {"standard": t("statsModeStandard"), "2archives": t("statsMode2Archives"), "timer": t("statsModeTimer")};
+  // Top 3 modes préférés (granular: standard, timer_easy, timer_normal, timer_hard, timer_hardcore, 2archives)
+  const modeGames = cs.modeGames || {};
+  function getModeLabel(key) {
+    if (key === "standard") return t("modeSimple");
+    if (key === "2archives") return t("statsMode2Archives");
+    if (key.startsWith("timer_")) {
+      const diff = key.replace("timer_", "");
+      return t("statsModeTimer") + " - " + t(diff).split("(")[0].trim();
+    }
+    return key;
+  }
   const medals = ["🥇", "🥈", "🥉"];
   const sortedModes = Object.entries(modeGames)
+    .filter(([, count]) => count > 0)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 3);
-  const hasAnyMode = sortedModes.some(([, count]) => count > 0);
+  const hasAnyMode = sortedModes.length > 0;
 
   if (hasAnyMode) {
     html += `<div class="stat-card stat-wide">
       <div class="stat-mode-ranking">`;
     sortedModes.forEach(([mode, count], i) => {
-      if (count > 0) {
-        html += `<div class="stat-mode-row">
-          <span class="mode-medal">${medals[i]}</span>
-          <span class="mode-name">${modeLabels[mode] || mode}</span>
-          <span class="mode-count">— ${count} ${t("csGamesCount")}</span>
-        </div>`;
-      }
+      html += `<div class="stat-mode-row">
+        <span class="mode-medal">${medals[i]}</span>
+        <span class="mode-name">${getModeLabel(mode)}</span>
+        <span class="mode-count">— ${count} ${t("csGamesCount")}</span>
+      </div>`;
     });
     html += `</div>
       <div class="stat-label" style="margin-top:6px">${t("csFavModes")}</div>
