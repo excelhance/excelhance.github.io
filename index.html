@@ -613,6 +613,11 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
   color: var(--text-muted);
   margin-top: 2px;
 }
+.stat-card .stat-value-secondary {
+  font-size: 1rem;
+  margin-top: 6px;
+  opacity: 0.85;
+}
 .stat-card.stat-wide {
   grid-column: 1 / -1;
 }
@@ -1122,6 +1127,7 @@ const TRANSLATIONS = {
     csCurrentStreak: "Série en cours",
     csBestStreak: "Meilleure série",
     csBestTime: "Meilleur temps",
+    csAvgTime: "Temps moyen",
     csAvgScore: "Score moyen",
     csFavArchive: "Archive favorite",
     csFavModes: "Modes préférés",
@@ -1215,6 +1221,7 @@ const TRANSLATIONS = {
     csCurrentStreak: "Current streak",
     csBestStreak: "Best streak",
     csBestTime: "Best time",
+    csAvgTime: "Avg. time",
     csAvgScore: "Avg. score",
     csFavArchive: "Favorite archive",
     csFavModes: "Favorite modes",
@@ -1308,6 +1315,7 @@ const TRANSLATIONS = {
     csCurrentStreak: "Aktuelle Serie",
     csBestStreak: "Beste Serie",
     csBestTime: "Bestzeit",
+    csAvgTime: "Durchschn. Zeit",
     csAvgScore: "Durchschn. Punkte",
     csFavArchive: "Lieblingsarchiv",
     csFavModes: "Lieblingsmodi",
@@ -1401,6 +1409,7 @@ const TRANSLATIONS = {
     csCurrentStreak: "Racha actual",
     csBestStreak: "Mejor racha",
     csBestTime: "Mejor tiempo",
+    csAvgTime: "Tiempo medio",
     csAvgScore: "Puntuación media",
     csFavArchive: "Archivo favorito",
     csFavModes: "Modos favoritos",
@@ -1494,6 +1503,7 @@ const TRANSLATIONS = {
     csCurrentStreak: "السلسلة الحالية",
     csBestStreak: "أفضل سلسلة",
     csBestTime: "أفضل وقت",
+    csAvgTime: "متوسط الوقت",
     csAvgScore: "متوسط النتيجة",
     csFavArchive: "الأرشيف المفضل",
     csFavModes: "الأوضاع المفضلة",
@@ -1587,6 +1597,7 @@ const TRANSLATIONS = {
     csCurrentStreak: "当前连胜",
     csBestStreak: "最佳连胜",
     csBestTime: "最快时间",
+    csAvgTime: "平均时间",
     csAvgScore: "平均得分",
     csFavArchive: "最常完成档案",
     csFavModes: "常玩模式",
@@ -1680,6 +1691,7 @@ const TRANSLATIONS = {
     csCurrentStreak: "Текущая серия",
     csBestStreak: "Лучшая серия",
     csBestTime: "Лучшее время",
+    csAvgTime: "Среднее время",
     csAvgScore: "Средний счёт",
     csFavArchive: "Любимый архив",
     csFavModes: "Любимые режимы",
@@ -3261,6 +3273,7 @@ function getDefaultCumulStats() {
     currentStreak: 0,
     bestStreak: 0,
     bestTime: null,
+    totalTime: 0,
     totalScore: 0,
     archiveWins: {"♠":0, "♥":0, "♦":0, "♣":0},
     modeGames: {},
@@ -3358,6 +3371,8 @@ function updateCumulStatsOnEnd(type, score, dureeSecondes, winningSuit, mode, di
     if (cs.bestTime === null || dureeSecondes < cs.bestTime) {
       cs.bestTime = dureeSecondes;
     }
+    if (!cs.totalTime) cs.totalTime = 0;
+    cs.totalTime += dureeSecondes;
     cs.totalScore += (score || 0);
     if (winningSuit && cs.archiveWins[winningSuit] !== undefined) {
       cs.archiveWins[winningSuit]++;
@@ -3417,6 +3432,8 @@ function renderCumulStats() {
   const winRate = cs.totalGames > 0 ? Math.round((cs.totalWins / cs.totalGames) * 100) : 0;
   const avgScore = cs.totalWins > 0 ? Math.round(cs.totalScore / cs.totalWins) : 0;
   const bestTimeStr = cs.bestTime !== null ? `${Math.floor(cs.bestTime / 60)}:${(cs.bestTime % 60).toString().padStart(2, "0")}` : "—";
+  const avgTimeSec = cs.totalWins > 0 && cs.totalTime ? Math.round(cs.totalTime / cs.totalWins) : null;
+  const avgTimeStr = avgTimeSec !== null ? `${Math.floor(avgTimeSec / 60)}:${(avgTimeSec % 60).toString().padStart(2, "0")}` : "—";
 
   // Trouver l'archive favorite (max wins)
   const archEntries = Object.entries(cs.archiveWins);
@@ -3455,10 +3472,12 @@ function renderCumulStats() {
     <div class="stat-label">${t("csBestStreak")}</div>
   </div>`;
 
-  // Meilleur temps
+  // Meilleur temps + Temps moyen
   html += `<div class="stat-card">
     <div class="stat-value">${bestTimeStr}</div>
     <div class="stat-label">${t("csBestTime")}</div>
+    <div class="stat-value stat-value-secondary">${avgTimeStr}</div>
+    <div class="stat-label">${t("csAvgTime")}</div>
   </div>`;
 
   // Archive favorite
