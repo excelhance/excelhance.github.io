@@ -254,8 +254,6 @@ button {
   font-size: 14px;
   transition: all 0.2s;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 button#btn-regles.regles {
   background: var(--btn-regles-bg);
@@ -3577,33 +3575,38 @@ document.getElementById("btn-stats-clear").addEventListener("click", function() 
 });
 
 /* ── Auto-fit button text: shrink font-size to prevent overflow ── */
+const _fitCtx = document.createElement("canvas").getContext("2d");
 function fitButtonText(btn) {
   // Skip icon-only buttons (toggle buttons with emoji/svg)
   if (btn.id === "theme-toggle" || btn.id === "lang-toggle" ||
       btn.id === "leaderboard-toggle" || btn.id === "stats-toggle" ||
       btn.id === "btn-back-mode" || btn.id === "btn-back-standard") return;
-
-  // Reset to original size first
-  const original = btn.dataset.originalFontSize;
-  if (original) btn.style.fontSize = original + "px";
+  // Skip hidden buttons
+  if (!btn.offsetWidth) return;
 
   const cs = getComputedStyle(btn);
-  const currentSize = parseFloat(cs.fontSize);
-  if (!btn.dataset.originalFontSize) btn.dataset.originalFontSize = currentSize;
+  if (!btn.dataset.originalFontSize) btn.dataset.originalFontSize = parseFloat(cs.fontSize);
 
   const minSize = 8;
   let size = parseFloat(btn.dataset.originalFontSize);
-  btn.style.fontSize = size + "px";
+  const fontWeight = cs.fontWeight;
+  const fontFamily = cs.fontFamily;
 
-  // Available width = button width - horizontal padding
+  // Available width = button width - horizontal padding - horizontal border
   const padL = parseFloat(cs.paddingLeft) || 0;
   const padR = parseFloat(cs.paddingRight) || 0;
-  const available = btn.clientWidth - padL - padR;
+  const borL = parseFloat(cs.borderLeftWidth) || 0;
+  const borR = parseFloat(cs.borderRightWidth) || 0;
+  const available = btn.offsetWidth - padL - padR - borL - borR;
 
-  while (btn.scrollWidth > btn.clientWidth && size > minSize) {
+  const text = btn.textContent || "";
+  // Measure text width using canvas (no layout dependency)
+  while (size > minSize) {
+    _fitCtx.font = fontWeight + " " + size + "px " + fontFamily;
+    if (_fitCtx.measureText(text).width <= available) break;
     size -= 0.5;
-    btn.style.fontSize = size + "px";
   }
+  btn.style.fontSize = size + "px";
 }
 
 function fitAllButtons() {
