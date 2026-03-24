@@ -253,6 +253,9 @@ button {
   font-weight:bold;
   font-size: 14px;
   transition: all 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 button#btn-regles.regles {
   background: var(--btn-regles-bg);
@@ -2368,6 +2371,7 @@ document.getElementById("defausser").onclick = () => {
         popup.style.display = "block";
         popup.style.position = "relative";
         popup.style.zIndex = "50";
+        requestAnimationFrame(() => popup.querySelectorAll("button").forEach(fitButtonText));
         vision10AsActive = true;
 
         // Blocage UI principale
@@ -2602,6 +2606,7 @@ function finDePartie(message, type = "VICTOIRE") {
     } else {
       btnReplay.textContent = t("victoryReplay");
     }
+    requestAnimationFrame(() => fitButtonText(btnReplay));
 
     btnReplay.onclick = () => location.reload();
   }
@@ -3571,6 +3576,50 @@ document.getElementById("btn-stats-clear").addEventListener("click", function() 
   }
 });
 
+/* ── Auto-fit button text: shrink font-size to prevent overflow ── */
+function fitButtonText(btn) {
+  // Skip icon-only buttons (toggle buttons with emoji/svg)
+  if (btn.id === "theme-toggle" || btn.id === "lang-toggle" ||
+      btn.id === "leaderboard-toggle" || btn.id === "stats-toggle" ||
+      btn.id === "btn-back-mode" || btn.id === "btn-back-standard") return;
+
+  // Reset to original size first
+  const original = btn.dataset.originalFontSize;
+  if (original) btn.style.fontSize = original + "px";
+
+  const cs = getComputedStyle(btn);
+  const currentSize = parseFloat(cs.fontSize);
+  if (!btn.dataset.originalFontSize) btn.dataset.originalFontSize = currentSize;
+
+  const minSize = 8;
+  let size = parseFloat(btn.dataset.originalFontSize);
+  btn.style.fontSize = size + "px";
+
+  // Available width = button width - horizontal padding
+  const padL = parseFloat(cs.paddingLeft) || 0;
+  const padR = parseFloat(cs.paddingRight) || 0;
+  const available = btn.clientWidth - padL - padR;
+
+  while (btn.scrollWidth > btn.clientWidth && size > minSize) {
+    size -= 0.5;
+    btn.style.fontSize = size + "px";
+  }
+}
+
+function fitAllButtons() {
+  document.querySelectorAll("button").forEach(fitButtonText);
+}
+
+// Run on load, resize, and after language switch
+window.addEventListener("load", fitAllButtons);
+window.addEventListener("resize", fitAllButtons);
+
+// Patch applyLang to re-fit after language changes
+const _originalApplyLang = applyLang;
+applyLang = function() {
+  _originalApplyLang.apply(this, arguments);
+  requestAnimationFrame(fitAllButtons);
+};
 
 </script>
 </body>
