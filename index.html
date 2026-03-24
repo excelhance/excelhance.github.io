@@ -3280,7 +3280,8 @@ function getDefaultCumulStats() {
     totalScore: 0,
     archiveWins: {"♠":0, "♥":0, "♦":0, "♣":0},
     modeGames: {},
-    modeLosses: {}
+    modeLosses: {},
+    _modeGamesV2: true
   };
 }
 
@@ -3290,6 +3291,12 @@ function saveCumulStats(cs) {
 
 function clearCumulStats() {
   try { localStorage.removeItem(CS_KEY); } catch(e) {}
+  // Nettoyer les flags de partie active pour éviter un faux rage-quit après reset
+  try {
+    localStorage.removeItem(CS_GAME_ACTIVE_KEY);
+    localStorage.removeItem(CS_LAST_ACTIVITY_KEY);
+    localStorage.removeItem(CS_GAME_MODE_KEY);
+  } catch(e) {}
 }
 
 // Marquer une partie comme en cours
