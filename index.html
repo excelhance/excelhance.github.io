@@ -664,12 +664,13 @@ button.joker-utilise { cursor: pointer; background:#dc2626; color:#fff; }
   font-size: 0.82rem;
 }
 .stat-mode-row .mode-medal {
-  font-size: 1rem;
+  font-size: 0.82rem;
   width: 20px;
   text-align: center;
+  color: var(--accent);
+  font-weight: 600;
 }
 .stat-mode-row .mode-name {
-  font-weight: 600;
   color: var(--text-primary);
 }
 .stat-mode-row .mode-count {
@@ -3519,7 +3520,7 @@ function renderCumulStats() {
     }
     return key;
   }
-  const medals = ["🥇", "🥈", "🥉"];
+  const medals = ["1.", "2.", "3."];
   // Trier par nombre de parties jouées (victoires + défaites), sans compter les AFK
   const sortedModes = [...allModeKeys]
     .map(key => ({ key, wins: modeGames[key] || 0, losses: modeLosses[key] || 0 }))
