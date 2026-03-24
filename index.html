@@ -1126,6 +1126,7 @@ const TRANSLATIONS = {
     csFavArchive: "Archive favorite",
     csFavModes: "Modes préférés",
     csGamesCount: "victoires",
+    csModeLosses: "défaites",
     csClose: "Fermer",
     csClear: "Réinitialiser",
     csClearConfirm: "Réinitialiser toutes les statistiques cumulées ?",
@@ -1218,6 +1219,7 @@ const TRANSLATIONS = {
     csFavArchive: "Favorite archive",
     csFavModes: "Favorite modes",
     csGamesCount: "wins",
+    csModeLosses: "losses",
     csClose: "Close",
     csClear: "Reset",
     csClearConfirm: "Reset all cumulative statistics?",
@@ -1310,6 +1312,7 @@ const TRANSLATIONS = {
     csFavArchive: "Lieblingsarchiv",
     csFavModes: "Lieblingsmodi",
     csGamesCount: "Siege",
+    csModeLosses: "Niederlagen",
     csClose: "Schließen",
     csClear: "Zurücksetzen",
     csClearConfirm: "Alle Gesamtstatistiken zurücksetzen?",
@@ -1402,6 +1405,7 @@ const TRANSLATIONS = {
     csFavArchive: "Archivo favorito",
     csFavModes: "Modos favoritos",
     csGamesCount: "victorias",
+    csModeLosses: "derrotas",
     csClose: "Cerrar",
     csClear: "Reiniciar",
     csClearConfirm: "¿Reiniciar todas las estadísticas acumuladas?",
@@ -1494,6 +1498,7 @@ const TRANSLATIONS = {
     csFavArchive: "الأرشيف المفضل",
     csFavModes: "الأوضاع المفضلة",
     csGamesCount: "انتصارات",
+    csModeLosses: "هزائم",
     csClose: "إغلاق",
     csClear: "إعادة تعيين",
     csClearConfirm: "إعادة تعيين جميع الإحصائيات التراكمية؟",
@@ -1586,6 +1591,7 @@ const TRANSLATIONS = {
     csFavArchive: "最常完成档案",
     csFavModes: "常玩模式",
     csGamesCount: "胜利",
+    csModeLosses: "失败",
     csClose: "关闭",
     csClear: "重置",
     csClearConfirm: "重置所有累计统计数据？",
@@ -1678,6 +1684,7 @@ const TRANSLATIONS = {
     csFavArchive: "Любимый архив",
     csFavModes: "Любимые режимы",
     csGamesCount: "побед",
+    csModeLosses: "поражений",
     csClose: "Закрыть",
     csClear: "Сбросить",
     csClearConfirm: "Сбросить всю общую статистику?",
@@ -3235,6 +3242,7 @@ document.getElementById("btn-leaderboard-clear").addEventListener("click", funct
 const CS_KEY = "archiviste-cumul-stats";
 const CS_GAME_ACTIVE_KEY = "archiviste-game-active";
 const CS_LAST_ACTIVITY_KEY = "archiviste-last-activity";
+const CS_GAME_MODE_KEY = "archiviste-game-mode";
 const CS_AFK_THRESHOLD = 5 * 60 * 1000; // 5 minutes
 
 function getCumulStats() {
@@ -3255,7 +3263,8 @@ function getDefaultCumulStats() {
     bestTime: null,
     totalScore: 0,
     archiveWins: {"♠":0, "♥":0, "♦":0, "♣":0},
-    modeGames: {}
+    modeGames: {},
+    modeLosses: {}
   };
 }
 
@@ -3272,6 +3281,9 @@ function marquerPartieActive() {
   try {
     localStorage.setItem(CS_GAME_ACTIVE_KEY, "1");
     localStorage.setItem(CS_LAST_ACTIVITY_KEY, Date.now().toString());
+    // Stocker le mode en cours pour le tracking rage quit
+    const modeKey = (typeof modeJeu !== "undefined" && modeJeu === "timer" && difficulteTimer) ? "timer_" + difficulteTimer : (typeof modeJeu !== "undefined" && modeJeu ? modeJeu : "");
+    if (modeKey) localStorage.setItem(CS_GAME_MODE_KEY, modeKey);
   } catch(e) {}
 }
 
@@ -3287,6 +3299,7 @@ function marquerPartieTerminee() {
   try {
     localStorage.removeItem(CS_GAME_ACTIVE_KEY);
     localStorage.removeItem(CS_LAST_ACTIVITY_KEY);
+    localStorage.removeItem(CS_GAME_MODE_KEY);
   } catch(e) {}
 }
 
@@ -3309,6 +3322,12 @@ function marquerPartieTerminee() {
     // Rage quit : compter comme défaite + reset streak
     cs.totalLosses++;
     cs.currentStreak = 0;
+    // Tracker la défaite par mode
+    const rqMode = localStorage.getItem(CS_GAME_MODE_KEY);
+    if (rqMode) {
+      if (!cs.modeLosses) cs.modeLosses = {};
+      cs.modeLosses[rqMode] = (cs.modeLosses[rqMode] || 0) + 1;
+    }
   }
   // AFK : pas de défaite, pas de reset streak
 
@@ -3346,6 +3365,12 @@ function updateCumulStatsOnEnd(type, score, dureeSecondes, winningSuit, mode, di
   } else {
     cs.totalLosses++;
     cs.currentStreak = 0;
+    // Tracker la défaite par mode
+    if (!cs.modeLosses) cs.modeLosses = {};
+    const lossKey = mode === "timer" && diffKey ? "timer_" + diffKey : (mode || null);
+    if (lossKey) {
+      cs.modeLosses[lossKey] = (cs.modeLosses[lossKey] || 0) + 1;
+    }
   }
 
   saveCumulStats(cs);
@@ -3453,6 +3478,9 @@ function renderCumulStats() {
 
   // Top 3 modes préférés (granular: standard, timer_easy, timer_normal, timer_hard, timer_hardcore, 2archives)
   const modeGames = cs.modeGames || {};
+  const modeLosses = cs.modeLosses || {};
+  // Collecter toutes les clés de mode (victoires + défaites)
+  const allModeKeys = new Set([...Object.keys(modeGames), ...Object.keys(modeLosses)]);
   function getModeLabel(key) {
     if (key === "standard") return t("modeSimple");
     if (key === "2archives") return t("statsMode2Archives");
@@ -3463,9 +3491,12 @@ function renderCumulStats() {
     return key;
   }
   const medals = ["🥇", "🥈", "🥉"];
-  const sortedModes = Object.entries(modeGames)
-    .filter(([, count]) => count > 0)
-    .sort((a, b) => b[1] - a[1])
+  // Trier par nombre de parties jouées (victoires + défaites), sans compter les AFK
+  const sortedModes = [...allModeKeys]
+    .map(key => ({ key, wins: modeGames[key] || 0, losses: modeLosses[key] || 0 }))
+    .map(m => ({ ...m, total: m.wins + m.losses }))
+    .filter(m => m.total > 0)
+    .sort((a, b) => b.total - a.total)
     .slice(0, 3);
   const hasAnyMode = sortedModes.length > 0;
 
@@ -3473,11 +3504,11 @@ function renderCumulStats() {
     html += `<div class="stat-card stat-wide">
       <div class="stat-label" style="margin-bottom:6px">${t("csFavModes")}</div>
       <div class="stat-mode-ranking">`;
-    sortedModes.forEach(([mode, count], i) => {
+    sortedModes.forEach((m, i) => {
       html += `<div class="stat-mode-row">
         <span class="mode-medal">${medals[i]}</span>
-        <span class="mode-name">${getModeLabel(mode)}</span>
-        <span class="mode-count">— ${count} ${t("csGamesCount")}</span>
+        <span class="mode-name">${getModeLabel(m.key)}</span>
+        <span class="mode-count">— ${m.wins} ${t("csGamesCount")} / ${m.losses} ${t("csModeLosses")}</span>
       </div>`;
     });
     html += `</div>
