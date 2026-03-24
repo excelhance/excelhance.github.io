@@ -3520,7 +3520,7 @@ function renderCumulStats() {
     }
     return key;
   }
-  const medals = ["1.", "2.", "3."];
+  const medals = ["#1.", "#2.", "#3."];
   // Trier par nombre de parties jouées (victoires + défaites), sans compter les AFK
   const sortedModes = [...allModeKeys]
     .map(key => ({ key, wins: modeGames[key] || 0, losses: modeLosses[key] || 0 }))
