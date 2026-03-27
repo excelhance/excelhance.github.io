@@ -2803,10 +2803,12 @@ function lancerAnimationDefaite() {
   for (let i = 0; i < numSkulls; i++) {
     const skull = document.createElement("div");
     skull.textContent = "💀";
+    const size = minSize + Math.random() * (maxSize - minSize);
+    const maxLeft = Math.max(0, window.innerWidth - size);
     skull.style.position = "fixed";
     skull.style.top = "-100px";
-    skull.style.left = `${Math.random() * 90}vw`;
-    skull.style.fontSize = `${minSize + Math.random() * (maxSize - minSize)}px`;
+    skull.style.left = `${Math.random() * maxLeft}px`;
+    skull.style.fontSize = `${size}px`;
     skull.style.zIndex = 9999;
     skull.style.pointerEvents = "none";
     document.body.appendChild(skull);
