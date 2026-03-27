@@ -2041,10 +2041,10 @@ function applyLang() {
   const modeTutBtn = document.getElementById("mode-tutorial");
   if (modeTutBtn) modeTutBtn.textContent = t("modeTutorial");
   const tutoSkipBtn = document.getElementById("tutorial-skip");
-  if (tutoSkipBtn && !(typeof tutorialMode !== 'undefined' && tutorialMode && tutorialStep === 13)) {
+  if (tutoSkipBtn && !(tutorialMode && tutorialStep === 13)) {
     tutoSkipBtn.textContent = t("tutoSkip");
   }
-  if (typeof tutorialMode !== 'undefined' && tutorialMode && typeof showTutorialStep === 'function') {
+  if (tutorialMode && typeof showTutorialStep === 'function') {
     showTutorialStep();
   }
 }
@@ -2123,6 +2123,10 @@ let chronoDebutMs = null;
 let chronoDureeInitiale = null;
 let difficulteTimer = null;
 
+/* Tutorial state (declared early to avoid TDZ) */
+let tutorialMode = false;
+let tutorialStep = 0;
+
 let stats = {
   nbPioches: 0,
   nbDefaussesNormales: 0,
@@ -2187,7 +2191,7 @@ function gererEtatBoutons() {
   }
 
   // Tutorial: override button states
-  if (typeof tutorialMode !== 'undefined' && tutorialMode && typeof tutorialOverrideButtons === 'function') {
+  if (tutorialMode && typeof tutorialOverrideButtons === 'function') {
     tutorialOverrideButtons();
   }
 }
@@ -3555,7 +3559,7 @@ function clearCumulStats() {
 
 // Marquer une partie comme en cours
 function marquerPartieActive() {
-  if (typeof tutorialMode !== 'undefined' && tutorialMode) return;
+  if (tutorialMode) return;
   try {
     localStorage.setItem(CS_GAME_ACTIVE_KEY, "1");
     localStorage.setItem(CS_LAST_ACTIVITY_KEY, Date.now().toString());
@@ -3828,8 +3832,6 @@ document.getElementById("btn-stats-clear").addEventListener("click", function() 
 /* =====================================================
    TUTORIEL INTERACTIF
 ===================================================== */
-let tutorialMode = false;
-let tutorialStep = 0;
 const TUTO_TOTAL_STEPS = 14; // steps 0-13
 
 function getTutoScriptedDeck() {
