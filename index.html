@@ -2041,10 +2041,8 @@ function applyLang() {
   const modeTutBtn = document.getElementById("mode-tutorial");
   if (modeTutBtn) modeTutBtn.textContent = t("modeTutorial");
   const tutoSkipBtn = document.getElementById("tutorial-skip");
-  if (tutoSkipBtn && !(tutorialMode && tutorialStep === 13)) {
-    tutoSkipBtn.textContent = t("tutoSkip");
-  }
-  if (tutorialMode && typeof showTutorialStep === 'function') {
+  if (tutoSkipBtn) tutoSkipBtn.textContent = t("tutoSkip");
+  if (typeof tutorialMode !== 'undefined' && tutorialMode && typeof showTutorialStep === 'function') {
     showTutorialStep();
   }
 }
