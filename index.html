@@ -869,6 +869,95 @@ canvas {
   animation: shake-game-over 0.6s ease-in-out;
 }
 
+/* ===== TUTORIAL ===== */
+#tutorial-start-wrapper {
+  text-align: center;
+  margin-top: 8px;
+}
+#mode-tutorial {
+  background: transparent;
+  color: var(--text-primary);
+  border: 2px dashed var(--accent);
+  font-size: 14px;
+  padding: 8px 24px;
+  width: auto;
+  min-height: 40px;
+}
+#tutorial-overlay {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 900;
+  padding: 10px 16px 16px;
+  background: var(--popup-bg);
+  border-top: 2px solid var(--accent);
+  box-shadow: 0 -4px 20px rgba(0,0,0,.4);
+  max-height: 45vh;
+  overflow-y: auto;
+}
+#tutorial-step-counter {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-align: right;
+  margin-bottom: 4px;
+}
+#tutorial-progress-container {
+  height: 4px;
+  background: var(--bg-deep);
+  border-radius: 2px;
+  margin-bottom: 10px;
+}
+#tutorial-progress-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+  width: 0;
+}
+#tutorial-message {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  text-align: center;
+  margin-bottom: 10px;
+}
+#tutorial-actions {
+  display: flex;
+  justify-content: center;
+}
+#tutorial-skip {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--text-muted);
+  font-size: 0.75rem;
+  padding: 4px 16px;
+  width: auto;
+}
+@keyframes tutorial-pulse {
+  0%   { box-shadow: 0 0 4px 2px rgba(56,189,248,.5); }
+  50%  { box-shadow: 0 0 12px 6px rgba(56,189,248,0); }
+  100% { box-shadow: 0 0 4px 2px rgba(56,189,248,.5); }
+}
+@keyframes tutorial-pulse-btn {
+  0%   { box-shadow: 0 0 6px 3px rgba(56,189,248,.7); }
+  50%  { box-shadow: 0 0 18px 8px rgba(56,189,248,0); }
+  100% { box-shadow: 0 0 6px 3px rgba(56,189,248,.7); }
+}
+@keyframes tutorial-pulse-card {
+  0%   { outline-color: rgba(56,189,248,.6); }
+  50%  { outline-color: rgba(56,189,248,0); }
+  100% { outline-color: rgba(56,189,248,.6); }
+}
+.tutorial-highlight { animation: tutorial-pulse 1.2s ease-in-out infinite; }
+#zone-actions .tutorial-highlight { animation: tutorial-pulse-btn 0.8s ease-in-out infinite; }
+.carte.tutorial-highlight { outline: 3px solid rgba(56,189,248,.6); outline-offset: 2px; animation: tutorial-pulse-card 0.8s ease-in-out infinite; }
+body.tutorial-active {
+  padding-bottom: 180px;
+}
+body.tutorial-active.partie-active #game-wrapper {
+  padding-bottom: 180px;
+}
+
 </style>
 </head>
 <body>
@@ -883,6 +972,9 @@ canvas {
 <div id="mode-selection">
   <button id="mode-standard">Modes standards</button>
   <button id="mode-timer">⏱️ Contre la montre</button>
+</div>
+<div id="tutorial-start-wrapper">
+  <button id="mode-tutorial">📖 Tutoriel</button>
 </div>
 <div id="standard-submenu" style="display:none">
   <button id="btn-back-standard" title="Retour">&#8592;</button>
@@ -989,6 +1081,15 @@ canvas {
   </div>
 
   <button id="btn-retour-jeu">Retour au jeu</button>
+</div>
+
+<div id="tutorial-overlay" style="display:none">
+  <div id="tutorial-step-counter"></div>
+  <div id="tutorial-progress-container"><div id="tutorial-progress-bar"></div></div>
+  <div id="tutorial-message"></div>
+  <div id="tutorial-actions">
+    <button id="tutorial-skip">Passer</button>
+  </div>
 </div>
 
 </div><!-- /game-wrapper -->
@@ -1150,7 +1251,38 @@ const TRANSLATIONS = {
     csClear: "Réinitialiser",
     csClearConfirm: "Réinitialiser toutes les statistiques cumulées ?",
     csNoData: "Aucune partie jouée pour le moment.",
-    csToggle: "Statistiques"
+    csToggle: "Statistiques",
+    modeTutorial: "📖 Tutoriel",
+    tutoSkip: "Passer",
+    tutoPlay: "Lancer une partie !",
+    tutoStep0: "Bienvenue ! 👋 Apprenez les mécaniques du jeu en quelques étapes.<br><br>👉 Cliquez sur <strong>PIOCHER</strong> pour tirer vos premières cartes.",
+    tutoStep1: "Vous avez tiré 2 cartes. Pour <strong>archiver</strong> une carte, sélectionnez-la puis cliquez sur l'archive de même couleur.<br><br>👉 Sélectionnez une carte <strong>♠</strong> puis cliquez sur l'archive <strong>♠</strong>.",
+    tutoStep2: "Bravo ! La carte ♠ est archivée. Le but est de remplir une archive avec 10 cartes.<br><br>👉 Cliquez sur <strong>PIOCHER</strong> pour continuer.",
+    tutoStep3: "Deux cartes de <strong>même valeur</strong> peuvent être défaussées ensemble.<br><br>👉 Sélectionnez les deux <strong>2</strong>, puis cliquez sur <strong>Défausser</strong>.",
+    tutoStep4: "Les cartes défaussées disparaissent définitivement du jeu.<br><br>👉 Cliquez sur <strong>PIOCHER</strong>.",
+    tutoStep5: "Combo spécial <strong>6 + 9</strong> ! En plus de la défausse, vous rejouez <strong>sans piocher</strong>.<br><br>👉 Sélectionnez le <strong>6</strong> et le <strong>9</strong>, puis <strong>Défausser</strong>.",
+    tutoStep6: "Après un 6+9, vous rejouez immédiatement sans piocher.<br><br>👉 Sélectionnez la carte <strong>♠</strong> et archivez-la dans <strong>♠</strong>.",
+    tutoStep7: "Parfait ! La Zone Centrale est vide.<br><br>👉 Cliquez sur <strong>PIOCHER</strong>.",
+    tutoStep8: "Pas de carte ♠ dans la Zone Centrale. Parfois, il faut archiver dans <strong>une autre couleur</strong> pour avancer !<br><br>👉 Sélectionnez le <strong>3♥</strong> et archivez-le dans <strong>♥</strong>.",
+    tutoStep9: "👉 Cliquez sur <strong>PIOCHER</strong>.",
+    tutoStep10: "Toujours pas de ♠. Continuons à archiver dans d'autres couleurs.<br><br>👉 Sélectionnez le <strong>4♦</strong> et archivez-le dans <strong>♦</strong>.",
+    tutoStep11: "👉 Cliquez sur <strong>PIOCHER</strong>.",
+    tutoStep12: "Combo <strong>10 + Roi</strong> ! Cela vide <strong>toute</strong> la Zone Centrale d'un coup. Impressionnant avec 4 cartes !<br><br>👉 Sélectionnez le <strong>10</strong> et le <strong>Roi</strong>, puis <strong>Défausser</strong>.",
+    tutoStep13: "La Zone Centrale est vide !<br><br>👉 Cliquez sur <strong>PIOCHER</strong>.",
+    tutoStep14: "Archivons pour remplir les archives et préparer la suite.<br><br>👉 Sélectionnez le <strong>A♥</strong> et archivez-le dans <strong>♥</strong>.",
+    tutoStep15: "👉 Cliquez sur <strong>PIOCHER</strong>.",
+    tutoStep16: "👉 Sélectionnez le <strong>8♦</strong> et archivez-le dans <strong>♦</strong>.",
+    tutoStep17: "👉 Cliquez sur <strong>PIOCHER</strong>.",
+    tutoStep18: "4 cartes dans la Zone Centrale, aucun combo de défausse possible et pas de carte ♠. La situation se bloque ! Le <strong>Joker</strong> permet de vider une archive et remettre ses cartes dans la pioche.<br><br>👉 Cliquez sur <strong>Activer Joker</strong>.",
+    tutoStep19: "Le Joker est activé ! Choisissez une archive à vider pour récupérer ses cartes.<br><br>👉 Cliquez sur l'archive <strong>♥</strong> (qui contient 2 cartes).",
+    tutoStep20: "Le Joker a été utilisé (bouton rouge). ⚠️ Une 2ème utilisation = défaite !<br><br>Les cartes ♥ sont retournées dans la pioche. 👉 Cliquez sur <strong>PIOCHER</strong>.",
+    tutoStep21: "Combo <strong>10 + Dame</strong> ! En plus de la défausse, cela <strong>annule</strong> le Joker utilisé. Vous pourrez l'utiliser à nouveau !<br><br>👉 Sélectionnez le <strong>10</strong> et la <strong>Dame</strong>, puis <strong>Défausser</strong>.",
+    tutoStep22: "Joker récupéré ! Continuons.<br><br>👉 Cliquez sur <strong>PIOCHER</strong>.",
+    tutoStep23: "Combo <strong>10 + As</strong> ! En plus de la défausse, cela vous permet de <strong>voir les 3 prochaines cartes</strong> de la pioche.<br><br>👉 Sélectionnez le <strong>10</strong> et l'<strong>As</strong>, puis <strong>Défausser</strong>.",
+    tutoStep24: "Vous voyez les 3 prochaines cartes : <strong>2 piques</strong> et 1 trèfle. C'est favorable pour l'archive ♠ en cours de construction !<br><br>👉 Cliquez sur <strong>Conserver pour la pioche suivante</strong>.",
+    tutoStep25: "Les 2 cartes ♠ sont conservées en haut de la pioche. Vérifions !<br><br>👉 Cliquez sur <strong>PIOCHER</strong>.",
+    tutoStep26: "Les voilà ! 2 cartes ♠ comme prévu. Archivons-en une pour renforcer l'archive ♠.<br><br>👉 Sélectionnez une carte <strong>♠</strong> et archivez-la dans <strong>♠</strong>.",
+    tutoStep27: "🎉 <strong>Bravo, tutoriel terminé !</strong><br><br>Rappels importants :<br>• La Zone Centrale contient <strong>7 cartes max</strong><br>• Les cartes défaussées <strong>disparaissent</strong> du jeu<br>• Le Joker ne peut être utilisé qu'<strong>une seule fois</strong> (sauf combo 10+Dame)<br>• L'objectif est de compléter une archive avec <strong>10 cartes</strong>"
   },
   en: {
     pageTitle: "The Archivist - solo game",
@@ -1244,7 +1376,38 @@ const TRANSLATIONS = {
     csClear: "Reset",
     csClearConfirm: "Reset all cumulative statistics?",
     csNoData: "No games played yet.",
-    csToggle: "Statistics"
+    csToggle: "Statistics",
+    modeTutorial: "📖 Tutorial",
+    tutoSkip: "Skip",
+    tutoPlay: "Start a game!",
+    tutoStep0: "Welcome! 👋 Learn the game mechanics in a few steps.<br><br>👉 Click <strong>DRAW</strong> to get your first cards.",
+    tutoStep1: "You drew 2 cards. To <strong>archive</strong> a card, select it then click the matching suit archive.<br><br>👉 Select a <strong>♠</strong> card then click the <strong>♠</strong> archive.",
+    tutoStep2: "Well done! The ♠ card is archived. The goal is to fill an archive with 10 cards.<br><br>👉 Click <strong>DRAW</strong> to continue.",
+    tutoStep3: "Two cards of the <strong>same value</strong> can be discarded together.<br><br>👉 Select both <strong>2s</strong>, then click <strong>Discard</strong>.",
+    tutoStep4: "Discarded cards are permanently removed from the game.<br><br>👉 Click <strong>DRAW</strong>.",
+    tutoStep5: "Special combo <strong>6 + 9</strong>! Besides discarding, you replay <strong>without drawing</strong>.<br><br>👉 Select the <strong>6</strong> and the <strong>9</strong>, then <strong>Discard</strong>.",
+    tutoStep6: "After a 6+9, you replay immediately without drawing.<br><br>👉 Select the <strong>♠</strong> card and archive it in <strong>♠</strong>.",
+    tutoStep7: "Perfect! The Central Zone is empty.<br><br>👉 Click <strong>DRAW</strong>.",
+    tutoStep8: "No ♠ card in the Central Zone. Sometimes you need to archive in <strong>another suit</strong> to keep going!<br><br>👉 Select the <strong>3♥</strong> and archive it in <strong>♥</strong>.",
+    tutoStep9: "👉 Click <strong>DRAW</strong>.",
+    tutoStep10: "Still no ♠. Let's keep archiving in other suits.<br><br>👉 Select the <strong>4♦</strong> and archive it in <strong>♦</strong>.",
+    tutoStep11: "👉 Click <strong>DRAW</strong>.",
+    tutoStep12: "Combo <strong>10 + King</strong>! This clears the <strong>entire</strong> Central Zone at once. Impressive with 4 cards!<br><br>👉 Select the <strong>10</strong> and the <strong>King</strong>, then <strong>Discard</strong>.",
+    tutoStep13: "The Central Zone is empty!<br><br>👉 Click <strong>DRAW</strong>.",
+    tutoStep14: "Let's archive to fill up our archives and prepare for what's next.<br><br>👉 Select the <strong>A♥</strong> and archive it in <strong>♥</strong>.",
+    tutoStep15: "👉 Click <strong>DRAW</strong>.",
+    tutoStep16: "👉 Select the <strong>8♦</strong> and archive it in <strong>♦</strong>.",
+    tutoStep17: "👉 Click <strong>DRAW</strong>.",
+    tutoStep18: "4 cards in the Central Zone, no discard combo possible and no ♠ card. You're stuck! The <strong>Joker</strong> lets you clear an archive and reshuffle its cards into the deck.<br><br>👉 Click <strong>Activate Joker</strong>.",
+    tutoStep19: "The Joker is activated! Choose an archive to clear and recover its cards.<br><br>👉 Click the <strong>♥</strong> archive (which has 2 cards).",
+    tutoStep20: "The Joker has been used (red button). ⚠️ Using it a 2nd time = defeat!<br><br>The ♥ cards are back in the deck. 👉 Click <strong>DRAW</strong>.",
+    tutoStep21: "Combo <strong>10 + Queen</strong>! Besides discarding, this <strong>cancels</strong> the used Joker. You can use it again!<br><br>👉 Select the <strong>10</strong> and the <strong>Queen</strong>, then <strong>Discard</strong>.",
+    tutoStep22: "Joker recovered! Let's continue.<br><br>👉 Click <strong>DRAW</strong>.",
+    tutoStep23: "Combo <strong>10 + Ace</strong>! Besides discarding, this lets you <strong>see the next 3 cards</strong> in the deck.<br><br>👉 Select the <strong>10</strong> and the <strong>Ace</strong>, then <strong>Discard</strong>.",
+    tutoStep24: "You can see the next 3 cards: <strong>2 spades</strong> and 1 club. That's great for the ♠ archive you're building!<br><br>👉 Click <strong>Keep for the next draw</strong>.",
+    tutoStep25: "The 2 ♠ cards are kept on top of the deck. Let's verify!<br><br>👉 Click <strong>DRAW</strong>.",
+    tutoStep26: "There they are! 2 ♠ cards as expected. Let's archive one to strengthen the ♠ archive.<br><br>👉 Select a <strong>♠</strong> card and archive it in <strong>♠</strong>.",
+    tutoStep27: "🎉 <strong>Well done, tutorial complete!</strong><br><br>Key reminders:<br>• The Central Zone holds <strong>7 cards max</strong><br>• Discarded cards are <strong>gone forever</strong><br>• The Joker can only be used <strong>once</strong> (unless 10+Queen combo)<br>• The goal is to complete an archive with <strong>10 cards</strong>"
   },
   de: {
     pageTitle: "Der Archivar - Solospiel",
@@ -1338,7 +1501,38 @@ const TRANSLATIONS = {
     csClear: "Zurücksetzen",
     csClearConfirm: "Alle Gesamtstatistiken zurücksetzen?",
     csNoData: "Noch keine Partien gespielt.",
-    csToggle: "Statistiken"
+    csToggle: "Statistiken",
+    modeTutorial: "📖 Tutorial",
+    tutoSkip: "Überspringen",
+    tutoPlay: "Spiel starten!",
+    tutoStep0: "Willkommen! 👋 Lernen Sie die Spielmechaniken in wenigen Schritten.<br><br>👉 Klicken Sie auf <strong>ZIEHEN</strong>, um Ihre ersten Karten zu erhalten.",
+    tutoStep1: "Sie haben 2 Karten gezogen. Um eine Karte zu <strong>archivieren</strong>, wählen Sie sie aus und klicken auf das passende Archiv.<br><br>👉 Wählen Sie eine <strong>♠</strong>-Karte und klicken Sie auf das <strong>♠</strong>-Archiv.",
+    tutoStep2: "Gut gemacht! Die ♠-Karte ist archiviert. Ziel: ein Archiv mit 10 Karten füllen.<br><br>👉 Klicken Sie auf <strong>ZIEHEN</strong>.",
+    tutoStep3: "Zwei Karten <strong>gleichen Werts</strong> können zusammen abgelegt werden.<br><br>👉 Wählen Sie beide <strong>2er</strong>, dann <strong>Ablegen</strong>.",
+    tutoStep4: "Abgelegte Karten verschwinden endgültig aus dem Spiel.<br><br>👉 Klicken Sie auf <strong>ZIEHEN</strong>.",
+    tutoStep5: "Spezialkombo <strong>6 + 9</strong>! Zusätzlich zur Ablage spielen Sie <strong>ohne Ziehen</strong> weiter.<br><br>👉 Wählen Sie die <strong>6</strong> und die <strong>9</strong>, dann <strong>Ablegen</strong>.",
+    tutoStep6: "Nach einer 6+9-Kombo spielen Sie sofort weiter, ohne zu ziehen.<br><br>👉 Wählen Sie die <strong>♠</strong>-Karte und archivieren Sie sie unter <strong>♠</strong>.",
+    tutoStep7: "Perfekt! Die Zentrale Zone ist leer.<br><br>👉 Klicken Sie auf <strong>ZIEHEN</strong>.",
+    tutoStep8: "Keine ♠-Karte in der Zentralen Zone. Manchmal muss man in <strong>einer anderen Farbe</strong> archivieren!<br><br>👉 Wählen Sie die <strong>3♥</strong> und archivieren Sie sie unter <strong>♥</strong>.",
+    tutoStep9: "👉 Klicken Sie auf <strong>ZIEHEN</strong>.",
+    tutoStep10: "Immer noch kein ♠. Archivieren wir weiter in anderen Farben.<br><br>👉 Wählen Sie die <strong>4♦</strong> und archivieren Sie sie unter <strong>♦</strong>.",
+    tutoStep11: "👉 Klicken Sie auf <strong>ZIEHEN</strong>.",
+    tutoStep12: "Kombo <strong>10 + König</strong>! Dies leert die <strong>gesamte</strong> Zentrale Zone auf einmal. Beeindruckend mit 4 Karten!<br><br>👉 Wählen Sie die <strong>10</strong> und den <strong>König</strong>, dann <strong>Ablegen</strong>.",
+    tutoStep13: "Die Zentrale Zone ist leer!<br><br>👉 Klicken Sie auf <strong>ZIEHEN</strong>.",
+    tutoStep14: "Archivieren wir, um die Archive zu füllen und uns vorzubereiten.<br><br>👉 Wählen Sie die <strong>A♥</strong> und archivieren Sie sie unter <strong>♥</strong>.",
+    tutoStep15: "👉 Klicken Sie auf <strong>ZIEHEN</strong>.",
+    tutoStep16: "👉 Wählen Sie die <strong>8♦</strong> und archivieren Sie sie unter <strong>♦</strong>.",
+    tutoStep17: "👉 Klicken Sie auf <strong>ZIEHEN</strong>.",
+    tutoStep18: "4 Karten in der Zentralen Zone, keine Ablagekombo möglich und kein ♠. Sie stecken fest! Der <strong>Joker</strong> leert ein Archiv und mischt dessen Karten zurück in den Stapel.<br><br>👉 Klicken Sie auf <strong>Joker aktivieren</strong>.",
+    tutoStep19: "Der Joker ist aktiviert! Wählen Sie ein Archiv zum Leeren.<br><br>👉 Klicken Sie auf das <strong>♥</strong>-Archiv (enthält 2 Karten).",
+    tutoStep20: "Der Joker wurde benutzt (roter Button). ⚠️ 2. Nutzung = Niederlage!<br><br>Die ♥-Karten sind zurück im Stapel. 👉 Klicken Sie auf <strong>ZIEHEN</strong>.",
+    tutoStep21: "Kombo <strong>10 + Dame</strong>! Zusätzlich wird der benutzte Joker <strong>zurückgesetzt</strong>. Sie können ihn erneut verwenden!<br><br>👉 Wählen Sie die <strong>10</strong> und die <strong>Dame</strong>, dann <strong>Ablegen</strong>.",
+    tutoStep22: "Joker wiederhergestellt! Weiter geht's.<br><br>👉 Klicken Sie auf <strong>ZIEHEN</strong>.",
+    tutoStep23: "Kombo <strong>10 + Ass</strong>! Zusätzlich können Sie die <strong>nächsten 3 Karten</strong> im Stapel sehen.<br><br>👉 Wählen Sie die <strong>10</strong> und das <strong>Ass</strong>, dann <strong>Ablegen</strong>.",
+    tutoStep24: "Sie sehen die nächsten 3 Karten: <strong>2 Pik</strong> und 1 Kreuz. Ideal für das ♠-Archiv, das Sie aufbauen!<br><br>👉 Klicken Sie auf <strong>Für den nächsten Zug behalten</strong>.",
+    tutoStep25: "Die 2 ♠-Karten bleiben oben im Stapel. Überprüfen wir das!<br><br>👉 Klicken Sie auf <strong>ZIEHEN</strong>.",
+    tutoStep26: "Da sind sie! 2 ♠-Karten wie erwartet. Archivieren wir eine davon für das ♠-Archiv.<br><br>👉 Wählen Sie eine <strong>♠</strong>-Karte und archivieren Sie sie in <strong>♠</strong>.",
+    tutoStep27: "🎉 <strong>Gut gemacht, Tutorial abgeschlossen!</strong><br><br>Wichtige Hinweise:<br>• Zentrale Zone: max. <strong>7 Karten</strong><br>• Abgelegte Karten sind <strong>für immer weg</strong><br>• Der Joker kann nur <strong>einmal</strong> benutzt werden (außer mit 10+Dame)<br>• Ziel ist es, ein Archiv mit <strong>10 Karten</strong> zu füllen"
   },
   es: {
     pageTitle: "El Archivista - juego en solitario",
@@ -1432,7 +1626,38 @@ const TRANSLATIONS = {
     csClear: "Reiniciar",
     csClearConfirm: "¿Reiniciar todas las estadísticas acumuladas?",
     csNoData: "Ninguna partida jugada todavía.",
-    csToggle: "Estadísticas"
+    csToggle: "Estadísticas",
+    modeTutorial: "📖 Tutorial",
+    tutoSkip: "Saltar",
+    tutoPlay: "¡Iniciar partida!",
+    tutoStep0: "¡Bienvenido! 👋 Aprende las mecánicas del juego en pocos pasos.<br><br>👉 Haz clic en <strong>ROBAR</strong> para obtener tus primeras cartas.",
+    tutoStep1: "Has robado 2 cartas. Para <strong>archivar</strong>, selecciona una carta y haz clic en el archivo del mismo palo.<br><br>👉 Selecciona una carta <strong>♠</strong> y haz clic en el archivo <strong>♠</strong>.",
+    tutoStep2: "¡Bien hecho! La carta ♠ está archivada. El objetivo es llenar un archivo con 10 cartas.<br><br>👉 Haz clic en <strong>ROBAR</strong>.",
+    tutoStep3: "Dos cartas del <strong>mismo valor</strong> se pueden descartar juntas.<br><br>👉 Selecciona ambos <strong>2</strong>, luego <strong>Descartar</strong>.",
+    tutoStep4: "Las cartas descartadas desaparecen definitivamente del juego.<br><br>👉 Haz clic en <strong>ROBAR</strong>.",
+    tutoStep5: "¡Combo especial <strong>6 + 9</strong>! Además del descarte, juegas de nuevo <strong>sin robar</strong>.<br><br>👉 Selecciona el <strong>6</strong> y el <strong>9</strong>, luego <strong>Descartar</strong>.",
+    tutoStep6: "Después de un 6+9, juegas inmediatamente sin robar.<br><br>👉 Selecciona la carta <strong>♠</strong> y archívala en <strong>♠</strong>.",
+    tutoStep7: "¡Perfecto! La Zona Central está vacía.<br><br>👉 Haz clic en <strong>ROBAR</strong>.",
+    tutoStep8: "No hay carta ♠ en la Zona Central. ¡A veces hay que archivar en <strong>otro palo</strong> para avanzar!<br><br>👉 Selecciona el <strong>3♥</strong> y archívalo en <strong>♥</strong>.",
+    tutoStep9: "👉 Haz clic en <strong>ROBAR</strong>.",
+    tutoStep10: "Sigue sin haber ♠. Sigamos archivando en otros palos.<br><br>👉 Selecciona el <strong>4♦</strong> y archívalo en <strong>♦</strong>.",
+    tutoStep11: "👉 Haz clic en <strong>ROBAR</strong>.",
+    tutoStep12: "¡Combo <strong>10 + Rey</strong>! Esto vacía <strong>toda</strong> la Zona Central de golpe. ¡Impresionante con 4 cartas!<br><br>👉 Selecciona el <strong>10</strong> y el <strong>Rey</strong>, luego <strong>Descartar</strong>.",
+    tutoStep13: "¡La Zona Central está vacía!<br><br>👉 Haz clic en <strong>ROBAR</strong>.",
+    tutoStep14: "Archivemos para llenar los archivos y preparar lo que viene.<br><br>👉 Selecciona el <strong>A♥</strong> y archívalo en <strong>♥</strong>.",
+    tutoStep15: "👉 Haz clic en <strong>ROBAR</strong>.",
+    tutoStep16: "👉 Selecciona el <strong>8♦</strong> y archívalo en <strong>♦</strong>.",
+    tutoStep17: "👉 Haz clic en <strong>ROBAR</strong>.",
+    tutoStep18: "4 cartas en la Zona Central, ningún combo de descarte posible y ninguna carta ♠. ¡Estás bloqueado! El <strong>Comodín</strong> vacía un archivo y devuelve sus cartas al mazo.<br><br>👉 Haz clic en <strong>Activar Comodín</strong>.",
+    tutoStep19: "¡El Comodín está activado! Elige un archivo para vaciarlo y recuperar sus cartas.<br><br>👉 Haz clic en el archivo <strong>♥</strong> (que tiene 2 cartas).",
+    tutoStep20: "El Comodín fue usado (botón rojo). ⚠️ ¡Usarlo una 2ª vez = derrota!<br><br>Las cartas ♥ volvieron al mazo. 👉 Haz clic en <strong>ROBAR</strong>.",
+    tutoStep21: "¡Combo <strong>10 + Reina</strong>! Además del descarte, esto <strong>anula</strong> el Comodín usado. ¡Puedes volver a usarlo!<br><br>👉 Selecciona el <strong>10</strong> y la <strong>Reina</strong>, luego <strong>Descartar</strong>.",
+    tutoStep22: "¡Comodín recuperado! Continuemos.<br><br>👉 Haz clic en <strong>ROBAR</strong>.",
+    tutoStep23: "¡Combo <strong>10 + As</strong>! Además del descarte, te permite <strong>ver las próximas 3 cartas</strong> del mazo.<br><br>👉 Selecciona el <strong>10</strong> y el <strong>As</strong>, luego <strong>Descartar</strong>.",
+    tutoStep24: "Ves las próximas 3 cartas: <strong>2 picas</strong> y 1 trébol. ¡Ideal para el archivo ♠ que estás construyendo!<br><br>👉 Haz clic en <strong>Conservar para el próximo robo</strong>.",
+    tutoStep25: "Las 2 cartas ♠ se conservan en la parte superior del mazo. ¡Verifiquemos!<br><br>👉 Haz clic en <strong>ROBAR</strong>.",
+    tutoStep26: "¡Ahí están! 2 cartas ♠ como se esperaba. Archivemos una para reforzar el archivo ♠.<br><br>👉 Selecciona una carta <strong>♠</strong> y archívala en <strong>♠</strong>.",
+    tutoStep27: "🎉 <strong>¡Bien hecho, tutorial completado!</strong><br><br>Recordatorios clave:<br>• La Zona Central tiene <strong>7 cartas máx.</strong><br>• Las cartas descartadas <strong>desaparecen para siempre</strong><br>• El Comodín solo puede usarse <strong>una vez</strong> (salvo combo 10+Reina)<br>• El objetivo es completar un archivo con <strong>10 cartas</strong>"
   },
   ar: {
     pageTitle: "الأرشيفي - لعبة فردية",
@@ -1526,7 +1751,38 @@ const TRANSLATIONS = {
     csClear: "إعادة تعيين",
     csClearConfirm: "إعادة تعيين جميع الإحصائيات التراكمية؟",
     csNoData: "لم يتم لعب أي لعبة بعد.",
-    csToggle: "إحصائيات"
+    csToggle: "إحصائيات",
+    modeTutorial: "📖 تعليمي",
+    tutoSkip: "تخطي",
+    tutoPlay: "!ابدأ اللعب",
+    tutoStep0: "!مرحبًا 👋 تعلّم آليات اللعبة في خطوات قليلة.<br><br>👉 انقر على <strong>سحب</strong> للحصول على أوراقك الأولى.",
+    tutoStep1: "سحبت ورقتين. <strong>لأرشفة</strong> ورقة، اختَرها ثم انقر على الأرشيف المطابق.<br><br>👉 اختر ورقة <strong>♠</strong> ثم انقر على أرشيف <strong>♠</strong>.",
+    tutoStep2: "!أحسنت! تمت أرشفة ورقة ♠. الهدف: ملء أرشيف بـ 10 أوراق.<br><br>👉 انقر على <strong>سحب</strong>.",
+    tutoStep3: "يمكن تجاهل ورقتين من <strong>نفس القيمة</strong> معًا.<br><br>👉 اختر كلا <strong>الـ2</strong>، ثم <strong>تجاهل</strong>.",
+    tutoStep4: "الأوراق المُتجاهَلة تختفي نهائيًا من اللعبة.<br><br>👉 انقر على <strong>سحب</strong>.",
+    tutoStep5: "!كومبو خاص <strong>6 + 9</strong>! بالإضافة للتجاهل، تلعب مجددًا <strong>بدون سحب</strong>.<br><br>👉 اختر <strong>6</strong> و<strong>9</strong>، ثم <strong>تجاهل</strong>.",
+    tutoStep6: "بعد كومبو 6+9، تلعب فورًا بدون سحب.<br><br>👉 اختر ورقة <strong>♠</strong> وأرشفها في <strong>♠</strong>.",
+    tutoStep7: "!ممتاز! المنطقة المركزية فارغة.<br><br>👉 انقر على <strong>سحب</strong>.",
+    tutoStep8: "لا توجد ورقة ♠ في المنطقة المركزية. أحيانًا يجب الأرشفة في <strong>لون آخر</strong> للتقدم!<br><br>👉 اختر <strong>3♥</strong> وأرشفها في <strong>♥</strong>.",
+    tutoStep9: "👉 انقر على <strong>سحب</strong>.",
+    tutoStep10: "لا يزال لا يوجد ♠. لنواصل الأرشفة في ألوان أخرى.<br><br>👉 اختر <strong>4♦</strong> وأرشفها في <strong>♦</strong>.",
+    tutoStep11: "👉 انقر على <strong>سحب</strong>.",
+    tutoStep12: "!كومبو <strong>10 + ملك</strong>! هذا يُفرغ المنطقة المركزية <strong>بالكامل</strong> دفعة واحدة. مذهل مع 4 أوراق!<br><br>👉 اختر <strong>10</strong> و<strong>الملك</strong>، ثم <strong>تجاهل</strong>.",
+    tutoStep13: "!المنطقة المركزية فارغة!<br><br>👉 انقر على <strong>سحب</strong>.",
+    tutoStep14: "لنُأرشف لملء الأرشيفات والتحضير للخطوات التالية.<br><br>👉 اختر <strong>A♥</strong> وأرشفها في <strong>♥</strong>.",
+    tutoStep15: "👉 انقر على <strong>سحب</strong>.",
+    tutoStep16: "👉 اختر <strong>8♦</strong> وأرشفها في <strong>♦</strong>.",
+    tutoStep17: "👉 انقر على <strong>سحب</strong>.",
+    tutoStep18: "4 أوراق في المنطقة المركزية، لا كومبو ممكن ولا ورقة ♠. الوضع مسدود! <strong>الجوكر</strong> يُفرغ أرشيفًا ويُعيد أوراقه للمجموعة.<br><br>👉 انقر على <strong>تفعيل الجوكر</strong>.",
+    tutoStep19: "!الجوكر مفعّل! اختر أرشيفًا لتفريغه واسترجاع أوراقه.<br><br>👉 انقر على أرشيف <strong>♥</strong> (يحتوي على ورقتين).",
+    tutoStep20: "تم استخدام الجوكر (زر أحمر). ⚠️ استخدامه مرة ثانية = هزيمة!<br><br>أوراق ♥ عادت للمجموعة. 👉 انقر على <strong>سحب</strong>.",
+    tutoStep21: "!كومبو <strong>10 + ملكة</strong>! بالإضافة للتجاهل، هذا <strong>يُلغي</strong> الجوكر المستخدم. يمكنك استخدامه مجددًا!<br><br>👉 اختر <strong>10</strong> و<strong>الملكة</strong>، ثم <strong>تجاهل</strong>.",
+    tutoStep22: "تم استرجاع الجوكر! لنكمل.<br><br>👉 انقر على <strong>سحب</strong>.",
+    tutoStep23: "كومبو <strong>10 + آس</strong>! بالإضافة للتجاهل، يمكنك <strong>رؤية الأوراق الـ3 التالية</strong> في المجموعة.<br><br>👉 اختر <strong>10</strong> و<strong>الآس</strong>، ثم <strong>تجاهل</strong>.",
+    tutoStep24: "ترى الأوراق الـ3 التالية: <strong>2 بستوني</strong> و1 نادي. مثالي لأرشيف ♠ الذي تبنيه!<br><br>👉 انقر على <strong>الاحتفاظ للسحب التالي</strong>.",
+    tutoStep25: "تم الاحتفاظ بالورقتين ♠ في أعلى المجموعة. لنتحقق!<br><br>👉 انقر على <strong>سحب</strong>.",
+    tutoStep26: "ها هما! ورقتان ♠ كما كان متوقعًا. لنؤرشف واحدة لتعزيز أرشيف ♠.<br><br>👉 اختر ورقة <strong>♠</strong> وأرشفها في <strong>♠</strong>.",
+    tutoStep27: "🎉 <strong>!أحسنت، اكتمل التعليمي!</strong><br><br>تذكيرات مهمة:<br>• المنطقة المركزية: <strong>7 أوراق كحد أقصى</strong><br>• الأوراق المُتجاهَلة <strong>تختفي للأبد</strong><br>• الجوكر يُستخدم <strong>مرة واحدة</strong> فقط (إلا مع كومبو 10+ملكة)<br>• الهدف هو إكمال أرشيف بـ<strong>10 أوراق</strong>"
   },
   zh: {
     pageTitle: "档案管理员 - 单人纸牌游戏",
@@ -1620,7 +1876,38 @@ const TRANSLATIONS = {
     csClear: "重置",
     csClearConfirm: "重置所有累计统计数据？",
     csNoData: "暂无游戏记录。",
-    csToggle: "统计"
+    csToggle: "统计",
+    modeTutorial: "📖 教程",
+    tutoSkip: "跳过",
+    tutoPlay: "开始游戏！",
+    tutoStep0: "欢迎！👋 通过几个步骤学习游戏机制。<br><br>👉 点击 <strong>抽牌</strong> 获取你的第一手牌。",
+    tutoStep1: "你抽到了2张牌。要<strong>归档</strong>一张牌，选中它然后点击对应花色的档案。<br><br>👉 选择一张 <strong>♠</strong> 牌，然后点击 <strong>♠</strong> 档案。",
+    tutoStep2: "做得好！♠牌已归档。目标：用10张牌填满一个档案。<br><br>👉 点击 <strong>抽牌</strong> 继续。",
+    tutoStep3: "两张<strong>相同点数</strong>的牌可以一起弃掉。<br><br>👉 选择两张 <strong>2</strong>，然后点击 <strong>弃牌</strong>。",
+    tutoStep4: "弃掉的牌将永久从游戏中消失。<br><br>👉 点击 <strong>抽牌</strong>。",
+    tutoStep5: "特殊组合 <strong>6 + 9</strong>！除了弃牌，你还可以<strong>不抽牌直接再玩</strong>。<br><br>👉 选择 <strong>6</strong> 和 <strong>9</strong>，然后 <strong>弃牌</strong>。",
+    tutoStep6: "6+9组合后，你可以立即行动而无需抽牌。<br><br>👉 选择 <strong>♠</strong> 牌并归档到 <strong>♠</strong>。",
+    tutoStep7: "完美！中央区域已清空。<br><br>👉 点击 <strong>抽牌</strong>。",
+    tutoStep8: "中央区域没有♠牌。有时需要归档到<strong>其他花色</strong>才能继续！<br><br>👉 选择 <strong>3♥</strong> 并归档到 <strong>♥</strong>。",
+    tutoStep9: "👉 点击 <strong>抽牌</strong>。",
+    tutoStep10: "仍然没有♠。继续归档到其他花色。<br><br>👉 选择 <strong>4♦</strong> 并归档到 <strong>♦</strong>。",
+    tutoStep11: "👉 点击 <strong>抽牌</strong>。",
+    tutoStep12: "组合 <strong>10 + K</strong>！这会一次性清空<strong>整个</strong>中央区域。4张牌一起消失，非常强大！<br><br>👉 选择 <strong>10</strong> 和 <strong>K</strong>，然后 <strong>弃牌</strong>。",
+    tutoStep13: "中央区域已清空！<br><br>👉 点击 <strong>抽牌</strong>。",
+    tutoStep14: "继续归档以填充档案，为后续做准备。<br><br>👉 选择 <strong>A♥</strong> 并归档到 <strong>♥</strong>。",
+    tutoStep15: "👉 点击 <strong>抽牌</strong>。",
+    tutoStep16: "👉 选择 <strong>8♦</strong> 并归档到 <strong>♦</strong>。",
+    tutoStep17: "👉 点击 <strong>抽牌</strong>。",
+    tutoStep18: "中央区域有4张牌，没有可用的弃牌组合，也没有♠牌。陷入困境！<strong>小丑牌</strong>可以清空一个档案，将其中的牌重新洗入牌堆。<br><br>👉 点击 <strong>激活小丑牌</strong>。",
+    tutoStep19: "小丑牌已激活！选择一个档案来清空并回收其中的牌。<br><br>👉 点击 <strong>♥</strong> 档案（包含2张牌）。",
+    tutoStep20: "小丑牌已使用（红色按钮）。⚠️ 第二次使用 = 失败！<br><br>♥的牌已回到牌堆。👉 点击 <strong>抽牌</strong>。",
+    tutoStep21: "组合 <strong>10 + Q</strong>！除了弃牌，还能<strong>取消</strong>已使用的小丑牌。你可以再次使用它！<br><br>👉 选择 <strong>10</strong> 和 <strong>Q</strong>，然后 <strong>弃牌</strong>。",
+    tutoStep22: "小丑牌已恢复！继续。<br><br>👉 点击 <strong>抽牌</strong>。",
+    tutoStep23: "组合 <strong>10 + A</strong>！除了弃牌，还能<strong>查看牌堆中接下来的3张牌</strong>。<br><br>👉 选择 <strong>10</strong> 和 <strong>A</strong>，然后 <strong>弃牌</strong>。",
+    tutoStep24: "你看到接下来的3张牌：<strong>2张♠</strong>和1张♣。非常有利于正在建设的♠档案！<br><br>👉 点击 <strong>保留到下次抽牌</strong>。",
+    tutoStep25: "2张♠牌保留在牌堆顶部。让我们验证一下！<br><br>👉 点击 <strong>抽牌</strong>。",
+    tutoStep26: "果然如此！2张♠牌如预期出现。归档一张来加强♠档案。<br><br>👉 选择一张 <strong>♠</strong> 牌并归档到 <strong>♠</strong>。",
+    tutoStep27: "🎉 <strong>做得好，教程完成！</strong><br><br>重要提醒：<br>• 中央区域最多 <strong>7张牌</strong><br>• 弃掉的牌<strong>永远消失</strong><br>• 小丑牌只能使用<strong>一次</strong>（除非使用10+Q组合）<br>• 目标是用<strong>10张牌</strong>填满一个档案"
   },
   ru: {
     pageTitle: "Архивариус - одиночная игра",
@@ -1714,7 +2001,38 @@ const TRANSLATIONS = {
     csClear: "Сбросить",
     csClearConfirm: "Сбросить всю общую статистику?",
     csNoData: "Пока нет сыгранных партий.",
-    csToggle: "Статистика"
+    csToggle: "Статистика",
+    modeTutorial: "📖 Обучение",
+    tutoSkip: "Пропустить",
+    tutoPlay: "Начать игру!",
+    tutoStep0: "Добро пожаловать! 👋 Изучите механики игры за несколько шагов.<br><br>👉 Нажмите <strong>ТЯНУТЬ</strong>, чтобы получить первые карты.",
+    tutoStep1: "Вы вытянули 2 карты. Чтобы <strong>архивировать</strong> карту, выберите её и нажмите на соответствующий архив.<br><br>👉 Выберите карту <strong>♠</strong> и нажмите на архив <strong>♠</strong>.",
+    tutoStep2: "Отлично! Карта ♠ в архиве. Цель: заполнить архив 10 картами.<br><br>👉 Нажмите <strong>ТЯНУТЬ</strong>.",
+    tutoStep3: "Две карты <strong>одного достоинства</strong> можно сбросить вместе.<br><br>👉 Выберите обе <strong>двойки</strong>, затем <strong>Сбросить</strong>.",
+    tutoStep4: "Сброшенные карты навсегда исчезают из игры.<br><br>👉 Нажмите <strong>ТЯНУТЬ</strong>.",
+    tutoStep5: "Спецкомбо <strong>6 + 9</strong>! Помимо сброса, вы играете снова <strong>без раздачи</strong>.<br><br>👉 Выберите <strong>6</strong> и <strong>9</strong>, затем <strong>Сбросить</strong>.",
+    tutoStep6: "После 6+9 вы играете сразу, без раздачи.<br><br>👉 Выберите карту <strong>♠</strong> и архивируйте в <strong>♠</strong>.",
+    tutoStep7: "Отлично! Центральная зона пуста.<br><br>👉 Нажмите <strong>ТЯНУТЬ</strong>.",
+    tutoStep8: "Нет карт ♠ в Центральной зоне. Иногда нужно архивировать в <strong>другую масть</strong>!<br><br>👉 Выберите <strong>3♥</strong> и архивируйте в <strong>♥</strong>.",
+    tutoStep9: "👉 Нажмите <strong>ТЯНУТЬ</strong>.",
+    tutoStep10: "Всё ещё нет ♠. Продолжаем архивировать в другие масти.<br><br>👉 Выберите <strong>4♦</strong> и архивируйте в <strong>♦</strong>.",
+    tutoStep11: "👉 Нажмите <strong>ТЯНУТЬ</strong>.",
+    tutoStep12: "Комбо <strong>10 + Король</strong>! Это очищает <strong>всю</strong> Центральную зону сразу. Впечатляюще с 4 картами!<br><br>👉 Выберите <strong>10</strong> и <strong>Короля</strong>, затем <strong>Сбросить</strong>.",
+    tutoStep13: "Центральная зона пуста!<br><br>👉 Нажмите <strong>ТЯНУТЬ</strong>.",
+    tutoStep14: "Продолжим архивировать для заполнения архивов.<br><br>👉 Выберите <strong>A♥</strong> и архивируйте в <strong>♥</strong>.",
+    tutoStep15: "👉 Нажмите <strong>ТЯНУТЬ</strong>.",
+    tutoStep16: "👉 Выберите <strong>8♦</strong> и архивируйте в <strong>♦</strong>.",
+    tutoStep17: "👉 Нажмите <strong>ТЯНУТЬ</strong>.",
+    tutoStep18: "4 карты в Центральной зоне, нет доступных комбо и нет карт ♠. Вы в тупике! <strong>Джокер</strong> очищает архив и возвращает его карты в колоду.<br><br>👉 Нажмите <strong>Активировать Джокер</strong>.",
+    tutoStep19: "Джокер активирован! Выберите архив для очистки и возврата карт.<br><br>👉 Нажмите на архив <strong>♥</strong> (содержит 2 карты).",
+    tutoStep20: "Джокер использован (красная кнопка). ⚠️ 2-е использование = поражение!<br><br>Карты ♥ вернулись в колоду. 👉 Нажмите <strong>ТЯНУТЬ</strong>.",
+    tutoStep21: "Комбо <strong>10 + Дама</strong>! Помимо сброса, это <strong>отменяет</strong> использованного Джокера. Можно снова использовать!<br><br>👉 Выберите <strong>10</strong> и <strong>Даму</strong>, затем <strong>Сбросить</strong>.",
+    tutoStep22: "Джокер восстановлен! Продолжаем.<br><br>👉 Нажмите <strong>ТЯНУТЬ</strong>.",
+    tutoStep23: "Комбо <strong>10 + Туз</strong>! Помимо сброса, можно <strong>увидеть следующие 3 карты</strong> в колоде.<br><br>👉 Выберите <strong>10</strong> и <strong>Туза</strong>, затем <strong>Сбросить</strong>.",
+    tutoStep24: "Вы видите следующие 3 карты: <strong>2 пики</strong> и 1 трефу. Отлично для архива ♠, который вы строите!<br><br>👉 Нажмите <strong>Сохранить для следующей раздачи</strong>.",
+    tutoStep25: "2 карты ♠ сохранены наверху колоды. Проверим!<br><br>👉 Нажмите <strong>ТЯНУТЬ</strong>.",
+    tutoStep26: "Вот они! 2 карты ♠ как и ожидалось. Архивируем одну для усиления архива ♠.<br><br>👉 Выберите карту <strong>♠</strong> и архивируйте в <strong>♠</strong>.",
+    tutoStep27: "🎉 <strong>Отлично, обучение завершено!</strong><br><br>Важные напоминания:<br>• Центральная зона: макс. <strong>7 карт</strong><br>• Сброшенные карты <strong>исчезают навсегда</strong><br>• Джокер можно использовать только <strong>один раз</strong> (кроме комбо 10+Дама)<br>• Цель — заполнить архив <strong>10 картами</strong>"
   }
 };
 
@@ -1827,6 +2145,15 @@ function applyLang() {
   if (btnConserver) btnConserver.textContent = t("keepForNext");
   const btnRemelanger = document.getElementById("btn-remelanger");
   if (btnRemelanger) btnRemelanger.textContent = t("shuffleUnder");
+
+  /* Tutorial elements */
+  const modeTutBtn = document.getElementById("mode-tutorial");
+  if (modeTutBtn) modeTutBtn.textContent = t("modeTutorial");
+  const tutoSkipBtn = document.getElementById("tutorial-skip");
+  if (tutoSkipBtn) tutoSkipBtn.textContent = t("tutoSkip");
+  if (typeof tutorialMode !== 'undefined' && tutorialMode && typeof showTutorialStep === 'function') {
+    showTutorialStep();
+  }
 }
 
 /* Update rules goal line based on current game mode */
@@ -1903,6 +2230,10 @@ let chronoDebutMs = null;
 let chronoDureeInitiale = null;
 let difficulteTimer = null;
 
+/* Tutorial state (declared early to avoid TDZ) */
+let tutorialMode = false;
+let tutorialStep = 0;
+
 let stats = {
   nbPioches: 0,
   nbDefaussesNormales: 0,
@@ -1964,6 +2295,11 @@ function gererEtatBoutons() {
     bloquerBoutons("piocher");
   } else {
       bloquerBoutons("defausser");
+  }
+
+  // Tutorial: override button states
+  if (tutorialMode && typeof tutorialOverrideButtons === 'function') {
+    tutorialOverrideButtons();
   }
 }
 
@@ -2117,6 +2453,7 @@ function piocherCartes(nb){
   updateCompteurPile();
   gererEtatBoutons();
   checkJeu();
+  if (tutorialMode) tutorialAdvance("draw");
 }
 
 function updateCompteurPile(){
@@ -2204,6 +2541,7 @@ document.querySelectorAll(".archive").forEach(archive => {
       btnJoker.classList.add("joker-utilise");
       checkJeu(); // check d'une victoire ou d'une défaite
       attenteAction = false;
+      if (tutorialMode) tutorialAdvance("joker-applied");
       return;
     }
 
@@ -2227,6 +2565,7 @@ document.querySelectorAll(".archive").forEach(archive => {
     gererEtatBoutons();
     checkJeu(); // check d'une victoire ou d'une défaite
     attenteAction = false;
+    if (tutorialMode) tutorialAdvance("archive");
   };
 });
 
@@ -2274,6 +2613,7 @@ document.getElementById("defausser").onclick = () => {
       updateCouleurZoneCentrale();
       gererEtatBoutons();
       checkJeu(); // check d'une victoire ou d'une défaite
+      if (tutorialMode) tutorialAdvance("discard");
       return;
     }
 
@@ -2287,6 +2627,7 @@ document.getElementById("defausser").onclick = () => {
             updateCouleurZoneCentrale();
             gererEtatBoutons();
             checkJeu(); // check d'une victoire ou d'une défaite
+            if (tutorialMode) tutorialAdvance("discard");
             return;
     }
     if (sel.length > 2) {
@@ -2303,6 +2644,7 @@ document.getElementById("defausser").onclick = () => {
         updateCouleurZoneCentrale();
         gererEtatBoutons();
         checkJeu(); // check d'une victoire ou d'une défaite
+        if (tutorialMode) tutorialAdvance("discard");
         return;  // rejouer immédiatement, aucune pioche
     }
 
@@ -2313,25 +2655,26 @@ document.getElementById("defausser").onclick = () => {
             jokerRecupere = true;
             jokerUtilise = false;
             jokerEnAttente = false;
-    
+
             // Bouton Joker -> état normal
             btnJoker.classList.remove("joker-utilise","joker-actif");
             btnJoker.style.backgroundColor = "";
             btnJoker.style.color = "";
-    
+
             // Suppression de l’icône Joker sur l’archive
             document.querySelectorAll(".joker-marqueur").forEach(j => j.remove());
         }
-    
+
         // Défausse des cartes
         sel.forEach(c => c.remove());
-    
+
         etat = "pioche";
         attenteAction = false; // pioche standard ensuite
         stats.nbDefaussesSpeciales++; // Stats nb défausses
         updateCouleurZoneCentrale();
         gererEtatBoutons();
-        checkJeu(); // check d'une victoire ou d'une défaite
+        checkJeu(); // check d’une victoire ou d’une défaite
+        if (tutorialMode) tutorialAdvance("discard");
         return;
     }
 
@@ -2346,6 +2689,7 @@ document.getElementById("defausser").onclick = () => {
         updateCouleurZoneCentrale();
         gererEtatBoutons();
         checkJeu(); // check d'une victoire ou d'une défaite
+        if (tutorialMode) tutorialAdvance("discard");
         return;
     }
 
@@ -2385,7 +2729,9 @@ document.getElementById("defausser").onclick = () => {
         // État bloquant
         etat = "action";        // ⬅️ IMPORTANT
         attenteAction = true;
-    
+
+        if (tutorialMode) tutorialAdvance("discard");
+
         return;
     }
 };
@@ -2395,6 +2741,7 @@ document.addEventListener("click", e => {
   // === Conserver ===
   if (e.target.id === "btn-conserver") {
       // Les cartes restent au sommet
+      if (tutorialMode) tutorialAdvance("keep-cards");
       fermerPopup10As();
   }
 
@@ -2478,6 +2825,7 @@ btnJoker.onclick = () => {
   jokerAEteUtilise=true;
   jokerEnAttente=true;
   btnJoker.classList.add("joker-actif");
+  if (tutorialMode) tutorialAdvance("joker-activate");
 };
 
 /* =====================================================
@@ -2721,6 +3069,7 @@ statsDiv.innerHTML = `
       
 /* =====================================================*/
 function checkJeu(){
+    if (tutorialMode) return;
     verifierDefaite();
     verifierVictoire();
 }
@@ -2907,32 +3256,38 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 document.getElementById("mode-standard").onclick = () => {
   document.getElementById("mode-selection").style.display = "none";
+  document.getElementById("tutorial-start-wrapper").style.display = "none";
   document.getElementById("standard-submenu").style.display = "";
 };
 document.getElementById("btn-back-standard").onclick = () => {
   document.getElementById("standard-submenu").style.display = "none";
   document.getElementById("mode-selection").style.display = "flex";
+  document.getElementById("tutorial-start-wrapper").style.display = "";
 };
 document.getElementById("mode-simple").onclick = () => {
   modeJeu = "standard";
   document.getElementById("standard-submenu").style.display = "none";
+  document.getElementById("tutorial-start-wrapper").style.display = "none";
   document.getElementById("zone-actions-container").style.display = "";
   updateRulesGoal();
 };
 document.getElementById("mode-2archives").onclick = () => {
   modeJeu = "2archives";
   document.getElementById("standard-submenu").style.display = "none";
+  document.getElementById("tutorial-start-wrapper").style.display = "none";
   document.getElementById("zone-actions-container").style.display = "";
   updateRulesGoal();
 };
 document.getElementById("mode-timer").onclick = () => {
   modeJeu = "timer";
   document.getElementById("mode-selection").style.display = "none";
+  document.getElementById("tutorial-start-wrapper").style.display = "none";
   document.getElementById("timer-difficulty-wrapper").style.display = "";
 };
 document.getElementById("btn-back-mode").onclick = () => {
   document.getElementById("timer-difficulty-wrapper").style.display = "none";
   document.getElementById("mode-selection").style.display = "flex";
+  document.getElementById("tutorial-start-wrapper").style.display = "";
   modeJeu = null;
 };
 document.querySelectorAll("#timer-difficulty button").forEach(btn => {
@@ -3030,6 +3385,7 @@ function getStatsResume() {
 }
 
 function envoyerLog(action, options = {}) {
+  if (tutorialMode) return;
   const isFinPartie = (action === "VICTOIRE" || action === "DEFAITE");
   const difficulteFR = { easy: "Facile", normal: "Normal", hard: "Difficile", hardcore: "Hardcore" };
   const modeLabel = modeJeu === "timer" ? `Timer | ${difficulteFR[difficulteTimer] || difficulteTimer}` : modeJeu === "2archives" ? "2 Archives" : modeJeu === "standard" ? "Standard" : "";
@@ -3313,6 +3669,7 @@ function clearCumulStats() {
 
 // Marquer une partie comme en cours
 function marquerPartieActive() {
+  if (tutorialMode) return;
   try {
     localStorage.setItem(CS_GAME_ACTIVE_KEY, "1");
     localStorage.setItem(CS_LAST_ACTIVITY_KEY, Date.now().toString());
@@ -3581,6 +3938,355 @@ document.getElementById("btn-stats-clear").addEventListener("click", function() 
     renderCumulStats();
   }
 });
+
+/* =====================================================
+   TUTORIEL INTERACTIF
+===================================================== */
+const TUTO_TOTAL_STEPS = 28; // steps 0-27
+
+function getTutoScriptedDeck() {
+  // Deck: last element = drawn first (pioche.pop())
+  // Draw 0: 5♠,7♠ | Draw 2: 2♥,2♦ | Draw 4: 6♣,9♠
+  // Draw 7: 3♥,4♦ | Draw 9: V♣,8♣ | Draw 11: 10♣,R♠
+  // Draw 13: A♥,D♣ | Draw 15: 8♦,7♣ | Draw 17: 3♣,V♦
+  return [
+    {label:"V", valeur:11, couleur:"♦"},
+    {label:"3", valeur:3, couleur:"♣"},
+    {label:"7", valeur:7, couleur:"♣"},
+    {label:"8", valeur:8, couleur:"♦"},
+    {label:"D", valeur:12, couleur:"♣"},
+    {label:"A", valeur:1, couleur:"♥"},
+    {label:"R", valeur:13, couleur:"♠"},
+    {label:"10", valeur:10, couleur:"♣"},
+    {label:"8", valeur:8, couleur:"♣"},
+    {label:"V", valeur:11, couleur:"♣"},
+    {label:"4", valeur:4, couleur:"♦"},
+    {label:"3", valeur:3, couleur:"♥"},
+    {label:"9", valeur:9, couleur:"♠"},
+    {label:"6", valeur:6, couleur:"♣"},
+    {label:"2", valeur:2, couleur:"♦"},
+    {label:"2", valeur:2, couleur:"♥"},
+    {label:"7", valeur:7, couleur:"♠"},
+    {label:"5", valeur:5, couleur:"♠"}
+  ];
+}
+
+function startTutorial() {
+  tutorialMode = true;
+  tutorialStep = 0;
+
+  // Reset game state
+  creerPaquet();
+  pioche = getTutoScriptedDeck();
+  etat = "pioche";
+  premierePioche = true;
+  attenteAction = false;
+  jokerUtilise = false;
+  jokerEnAttente = false;
+  jokerAEteUtilise = false;
+  jokerRecupere = false;
+  sessionTerminee = false;
+  modeJeu = "standard";
+
+  // Clear archives
+  couleurs.forEach(c => { archives[c] = []; });
+  document.querySelectorAll(".archive-cartes").forEach(el => el.innerHTML = "");
+  document.querySelectorAll(".compteur").forEach(el => el.remove());
+  document.querySelectorAll(".joker-marqueur").forEach(el => el.remove());
+
+  // Clear centre
+  centre.innerHTML = "";
+
+  // Reset joker button
+  btnJoker.classList.remove("joker-utilise", "joker-actif");
+  btnJoker.classList.add("joker-inactif");
+  btnJoker.style.backgroundColor = "";
+  btnJoker.style.color = "";
+
+  // Hide mode selection, show game
+  document.getElementById("mode-selection").style.display = "none";
+  document.getElementById("tutorial-start-wrapper").style.display = "none";
+  document.getElementById("zone-actions-container").style.display = "";
+  document.getElementById("btn-regles").style.display = "none";
+
+  // Show tutorial overlay
+  document.getElementById("tutorial-overlay").style.display = "";
+  document.body.classList.add("tutorial-active");
+
+  updateCompteurPile();
+  updateCouleurZoneCentrale();
+  gererEtatBoutons();
+  showTutorialStep();
+}
+
+function showTutorialStep() {
+  const msgEl = document.getElementById("tutorial-message");
+  const counterEl = document.getElementById("tutorial-step-counter");
+  const progressBar = document.getElementById("tutorial-progress-bar");
+  const skipBtn = document.getElementById("tutorial-skip");
+
+  // Remove old highlights
+  document.querySelectorAll(".tutorial-highlight").forEach(el => el.classList.remove("tutorial-highlight"));
+
+  // Progress
+  counterEl.textContent = (tutorialStep + 1) + "/" + TUTO_TOTAL_STEPS;
+  progressBar.style.width = ((tutorialStep + 1) / TUTO_TOTAL_STEPS * 100) + "%";
+
+  // Message
+  msgEl.innerHTML = t("tutoStep" + tutorialStep);
+
+  // Last step: change button to "Start a game!"
+  if (tutorialStep === TUTO_TOTAL_STEPS - 1) {
+    skipBtn.textContent = t("tutoPlay");
+    skipBtn.style.background = "#22c55e";
+    skipBtn.style.color = "#fff";
+    skipBtn.style.borderColor = "#22c55e";
+    skipBtn.style.fontSize = "0.9rem";
+  } else {
+    skipBtn.textContent = t("tutoSkip");
+    skipBtn.style.background = "";
+    skipBtn.style.color = "";
+    skipBtn.style.borderColor = "";
+    skipBtn.style.fontSize = "";
+  }
+
+  // Step 20 setup: fix deck after joker shuffle (♥ cards returned + new draws)
+  // Note: Joker clears the central zone, so these are the only cards drawn
+  // Draw 20: 10♠,D♣ | Draw 22: 10♦,A♠ | Popup 10+As: 9♠,6♠,8♣
+  if (tutorialStep === 20) {
+    pioche = [
+      {label:"8", valeur:8, couleur:"♣"},
+      {label:"6", valeur:6, couleur:"♠"},
+      {label:"9", valeur:9, couleur:"♠"},
+      {label:"A", valeur:1, couleur:"♠"},
+      {label:"10", valeur:10, couleur:"♦"},
+      {label:"D", valeur:12, couleur:"♣"},
+      {label:"10", valeur:10, couleur:"♠"}
+    ];
+    updateCompteurPile();
+  }
+
+  // Step 24: disable "Remélanger" button in popup (only "Conserver" allowed)
+  if (tutorialStep === 24) {
+    var btnRemel = document.getElementById("btn-remelanger");
+    if (btnRemel) { btnRemel.disabled = true; btnRemel.style.opacity = "0.4"; }
+  }
+
+  // Highlight target element
+  tutorialHighlight();
+
+  // Override buttons
+  tutorialOverrideButtons();
+}
+
+function tutorialOverrideButtons() {
+  const drawSteps = [0, 2, 4, 7, 9, 11, 13, 15, 17, 20, 22, 25];
+  const discardSteps = [3, 5, 12, 21, 23];
+  const jokerStep = 18;
+
+  if (drawSteps.includes(tutorialStep)) {
+    debloquerBoutons("piocher");
+  } else {
+    bloquerBoutons("piocher");
+  }
+  if (discardSteps.includes(tutorialStep)) {
+    debloquerBoutons("defausser");
+  } else {
+    bloquerBoutons("defausser");
+  }
+  if (tutorialStep === jokerStep) {
+    debloquerBoutons("joker");
+  } else {
+    bloquerBoutons("joker");
+  }
+}
+
+function tutorialHighlight() {
+  switch (tutorialStep) {
+    // Draw steps
+    case 0: case 2: case 4: case 7: case 9: case 11: case 13: case 15: case 17: case 20: case 22: case 25:
+      document.getElementById("piocher").classList.add("tutorial-highlight");
+      break;
+    // Archive ♠
+    case 1: case 6: case 26:
+      document.querySelector('.archive[data-c="♠"]').classList.add("tutorial-highlight");
+      document.querySelectorAll('#centre .carte[data-couleur="♠"]').forEach(function(c) {
+        c.classList.add("tutorial-highlight");
+      });
+      break;
+    // Archive ♥
+    case 8: case 14:
+      document.querySelector('.archive[data-c="♥"]').classList.add("tutorial-highlight");
+      document.querySelectorAll('#centre .carte[data-couleur="♥"]').forEach(function(c) {
+        c.classList.add("tutorial-highlight");
+      });
+      break;
+    // Archive ♦
+    case 10: case 16:
+      document.querySelector('.archive[data-c="♦"]').classList.add("tutorial-highlight");
+      document.querySelectorAll('#centre .carte[data-couleur="♦"]').forEach(function(c) {
+        c.classList.add("tutorial-highlight");
+      });
+      break;
+    // Discard steps — highlight button + cards to select
+    case 3:
+      document.getElementById("defausser").classList.add("tutorial-highlight");
+      document.querySelectorAll('#centre .carte[data-valeur="2"]').forEach(function(c) {
+        c.classList.add("tutorial-highlight");
+      });
+      break;
+    case 5:
+      document.getElementById("defausser").classList.add("tutorial-highlight");
+      document.querySelectorAll('#centre .carte[data-valeur="6"], #centre .carte[data-valeur="9"]').forEach(function(c) {
+        c.classList.add("tutorial-highlight");
+      });
+      break;
+    case 12:
+      document.getElementById("defausser").classList.add("tutorial-highlight");
+      document.querySelectorAll('#centre .carte[data-valeur="10"], #centre .carte[data-valeur="13"]').forEach(function(c) {
+        c.classList.add("tutorial-highlight");
+      });
+      break;
+    case 21:
+      document.getElementById("defausser").classList.add("tutorial-highlight");
+      document.querySelectorAll('#centre .carte[data-valeur="10"], #centre .carte[data-valeur="12"]').forEach(function(c) {
+        c.classList.add("tutorial-highlight");
+      });
+      break;
+    // Joker activate
+    case 18:
+      document.getElementById("joker").classList.add("tutorial-highlight");
+      break;
+    // Joker applied — highlight ♥ archive
+    case 19:
+      document.querySelector('.archive[data-c="♥"]').classList.add("tutorial-highlight");
+      break;
+    // Discard 10+A
+    case 23:
+      document.getElementById("defausser").classList.add("tutorial-highlight");
+      document.querySelectorAll('#centre .carte[data-valeur="10"], #centre .carte[data-valeur="1"]').forEach(function(c) {
+        c.classList.add("tutorial-highlight");
+      });
+      break;
+    // 10+As popup — highlight "Conserver" button
+    case 24:
+      var btnCons = document.getElementById("btn-conserver");
+      if (btnCons) btnCons.classList.add("tutorial-highlight");
+      break;
+  }
+}
+
+function tutorialAdvance(action) {
+  if (!tutorialMode) return;
+
+  const expected = {
+    0: "draw", 1: "archive", 2: "draw", 3: "discard",
+    4: "draw", 5: "discard", 6: "archive", 7: "draw",
+    8: "archive", 9: "draw", 10: "archive", 11: "draw",
+    12: "discard", 13: "draw", 14: "archive", 15: "draw",
+    16: "archive", 17: "draw", 18: "joker-activate",
+    19: "joker-applied", 20: "draw", 21: "discard",
+    22: "draw", 23: "discard", 24: "keep-cards",
+    25: "draw", 26: "archive"
+  };
+
+  if (expected[tutorialStep] === action) {
+    tutorialStep++;
+    if (tutorialStep < TUTO_TOTAL_STEPS) {
+      showTutorialStep();
+    }
+  }
+}
+
+function skipTutorial() {
+  tutorialMode = false;
+  localStorage.setItem("archiviste-tutorial-done", "1");
+
+  // Hide tutorial overlay
+  document.getElementById("tutorial-overlay").style.display = "none";
+  document.body.classList.remove("tutorial-active", "partie-active");
+  document.querySelectorAll(".tutorial-highlight").forEach(el => el.classList.remove("tutorial-highlight"));
+
+  // Reset game state
+  creerPaquet();
+  couleurs.forEach(c => { archives[c] = []; });
+  document.querySelectorAll(".archive-cartes").forEach(el => el.innerHTML = "");
+  document.querySelectorAll(".compteur").forEach(el => el.remove());
+  document.querySelectorAll(".joker-marqueur").forEach(el => el.remove());
+  centre.innerHTML = "";
+  btnJoker.classList.remove("joker-utilise", "joker-actif");
+  btnJoker.classList.add("joker-inactif");
+  btnJoker.style.backgroundColor = "";
+  btnJoker.style.color = "";
+
+  // Return to main page
+  document.getElementById("zone-actions-container").style.display = "none";
+  document.getElementById("mode-selection").style.display = "flex";
+  document.getElementById("tutorial-start-wrapper").style.display = "";
+  document.getElementById("btn-regles").style.display = "";
+
+  updateCompteurPile();
+  updateCouleurZoneCentrale();
+}
+
+function endTutorial() {
+  tutorialMode = false;
+  localStorage.setItem("archiviste-tutorial-done", "1");
+
+  // Hide tutorial overlay
+  document.getElementById("tutorial-overlay").style.display = "none";
+  document.body.classList.remove("tutorial-active");
+  document.querySelectorAll(".tutorial-highlight").forEach(el => el.classList.remove("tutorial-highlight"));
+
+  // Reset game state for a fresh standard game
+  creerPaquet();
+  modeJeu = "standard";
+  etat = "pioche";
+  premierePioche = true;
+  attenteAction = false;
+  jokerUtilise = false;
+  jokerEnAttente = false;
+  jokerAEteUtilise = false;
+  jokerRecupere = false;
+  sessionTerminee = false;
+
+  // Clear archives
+  couleurs.forEach(c => { archives[c] = []; });
+  document.querySelectorAll(".archive-cartes").forEach(el => el.innerHTML = "");
+  document.querySelectorAll(".compteur").forEach(el => el.remove());
+  document.querySelectorAll(".joker-marqueur").forEach(el => el.remove());
+
+  // Clear centre
+  centre.innerHTML = "";
+
+  // Reset joker button
+  btnJoker.classList.remove("joker-utilise", "joker-actif");
+  btnJoker.classList.add("joker-inactif");
+  btnJoker.style.backgroundColor = "";
+  btnJoker.style.color = "";
+
+  // Show game UI (already visible from tutorial)
+  document.getElementById("zone-actions-container").style.display = "";
+  document.getElementById("btn-regles").style.display = "";
+
+  updateCompteurPile();
+  updateCouleurZoneCentrale();
+  updateRulesGoal();
+  gererEtatBoutons();
+}
+
+// Tutorial button handlers
+document.getElementById("mode-tutorial").onclick = () => {
+  startTutorial();
+};
+document.getElementById("tutorial-skip").onclick = () => {
+  skipTutorial();
+};
+
+// First visit: highlight tutorial button
+if (!localStorage.getItem("archiviste-tutorial-done")) {
+  document.getElementById("mode-tutorial").classList.add("tutorial-highlight");
+}
 
 
 </script>
