@@ -3952,13 +3952,19 @@ function tutorialOverrideButtons() {
   const discardSteps = [3, 5, 8, 12];
   const jokerStep = 9;
 
-  if (!drawSteps.includes(tutorialStep)) {
+  if (drawSteps.includes(tutorialStep)) {
+    debloquerBoutons("piocher");
+  } else {
     bloquerBoutons("piocher");
   }
-  if (!discardSteps.includes(tutorialStep)) {
+  if (discardSteps.includes(tutorialStep)) {
+    debloquerBoutons("defausser");
+  } else {
     bloquerBoutons("defausser");
   }
-  if (tutorialStep !== jokerStep) {
+  if (tutorialStep === jokerStep) {
+    debloquerBoutons("joker");
+  } else {
     bloquerBoutons("joker");
   }
 }
@@ -3971,6 +3977,10 @@ function tutorialHighlight() {
     case 1: case 6: case 10:
       var archEl = document.querySelector('.archive[data-c="♠"]');
       if (archEl) archEl.classList.add("tutorial-highlight");
+      // Also highlight the matching card in central zone
+      document.querySelectorAll('#centre .carte[data-couleur="♠"]').forEach(function(c) {
+        c.classList.add("tutorial-highlight");
+      });
       break;
     case 3: case 5: case 8: case 12:
       document.getElementById("defausser").classList.add("tutorial-highlight");
