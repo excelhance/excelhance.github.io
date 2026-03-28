@@ -904,7 +904,7 @@ canvas {
 }
 #tutorial-progress-container {
   height: 4px;
-  background: var(--zone-border);
+  background: var(--bg-deep);
   border-radius: 2px;
   margin-bottom: 10px;
 }
@@ -939,6 +939,8 @@ canvas {
 }
 .tutorial-highlight {
   animation: tutorial-pulse 1.5s infinite !important;
+  outline: 3px solid rgba(56, 189, 248, 0.8) !important;
+  outline-offset: 2px !important;
 }
 body.tutorial-active {
   padding-bottom: 180px;
@@ -1245,12 +1247,12 @@ const TRANSLATIONS = {
     tutoSkip: "Passer",
     tutoPlay: "Lancer une partie !",
     tutoStep0: "Bienvenue ! 👋 Apprenez les mécaniques du jeu en quelques étapes.<br><br>👉 Cliquez sur <strong>PIOCHER</strong> pour tirer vos premières cartes.",
-    tutoStep1: "Vous avez tiré 2 cartes. Pour <strong>archiver</strong> une carte, sélectionnez-la puis cliquez sur l'archive de même couleur.<br><br>👉 Sélectionnez le <strong>5♠</strong> puis cliquez sur l'archive <strong>♠</strong>.",
-    tutoStep2: "Bravo ! Le 5♠ est archivé. Le but est de remplir une archive avec 10 cartes.<br><br>👉 Cliquez sur <strong>PIOCHER</strong> pour continuer.",
+    tutoStep1: "Vous avez tiré 2 cartes. Pour <strong>archiver</strong> une carte, sélectionnez-la puis cliquez sur l'archive de même couleur.<br><br>👉 Sélectionnez une carte <strong>♠</strong> puis cliquez sur l'archive <strong>♠</strong>.",
+    tutoStep2: "Bravo ! La carte ♠ est archivée. Le but est de remplir une archive avec 10 cartes.<br><br>👉 Cliquez sur <strong>PIOCHER</strong> pour continuer.",
     tutoStep3: "Deux cartes de <strong>même valeur</strong> peuvent être défaussées ensemble.<br><br>👉 Sélectionnez les deux <strong>2</strong>, puis cliquez sur <strong>Défausser</strong>.",
     tutoStep4: "Les cartes défaussées disparaissent définitivement du jeu.<br><br>👉 Cliquez sur <strong>PIOCHER</strong>.",
     tutoStep5: "Combo spécial <strong>6 + 9</strong> ! En plus de la défausse, vous rejouez <strong>sans piocher</strong>.<br><br>👉 Sélectionnez le <strong>6</strong> et le <strong>9</strong>, puis <strong>Défausser</strong>.",
-    tutoStep6: "Après un 6+9, vous rejouez immédiatement sans piocher.<br><br>👉 Sélectionnez le <strong>7♠</strong> et archivez-le dans <strong>♠</strong>.",
+    tutoStep6: "Après un 6+9, vous rejouez immédiatement sans piocher.<br><br>👉 Sélectionnez la carte <strong>♠</strong> et archivez-la dans <strong>♠</strong>.",
     tutoStep7: "Parfait ! La Zone Centrale est vide.<br><br>👉 Cliquez sur <strong>PIOCHER</strong>.",
     tutoStep8: "Pas de carte ♠ dans la Zone Centrale. Parfois, il faut archiver dans <strong>une autre couleur</strong> pour avancer !<br><br>👉 Sélectionnez le <strong>3♥</strong> et archivez-le dans <strong>♥</strong>.",
     tutoStep9: "👉 Cliquez sur <strong>PIOCHER</strong>.",
@@ -1365,12 +1367,12 @@ const TRANSLATIONS = {
     tutoSkip: "Skip",
     tutoPlay: "Start a game!",
     tutoStep0: "Welcome! 👋 Learn the game mechanics in a few steps.<br><br>👉 Click <strong>DRAW</strong> to get your first cards.",
-    tutoStep1: "You drew 2 cards. To <strong>archive</strong> a card, select it then click the matching suit archive.<br><br>👉 Select the <strong>5♠</strong> then click the <strong>♠</strong> archive.",
-    tutoStep2: "Well done! The 5♠ is archived. The goal is to fill an archive with 10 cards.<br><br>👉 Click <strong>DRAW</strong> to continue.",
+    tutoStep1: "You drew 2 cards. To <strong>archive</strong> a card, select it then click the matching suit archive.<br><br>👉 Select a <strong>♠</strong> card then click the <strong>♠</strong> archive.",
+    tutoStep2: "Well done! The ♠ card is archived. The goal is to fill an archive with 10 cards.<br><br>👉 Click <strong>DRAW</strong> to continue.",
     tutoStep3: "Two cards of the <strong>same value</strong> can be discarded together.<br><br>👉 Select both <strong>2s</strong>, then click <strong>Discard</strong>.",
     tutoStep4: "Discarded cards are permanently removed from the game.<br><br>👉 Click <strong>DRAW</strong>.",
     tutoStep5: "Special combo <strong>6 + 9</strong>! Besides discarding, you replay <strong>without drawing</strong>.<br><br>👉 Select the <strong>6</strong> and the <strong>9</strong>, then <strong>Discard</strong>.",
-    tutoStep6: "After a 6+9, you replay immediately without drawing.<br><br>👉 Select the <strong>7♠</strong> and archive it in <strong>♠</strong>.",
+    tutoStep6: "After a 6+9, you replay immediately without drawing.<br><br>👉 Select the <strong>♠</strong> card and archive it in <strong>♠</strong>.",
     tutoStep7: "Perfect! The Central Zone is empty.<br><br>👉 Click <strong>DRAW</strong>.",
     tutoStep8: "No ♠ card in the Central Zone. Sometimes you need to archive in <strong>another suit</strong> to keep going!<br><br>👉 Select the <strong>3♥</strong> and archive it in <strong>♥</strong>.",
     tutoStep9: "👉 Click <strong>DRAW</strong>.",
@@ -1485,12 +1487,12 @@ const TRANSLATIONS = {
     tutoSkip: "Überspringen",
     tutoPlay: "Spiel starten!",
     tutoStep0: "Willkommen! 👋 Lernen Sie die Spielmechaniken in wenigen Schritten.<br><br>👉 Klicken Sie auf <strong>ZIEHEN</strong>, um Ihre ersten Karten zu erhalten.",
-    tutoStep1: "Sie haben 2 Karten gezogen. Um eine Karte zu <strong>archivieren</strong>, wählen Sie sie aus und klicken auf das passende Archiv.<br><br>👉 Wählen Sie die <strong>5♠</strong> und klicken Sie auf das <strong>♠</strong>-Archiv.",
-    tutoStep2: "Gut gemacht! Die 5♠ ist archiviert. Ziel: ein Archiv mit 10 Karten füllen.<br><br>👉 Klicken Sie auf <strong>ZIEHEN</strong>.",
+    tutoStep1: "Sie haben 2 Karten gezogen. Um eine Karte zu <strong>archivieren</strong>, wählen Sie sie aus und klicken auf das passende Archiv.<br><br>👉 Wählen Sie eine <strong>♠</strong>-Karte und klicken Sie auf das <strong>♠</strong>-Archiv.",
+    tutoStep2: "Gut gemacht! Die ♠-Karte ist archiviert. Ziel: ein Archiv mit 10 Karten füllen.<br><br>👉 Klicken Sie auf <strong>ZIEHEN</strong>.",
     tutoStep3: "Zwei Karten <strong>gleichen Werts</strong> können zusammen abgelegt werden.<br><br>👉 Wählen Sie beide <strong>2er</strong>, dann <strong>Ablegen</strong>.",
     tutoStep4: "Abgelegte Karten verschwinden endgültig aus dem Spiel.<br><br>👉 Klicken Sie auf <strong>ZIEHEN</strong>.",
     tutoStep5: "Spezialkombo <strong>6 + 9</strong>! Zusätzlich zur Ablage spielen Sie <strong>ohne Ziehen</strong> weiter.<br><br>👉 Wählen Sie die <strong>6</strong> und die <strong>9</strong>, dann <strong>Ablegen</strong>.",
-    tutoStep6: "Nach einer 6+9-Kombo spielen Sie sofort weiter, ohne zu ziehen.<br><br>👉 Wählen Sie die <strong>7♠</strong> und archivieren Sie sie unter <strong>♠</strong>.",
+    tutoStep6: "Nach einer 6+9-Kombo spielen Sie sofort weiter, ohne zu ziehen.<br><br>👉 Wählen Sie die <strong>♠</strong>-Karte und archivieren Sie sie unter <strong>♠</strong>.",
     tutoStep7: "Perfekt! Die Zentrale Zone ist leer.<br><br>👉 Klicken Sie auf <strong>ZIEHEN</strong>.",
     tutoStep8: "Keine ♠-Karte in der Zentralen Zone. Manchmal muss man in <strong>einer anderen Farbe</strong> archivieren!<br><br>👉 Wählen Sie die <strong>3♥</strong> und archivieren Sie sie unter <strong>♥</strong>.",
     tutoStep9: "👉 Klicken Sie auf <strong>ZIEHEN</strong>.",
@@ -1605,12 +1607,12 @@ const TRANSLATIONS = {
     tutoSkip: "Saltar",
     tutoPlay: "¡Iniciar partida!",
     tutoStep0: "¡Bienvenido! 👋 Aprende las mecánicas del juego en pocos pasos.<br><br>👉 Haz clic en <strong>ROBAR</strong> para obtener tus primeras cartas.",
-    tutoStep1: "Has robado 2 cartas. Para <strong>archivar</strong>, selecciona una carta y haz clic en el archivo del mismo palo.<br><br>👉 Selecciona el <strong>5♠</strong> y haz clic en el archivo <strong>♠</strong>.",
-    tutoStep2: "¡Bien hecho! El 5♠ está archivado. El objetivo es llenar un archivo con 10 cartas.<br><br>👉 Haz clic en <strong>ROBAR</strong>.",
+    tutoStep1: "Has robado 2 cartas. Para <strong>archivar</strong>, selecciona una carta y haz clic en el archivo del mismo palo.<br><br>👉 Selecciona una carta <strong>♠</strong> y haz clic en el archivo <strong>♠</strong>.",
+    tutoStep2: "¡Bien hecho! La carta ♠ está archivada. El objetivo es llenar un archivo con 10 cartas.<br><br>👉 Haz clic en <strong>ROBAR</strong>.",
     tutoStep3: "Dos cartas del <strong>mismo valor</strong> se pueden descartar juntas.<br><br>👉 Selecciona ambos <strong>2</strong>, luego <strong>Descartar</strong>.",
     tutoStep4: "Las cartas descartadas desaparecen definitivamente del juego.<br><br>👉 Haz clic en <strong>ROBAR</strong>.",
     tutoStep5: "¡Combo especial <strong>6 + 9</strong>! Además del descarte, juegas de nuevo <strong>sin robar</strong>.<br><br>👉 Selecciona el <strong>6</strong> y el <strong>9</strong>, luego <strong>Descartar</strong>.",
-    tutoStep6: "Después de un 6+9, juegas inmediatamente sin robar.<br><br>👉 Selecciona el <strong>7♠</strong> y archívalo en <strong>♠</strong>.",
+    tutoStep6: "Después de un 6+9, juegas inmediatamente sin robar.<br><br>👉 Selecciona la carta <strong>♠</strong> y archívala en <strong>♠</strong>.",
     tutoStep7: "¡Perfecto! La Zona Central está vacía.<br><br>👉 Haz clic en <strong>ROBAR</strong>.",
     tutoStep8: "No hay carta ♠ en la Zona Central. ¡A veces hay que archivar en <strong>otro palo</strong> para avanzar!<br><br>👉 Selecciona el <strong>3♥</strong> y archívalo en <strong>♥</strong>.",
     tutoStep9: "👉 Haz clic en <strong>ROBAR</strong>.",
@@ -1725,12 +1727,12 @@ const TRANSLATIONS = {
     tutoSkip: "تخطي",
     tutoPlay: "!ابدأ اللعب",
     tutoStep0: "!مرحبًا 👋 تعلّم آليات اللعبة في خطوات قليلة.<br><br>👉 انقر على <strong>سحب</strong> للحصول على أوراقك الأولى.",
-    tutoStep1: "سحبت ورقتين. <strong>لأرشفة</strong> ورقة، اختَرها ثم انقر على الأرشيف المطابق.<br><br>👉 اختر <strong>5♠</strong> ثم انقر على أرشيف <strong>♠</strong>.",
-    tutoStep2: "!أحسنت! تمت أرشفة 5♠. الهدف: ملء أرشيف بـ 10 أوراق.<br><br>👉 انقر على <strong>سحب</strong>.",
+    tutoStep1: "سحبت ورقتين. <strong>لأرشفة</strong> ورقة، اختَرها ثم انقر على الأرشيف المطابق.<br><br>👉 اختر ورقة <strong>♠</strong> ثم انقر على أرشيف <strong>♠</strong>.",
+    tutoStep2: "!أحسنت! تمت أرشفة ورقة ♠. الهدف: ملء أرشيف بـ 10 أوراق.<br><br>👉 انقر على <strong>سحب</strong>.",
     tutoStep3: "يمكن تجاهل ورقتين من <strong>نفس القيمة</strong> معًا.<br><br>👉 اختر كلا <strong>الـ2</strong>، ثم <strong>تجاهل</strong>.",
     tutoStep4: "الأوراق المُتجاهَلة تختفي نهائيًا من اللعبة.<br><br>👉 انقر على <strong>سحب</strong>.",
     tutoStep5: "!كومبو خاص <strong>6 + 9</strong>! بالإضافة للتجاهل، تلعب مجددًا <strong>بدون سحب</strong>.<br><br>👉 اختر <strong>6</strong> و<strong>9</strong>، ثم <strong>تجاهل</strong>.",
-    tutoStep6: "بعد كومبو 6+9، تلعب فورًا بدون سحب.<br><br>👉 اختر <strong>7♠</strong> وأرشفها في <strong>♠</strong>.",
+    tutoStep6: "بعد كومبو 6+9، تلعب فورًا بدون سحب.<br><br>👉 اختر ورقة <strong>♠</strong> وأرشفها في <strong>♠</strong>.",
     tutoStep7: "!ممتاز! المنطقة المركزية فارغة.<br><br>👉 انقر على <strong>سحب</strong>.",
     tutoStep8: "لا توجد ورقة ♠ في المنطقة المركزية. أحيانًا يجب الأرشفة في <strong>لون آخر</strong> للتقدم!<br><br>👉 اختر <strong>3♥</strong> وأرشفها في <strong>♥</strong>.",
     tutoStep9: "👉 انقر على <strong>سحب</strong>.",
@@ -1845,12 +1847,12 @@ const TRANSLATIONS = {
     tutoSkip: "跳过",
     tutoPlay: "开始游戏！",
     tutoStep0: "欢迎！👋 通过几个步骤学习游戏机制。<br><br>👉 点击 <strong>抽牌</strong> 获取你的第一手牌。",
-    tutoStep1: "你抽到了2张牌。要<strong>归档</strong>一张牌，选中它然后点击对应花色的档案。<br><br>👉 选择 <strong>5♠</strong>，然后点击 <strong>♠</strong> 档案。",
-    tutoStep2: "做得好！5♠已归档。目标：用10张牌填满一个档案。<br><br>👉 点击 <strong>抽牌</strong> 继续。",
+    tutoStep1: "你抽到了2张牌。要<strong>归档</strong>一张牌，选中它然后点击对应花色的档案。<br><br>👉 选择一张 <strong>♠</strong> 牌，然后点击 <strong>♠</strong> 档案。",
+    tutoStep2: "做得好！♠牌已归档。目标：用10张牌填满一个档案。<br><br>👉 点击 <strong>抽牌</strong> 继续。",
     tutoStep3: "两张<strong>相同点数</strong>的牌可以一起弃掉。<br><br>👉 选择两张 <strong>2</strong>，然后点击 <strong>弃牌</strong>。",
     tutoStep4: "弃掉的牌将永久从游戏中消失。<br><br>👉 点击 <strong>抽牌</strong>。",
     tutoStep5: "特殊组合 <strong>6 + 9</strong>！除了弃牌，你还可以<strong>不抽牌直接再玩</strong>。<br><br>👉 选择 <strong>6</strong> 和 <strong>9</strong>，然后 <strong>弃牌</strong>。",
-    tutoStep6: "6+9组合后，你可以立即行动而无需抽牌。<br><br>👉 选择 <strong>7♠</strong> 并归档到 <strong>♠</strong>。",
+    tutoStep6: "6+9组合后，你可以立即行动而无需抽牌。<br><br>👉 选择 <strong>♠</strong> 牌并归档到 <strong>♠</strong>。",
     tutoStep7: "完美！中央区域已清空。<br><br>👉 点击 <strong>抽牌</strong>。",
     tutoStep8: "中央区域没有♠牌。有时需要归档到<strong>其他花色</strong>才能继续！<br><br>👉 选择 <strong>3♥</strong> 并归档到 <strong>♥</strong>。",
     tutoStep9: "👉 点击 <strong>抽牌</strong>。",
@@ -1965,12 +1967,12 @@ const TRANSLATIONS = {
     tutoSkip: "Пропустить",
     tutoPlay: "Начать игру!",
     tutoStep0: "Добро пожаловать! 👋 Изучите механики игры за несколько шагов.<br><br>👉 Нажмите <strong>ТЯНУТЬ</strong>, чтобы получить первые карты.",
-    tutoStep1: "Вы вытянули 2 карты. Чтобы <strong>архивировать</strong> карту, выберите её и нажмите на соответствующий архив.<br><br>👉 Выберите <strong>5♠</strong> и нажмите на архив <strong>♠</strong>.",
-    tutoStep2: "Отлично! 5♠ в архиве. Цель: заполнить архив 10 картами.<br><br>👉 Нажмите <strong>ТЯНУТЬ</strong>.",
+    tutoStep1: "Вы вытянули 2 карты. Чтобы <strong>архивировать</strong> карту, выберите её и нажмите на соответствующий архив.<br><br>👉 Выберите карту <strong>♠</strong> и нажмите на архив <strong>♠</strong>.",
+    tutoStep2: "Отлично! Карта ♠ в архиве. Цель: заполнить архив 10 картами.<br><br>👉 Нажмите <strong>ТЯНУТЬ</strong>.",
     tutoStep3: "Две карты <strong>одного достоинства</strong> можно сбросить вместе.<br><br>👉 Выберите обе <strong>двойки</strong>, затем <strong>Сбросить</strong>.",
     tutoStep4: "Сброшенные карты навсегда исчезают из игры.<br><br>👉 Нажмите <strong>ТЯНУТЬ</strong>.",
     tutoStep5: "Спецкомбо <strong>6 + 9</strong>! Помимо сброса, вы играете снова <strong>без раздачи</strong>.<br><br>👉 Выберите <strong>6</strong> и <strong>9</strong>, затем <strong>Сбросить</strong>.",
-    tutoStep6: "После 6+9 вы играете сразу, без раздачи.<br><br>👉 Выберите <strong>7♠</strong> и архивируйте в <strong>♠</strong>.",
+    tutoStep6: "После 6+9 вы играете сразу, без раздачи.<br><br>👉 Выберите карту <strong>♠</strong> и архивируйте в <strong>♠</strong>.",
     tutoStep7: "Отлично! Центральная зона пуста.<br><br>👉 Нажмите <strong>ТЯНУТЬ</strong>.",
     tutoStep8: "Нет карт ♠ в Центральной зоне. Иногда нужно архивировать в <strong>другую масть</strong>!<br><br>👉 Выберите <strong>3♥</strong> и архивируйте в <strong>♥</strong>.",
     tutoStep9: "👉 Нажмите <strong>ТЯНУТЬ</strong>.",
@@ -4002,11 +4004,12 @@ function showTutorialStep() {
   }
 
   // Step 20 setup: fix deck after joker shuffle (♥ cards returned + new draws)
+  // Note: Joker clears the central zone, so these are the only cards drawn
   if (tutorialStep === 20) {
     pioche = [
       {label:"3", valeur:3, couleur:"♥"},
       {label:"A", valeur:1, couleur:"♥"},
-      {label:"5", valeur:5, couleur:"♣"},
+      {label:"D", valeur:12, couleur:"♣"},
       {label:"10", valeur:10, couleur:"♠"}
     ];
     updateCompteurPile();
@@ -4127,7 +4130,47 @@ function tutorialAdvance(action) {
 function endTutorial() {
   tutorialMode = false;
   localStorage.setItem("archiviste-tutorial-done", "1");
-  location.reload();
+
+  // Hide tutorial overlay
+  document.getElementById("tutorial-overlay").style.display = "none";
+  document.body.classList.remove("tutorial-active");
+  document.querySelectorAll(".tutorial-highlight").forEach(el => el.classList.remove("tutorial-highlight"));
+
+  // Reset game state for a fresh standard game
+  creerPaquet();
+  modeJeu = "standard";
+  etat = "pioche";
+  premierePioche = true;
+  attenteAction = false;
+  jokerUtilise = false;
+  jokerEnAttente = false;
+  jokerAEteUtilise = false;
+  jokerRecupere = false;
+  sessionTerminee = false;
+
+  // Clear archives
+  couleurs.forEach(c => { archives[c] = []; });
+  document.querySelectorAll(".archive-cartes").forEach(el => el.innerHTML = "");
+  document.querySelectorAll(".compteur").forEach(el => el.remove());
+  document.querySelectorAll(".joker-marqueur").forEach(el => el.remove());
+
+  // Clear centre
+  centre.innerHTML = "";
+
+  // Reset joker button
+  btnJoker.classList.remove("joker-utilise", "joker-actif");
+  btnJoker.classList.add("joker-inactif");
+  btnJoker.style.backgroundColor = "";
+  btnJoker.style.color = "";
+
+  // Show game UI (already visible from tutorial)
+  document.getElementById("zone-actions-container").style.display = "";
+  document.getElementById("btn-regles").style.display = "";
+
+  updateCompteurPile();
+  updateCouleurZoneCentrale();
+  updateRulesGoal();
+  gererEtatBoutons();
 }
 
 // Tutorial button handlers
