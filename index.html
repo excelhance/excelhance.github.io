@@ -4107,8 +4107,14 @@ function tutorialHighlight() {
     case 0: case 2: case 4: case 7: case 9: case 11: case 13: case 15: case 17: case 20: case 22: case 25:
       document.getElementById("piocher").classList.add("tutorial-highlight");
       break;
-    // Archive ♠
-    case 1: case 6: case 26:
+    // Archive ♠ (first ♠ card only)
+    case 1: case 26:
+      document.querySelector('.archive[data-c="♠"]').classList.add("tutorial-highlight");
+      var firstSpade = document.querySelector('#centre .carte[data-couleur="♠"]');
+      if (firstSpade) firstSpade.classList.add("tutorial-highlight");
+      break;
+    // Archive ♠ (all ♠ cards)
+    case 6:
       document.querySelector('.archive[data-c="♠"]').classList.add("tutorial-highlight");
       document.querySelectorAll('#centre .carte[data-couleur="♠"]').forEach(function(c) {
         c.classList.add("tutorial-highlight");
